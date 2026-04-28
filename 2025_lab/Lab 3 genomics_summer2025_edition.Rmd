@@ -1,0 +1,525 @@
+---
+title: "Biol 4315 Lab 3"
+subtitle: "Genome Assembly and Annotation Basics"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+    collapsed: false
+---
+
+```{=html}
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-hight: 30px;
+  }
+td {  /* Table  */
+  font-size: 14px;
+}
+ul { /* List */
+  font-size: 18px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: Black;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: Black;
+}
+
+code.r{ /* Code block */
+    font-size: 14px;
+}
+.tocify {
+    border: none;
+}
+
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+options(knitr.duplicate.label = "allow")
+
+```
+
+
+```{r klippy, echo=FALSE, include=TRUE, eval=TRUE}
+klippy::klippy(position = c("top","right"), lang = c("r", "markdown", "bash"))
+```
+<br>
+
+# **The setup**
+
+Create a new `GitHub` repo for this lab.
+
+In RStudio:
+
+- Create a new R Project with vertion control and connect it to your `GitHub` repo.
+
+- Start a new R Markdown file named `lab3_assembly_annotation.Rmd`
+
+- Make sure to add all downloaded files to the `.gitignore` files.
+
+Commit these two files immediately with a message like `Initial commit`.
+
+On terminal, pull the docker image for `quast`, which along side `BUSCO` will be used to evaluate the quality of the genome assembly you will do today. 
+
+```{bash pull_quast}
+docker pull quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2
+```
+
+Next use `conda` to install the sequence aligner `minimap2` if not installed on your computer. 
+You can check if it is installed by running `minimap2 -h` in your bash terminal. `minimap2` does not require a virtual environet. 
+
+Also, load the following packages in your R session:
+
+```{r packages}
+library("IRanges")
+library("GenomicRanges")
+library("Rsamtools")
+library("GenomicAlignments")
+library("Gviz")
+```
+
+Lastly, download the yeast reference genome, along with it's GFF file ( a file that contains the list of gene annotations) to be used for the assembly check.This should be done in the terminal. 
+
+**Remember to use `gunzip` to unzip both files.**  
+
+```{bash refgen_dl}
+#Download the reference genome from refseq
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz
+
+#Download the genome annotation file from refseq
+
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.gff.gz
+
+```
+
+>**One final note before you begin:** the assignment questions for this lab are interspersed througout the lab. There are 8 questions, make sure to answer all of them. 
+
+
+***
+
+# **Learning objectives**
+
+<details>
+
+<summary>Click to expand</summary>
+
+**By the end of this lab you will be able to:**
+
+-   Understand the basic process and challenges of genome assembly.
+
+-   Use Flye to perform long-read de novo genome assembly.
+
+-   Evaluate assemblies using QUAST and BUSCO.
+
+-   Interpret common assembly quality metrics.
+
+-   Use GRanges for basic annotation-like tasks by mapping known genes to assembled contigs.
+
+</details>
+
+------------------------------------------------------------------------
+
+# **Assembly overview**
+
+A genome assembly is the process of piecing together the full DNA sequence from sequencing reads.
+Long reads (like those from Oxford Nanopore) simplify this task because they provide more contiguous information. However, they 
+also tend to have higher error rates compared to short reads.
+
+In this lab, you'll assemble a small dataset of Oxford Nanopore reads from a _Saccharomyces cerevisiae_ isolate — the same strain you worked with in the previous lab. The dataset has low coverage, which will affect the quality of your assembly.
+
+Important concepts:
+
+- Coverage - How many times, on average, each position in the genome is represented by a read.
+For example, 30× coverage means each base is represented, on average, by 30 different reads. High coverage improves the ability to generate a consensus sequence that corrects for sequencing or PCR errors. 
+
+- Contiguity (e.g., number of contigs, N50) - A measure of how fragmented the assembly is.
+One common metric is N50, which indicates that 50% of the assembled genome is contained in contigs that are at least that length. As a rule of thumb, a high N50 and a small number of contigs indicate a more contiguous (i.e., less fragmented) assembly.  
+
+- Completeness - A measure of how much of the expected genome content is present in the assembly.
+This is often assessed both by comparing the assembly size to expected size based on a reference genome, and whether key conserved genes (e.g., using `BUSCO`) are detected. For example, a complete assembly of _S. cerevisiae_ should contain nearly all expected genes for that species and be roughly 12Mb long. 
+
+***
+
+# **Assemble the genome**
+
+You will assemble the genome using `Flye`, a _de novo_ assembler designed specifically for long noisy reads, such as those 
+generated by Oxford Nanopore or PacBio sequencing platforms. It uses a repeat graph approach to assemble genomes, which allows it 
+to handle complex repeat structures more effectively than traditional assemblers. `Flye` performs well on both low- and 
+high-coverage datasets and is widely used in microbial, eukaryotic, and metagenomic projects.
+
+>A _de novo_ assembler is a tool that assembles sequencing reads into a genome without using a reference genome. It builds the 
+>sequence entirely from scratch, based only on overlaps and patterns in the reads themselves.
+
+
+```{bash flye}
+
+# Run the Flye assembler, note the expected genome size
+flye --nano-raw ERR1539006.fastq --out-dir flye_output --threads 8 --genome-size 12m
+
+```
+
+* The `--nano-raw` flag denotes we are using raw nanopore reads with old sequencing chemistry.
+
+* The `--threds` flag denotes number of CPU cores to use, here 8.
+
+* The `--genome-size` flag is where the expected genome size is specified. Here 12Mb which is the expected size of the _S. cerevisiae_ genome. 
+
+Once done, your assembled genome will be in `flye_output/assembly.fasta`, and a summary of the assembly process and stats will by in `flye_output/flye.log` but also outputted to terminal.
+
+## **Assignment question 1**
+
+In your `.Rmd` file have an R code chunk that tabulate the alignment statistics, make sure that the table shows the total length of the assembly, the N50, the number of contigs, largest contig and coverage. 
+Based on that, would you expect to have a complete genome? Would you say that the coverage is adequate (3 marks)?
+
+***
+
+# **Evaluate the assembly**
+
+You will evaluate the assembly using two tools `quast` and `BUSCO`. `quast` is used to check and compare genome assemblies. It 
+provides some rudimentary matrices for contiguity such as N50 and the number of contigs along with some more interesting ones that 
+evaluate the accuracy of the assembly such as misassemblies.
+`BUSCO` is used to evaluate the completeness of an assembly. It identifies the presence or absence of highly conserved, single-copy
+genes (orthologs) in the assembly, compared to a reference set for a specific lineage (in your case saccharomycetaceae). A high 
+`BUSCO` score indicates a more complete representation of the expected gene content for a given organism.
+The score is made of several components: 
+
+- C - level of completeness made up of: S (found in single copy as expected) and D (duplicated - appeared more than once. Could indicate assembly redundancy or real duplication.)
+
+- F - Fragmented. Partial matches. May reflect incomplete assembly or gene breakage/partial deletions.
+
+- M - Missing. Not found. Could be due to deletion, divergence, or poor assembly.
+
+## **Evaluating the assembly using `BUSCO`**
+
+Remember that `BUSCO` will be ran using docker, so make sure that docker desktop is active on your Mac.
+
+```{bash busco}
+
+docker run --rm \
+  -v "$PWD":/data \
+  -w /data \
+  ezlabgva/busco:v6.0.0_cv1 \
+  busco -i assembly.fasta -o busco_output -l saccharomycetaceae_odb12 -m genome -c 8
+
+
+```
+
+* `-v "$PWD":/data` mounts the current working directory(`pwd` in unix) into the container as `/data`.
+
+* `-w /data` ensures the container operates inside the mounted folder.
+
+* `-c` represents the number of cores, in this case you will use 8.
+
+>Note: -l is for leneage, since we know the sample is a yeast (Saccharomyces), you will use the 
+saccharomycetaceae_odb12 as reference. `BUSCO` also has the ability to try an idenfy the lineage of the 
+submitted assembly using the `--auto-lineage-euk` flag.
+While this is a useful option, saccharomycetaceae_odb12 is more specific and reliable and will save you 
+runtime. 
+
+
+### **Assignment question 2**
+
+The `BUSCO` reports should be found under `/busco_results`. Open the text file with lineage specific results, and answe the following:
+
+* What were the `BUSCO` scores? Given the coverage do you think they are good (2 marks)?
+
+* What was the N50 compared to the `flye` calculated one (1 mark)?
+
+* What was the total assembly length (1 mark)?
+
+
+## **Evaluating the assembly with `quast`**
+
+`quast` will also be run using docker.
+
+```{bash}
+
+
+docker run --rm -v "$(pwd)":/data -w /data quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2 \
+  quast.py assembly.fasta \
+  -r GCF_000146045.2_R64_genomic.fna \
+  -g GCF_000146045.2_R64_genomic.gff \
+  -o quast_output
+
+```
+
+
+* The `-r` argument specifies the reference genome to which the assembly is compared. In this case, you will 
+use the RefSeq reference genome for _S. cerevisiae_. A RefSeq genome is a curated, non-redundant, and 
+annotated reference genome sequence maintained by NCBI that serves as a standard for genomic research and 
+analysis. `GCF_000146045.2_R64_genomic.fna` is the genome sequence from _S. cerevisiae_ strain S288C.
+
+* The `-g` argument specifies gene annotations by providing the GFF file for the reference genome. GFF stands 
+for General Feature Format. It is a tab-delimited text file that describes genomic features—such as genes, 
+exons, and regulatory elements—along a reference sequence.
+
+* The `-o` argument specifies the output directory where `quast` will write its reports.
+
+### **Assignment question 3**
+
+Open the `quast` report
+
+* What was the genome fraction how does it compare to `BUSCO` (2 marks)?
+
+* What was the duplication ratio (1 mark)?
+
+* What was the level of misassemblies and what is the length of the misassembled contigs? What does it tell 
+you about how well the reference genome represents the genomic diversity of the species _S. cerevisiae_ (3 marks)?
+
+***
+
+# **Annotating assemblies using alignment and visualization tools**
+
+Next, you will align the contigs resulting from the genome assembly to the reference genome, and then align `CDSs` from the reference genome back to the contigues.
+
+Aligning assembled contigs to a reference genome allows us to evaluate the structure and quality of the assembly. This step helps answer key questions like:
+
+* Which parts of the genome were recovered?
+
+* Are the contigs in the correct order and orientation?
+
+* Do the contigs cover important genomic features, like genes or regulatory regions?
+
+By mapping contigs to a known reference, we can also detect structural differences (e.g., insertions, deletions, rearrangements), identify potential misassemblies, and gain biological insights — such as which genes were successfully captured.
+
+Even when working with novel organisms, aligning to a related reference can help anchor contigs to known biology and guide downstream annotation.
+
+## **Why align the CDSs to the contig?**
+
+Aligning the coding DNA sequences (CDSs) from a trusted reference genome (like RefSeq) to your assembled contigs allows you to annotate potential genes in your assembly. This helps identify what functional elements—like protein-coding genes—are present and where they are located. Even if your assembly is incomplete or fragmented, mapping known CDSs can reveal which parts of the genome 
+were successfully recovered and what biological functions they might encode. It's a key step in making your assembly biologically 
+meaningful.
+
+## **Assignment question 4, data prep**
+
+For the next part you will work only with the sequence of chromosome 1, to reduce CPU time.
+
+* Write a code chunk that extract the sequence of chromosome 1 from `GCF_000146045.2_R64_genomic.fna`. and saves is as `R64_chr1.fna` (2 marks). 
+
+* Make sure the chunk is on your `.rmd` file, and that you run it (1 mark). 
+
+* Make sure the `R64_chr1.fna` is in your `.gitignore` as well (1 mark). 
+
+## **Aligning your assembly to chromosome 1**
+
+Next you will use `minimap2` to align the contigs to chromosome 1 extracted from the reference genome.
+
+`minimap2` is a fast and efficient sequence alignment tool designed for aligning long DNA or RNA reads to reference genomes. It’s commonly used for tasks like genome assembly validation, transcriptome alignment, and comparative genomics. `minimap2` supports both long-read technologies (like Oxford Nanopore and PacBio) and short-read alignments, and it can output results in standard formats like SAM/BAM. Its speed and accuracy make it a popular choice for aligning assembled contigs or raw reads to reference sequences.
+
+The `-ax asm5` argument is used when aligning closely related sequences, such as contings to reference genome, and requires a 
+minimum of 95% sequence identity.  
+
+```{bash chr1}
+
+minimap2 -t 8 -ax asm5 chr1.fna ./flye_output/assembly.fasta > contig_vs_chr1.sam
+
+```
+
+
+>**Note:** the output here is a `sam` (sequence alignment map) file, which is a tab delaminated text file that specifies the coordinates of each aligned sequence relative to the reference (in this case chromosom 1). If you wish to view the file you can use the head command in terminal. 
+
+
+### **Using `samtools` to sort the alignment by region and converting it to a bam file**
+
+In order to visualize the alignment, it need to be sorted by coordinates so that fragments that are close to each other will indeed
+appear like that in the plot. The human readable `sam` file will also be converted to a binary alignment map 
+(`bam`) file. 
+Binary files are compressed and their processing is less computationally demanding. 
+
+1. Convert the `sam` file to a `bam` file. 
+
+```{bash samtobam}
+
+samtools view -bS alignment.sam > alignment.bam
+
+```
+
+2. Sort the aligned contigs based on their coordinates along chromosome 1, this is required for indexing and visualization.
+
+```{bash sortbat}
+samtools sort alignment.bam -o alignment.sorted.bam
+
+```
+
+
+
+3. Index the sorted bam file. 
+
+```{bash bam2bai}
+samtools index alignment.sorted.bam
+
+```
+
+* Creates an index file (.bai) for the sorted BAM.
+
+* Indexing allows fast access to specific regions, which is essential for genome browsers and R packages like 
+`Gviz` or `GenomicAlignments`.
+
+
+### **Visualizing the alignment to chromosome 1 with GRanges**
+
+Next you will vizulize the aligned contigs against the chromosome using Granges.
+GRanges (Genomic Ranges) are R objects used to represent and manipulate genomic intervals. Each range specifies a chromosome, a 
+start and end position, and a strand (plus or minus). GRanges are commonly used to model things like genes, 
+exons, alignments, or any other features mapped to a genome.
+
+1. Import the `bam` file and convert it into a Granges object
+
+```{r bamimport}
+
+
+# BAM file path
+bam_file <- "alignment.sorted.bam"
+
+# Open connection to BAM file
+bam <- BamFile(bam_file)
+
+# Read all alignments (already restricted to chr1)
+alns <- readGAlignments(bam)
+
+# Convert to GRanges object
+gr_alns <- granges(alns)
+
+
+```
+
+2. Create "tracks" showing the alignment
+
+```{r tracks}
+
+aln_track <- AnnotationTrack(gr_alns, name = "Contigs", genome = "sacCer3", chromosome = "chr1")
+
+
+# Add genome axis for scale
+axis_track <- GenomeAxisTrack()
+
+```
+
+
+`AnnotationTrack()` creates a track (i.e., a visual layer or the "Y axis like" component) for plotting annotations like genes, alignments, or any genomic features. The arguments `name`, `genome`, and `chromosome` are for aesthetics only. 
+
+`GenomeAxiaTrack()` Creates a horizontal genomic scale bar for your plot, showing genomic coordinates (e.g., in bp or Mb).
+It provides reference points so you can interpret where your annotations fall along the chromosome — like a ruler along the x-axis.
+
+
+3. Visualize the alignment
+
+```{r viz1}
+
+# Plot
+plotTracks(list(axis_track, aln_track),
+           from = min(start(gr_alns)),
+           to = max(end(gr_alns)),
+           main = "Contig Alignments to Chromosome 1")
+
+```
+
+
+`plotTracks()` combines the tracks and plots them over the region spanned by the contigs.
+
+***
+
+>Congrats — you just built your own genome browser! While not as fancy or interactive as the [UCSC genome browser](https://genome.ucsc.edu/), this R-based version is still incredibly powerful. It allows for customization, automation, and seamless integration with your analysis pipeline — all within a reproducible script.
+
+***
+
+#### **Assignment question 5**
+
+-  How many contigs did you have aligning to chromosome 1 (1 mark)?
+
+-  Make sure to have the plot in your `.RMD` file (1 mark).
+
+
+### **Assignment question 6 - Garbing the longest contig**
+
+Before proceeding with annotation:
+
+* Write a code chunk that extracts the longest contig from your `assembly.fasta` file and saves it as `longest_contig.fasta`.
+
+* The code is included in your .Rmd assignment file.
+
+* The resulting FASTA file is committed and pushed to your GitHub repository.
+
+Why are we doing this?
+
+Working with just the longest contig reduces computational load and simplifies the next steps, where you'll align known coding 
+sequences (CDSs) to your assembly as a first pass at annotation.
+
+
+### **Aligning CDSs to the longest contig**
+
+1. Use `minimap2` to align the cds containing fasta file (`GCF_000146045.2_R64_cds_from_genomic.fna`) to the longest contig
+
+```{bash longestvcds}
+
+minimap2 -ax splice -uf --secondary=no longest_contig.fasta GCF_000146045.2_R64_cds_from_genomic.fna > cds_aln.sam
+
+```
+
+* The `ax splice` argument use the splice-aware preset, which is designed for aligning spliced transcripts (like mRNAs or CDSs) to a genome.
+
+* The `-uf` flag indicates that the query sequences are full-length cDNA (or CDSs in this case), which helps minimap2 model 
+splicing more accurately.
+
+* The `--secondary=no` argument suppresses secondary alignments, so each CDS is reported with only its best alignment (simplifies downstream interpretation).
+
+
+### **Assignment question 7 Getting bam and bai files for visualization**
+
+* Write a code chunk that converts your cds_aln.sam file to a sorted and indexed `BAM` file for visualization (2 marks).
+
+* Include the code in your .Rmd file (1 mark).
+
+* Ensure the final `BAM` is named cds_aln.sorted.bam (1 mark)
+
+* Ensure that the Bam and Bai files are in the `.gitignore` file (1 mark). 
+
+* Commit and push your changes to your GitHub repository (1 mark).
+
+
+### **Assignment question 8 Visualize CDS**
+
+Using your sorted `BAM` file, create `Gviz` tracks that represent the aligned CDSs.
+
+* Remember to read the alignment and convert it into granges.
+
+* Remember working with annotation tracks
+
+* Remember to plot the alignment track
+
+* Remember to include your code and the plot in the .Rmd file.
+
+* Commit and push changes to `GitHub`
+
+***
+
+# **You're all done**
+
+Hope you had fun assembling and annotating genomes, this lab will become very useful once you start working on your project. Next lab will deal with transcriptomics data. 
+
+***

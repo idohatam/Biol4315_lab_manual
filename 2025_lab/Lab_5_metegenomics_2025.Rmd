@@ -1,0 +1,927 @@
+---
+title: "Biol 4315 Lab 5 Amplicon metagenomics"
+subtitle: "Using DADA2 to analyze microbiome data"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+    number_sections: true
+    collapsed: false
+---
+
+```{=html}
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 30px;
+  }
+td {  /* Table  */
+  font-size: 14px;
+}
+ul { /* List */
+  font-size: 18px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: Black;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: Black;
+}
+
+code.r{ /* Code block */
+    font-size: 14px;
+}
+.tocify {
+    border: none;
+}
+
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, class.source = "fold-show")
+options(knitr.duplicate.label = "allow")
+
+```
+
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position = c("top","right"))
+```
+
+<br>
+
+# **Lab 5 amplicon metagenomics**
+
+<br>
+
+## **Learning objectives**
+
+<details>
+
+<summary>Click to expand</summary>
+
+**By the end of this lab you will be able to:**
+
+-   Execute a complete omics workflow from quality assessment to high-level analysis
+
+-   Use DADA2 to generate an ASV/OTU count table from raw sequencing data
+
+-   Analyze mouse microbiome data using the phyloseq package
+
+-   Analyze mouse microbiome data using custom functions
+
+</details>
+
+
+<br/>
+
+# **Setup and introduction**
+
+In this lab, you will learn how to analyze amplicon metagenomics datasets. As a reminder, amplicon metagenomics involves amplifying
+specific gene regions from environmental samples. These are typically marker genes like rRNA genes (we'll use 16S rRNA here) that
+help us identify which organisms are present in the studied environment. While amplicon metagenomics is most commonly used to study
+microbial communities, it can also detect macro-organisms like cryptic invasive species.
+
+You will conduct a complete microbiome study from start to finish, beginning with demultiplexed reads and progressing through
+quality assessment, trimming, denoising, paired-end read merging, chimera removal, taxonomic annotation, and data analysis to
+identify trends in community attributes like richness, diversity, and composition.
+
+## **Before you begin**
+
+Create a new `GitHub` repo for this lab.
+
+- Make sure to initiate it with a `README` file and `.gitignore`file. 
+
+In RStudio:
+
+- Create a new R Project with version control and connect it to your `GitHub` repo.
+
+- Start a new R Markdown file named `lab5_metagenomics.Rmd`
+
+- Make sure to add all downloaded files to the `.gitignore` files.
+
+Commit these changes with an appropriate message.
+
+
+## **The dataset**
+
+You will work with a subset of real-world data from Pat Schloss's [lab](http://www.schlosslab.org/) studying mouse microbiomes. This study examined changes in microbial communities of baby mice during their weaning process (a time series data) and it follows `mothur`'s [SOP](https://mothur.org/wiki/miseq_sop/) for analyzing Illumina MiSeq amplicon sequencing data. 
+
+The complete dataset (approximately 1.5GB uncompressed) is available [here](https://mothur.org/MiSeqDevelopmentData/StabilityNoMetaG.tar). `Mothur`, developed by the Schloss lab, was a pioneering, OS-agnostic suite of functions for amplicon metagenomics analysis. However, it processes large and diverse datasets slowly and has consequently lost a lot of it's initial popularity to faster tools like `USEARCH` and R packages such as `DADA2` (which we'll use here).
+
+```{r dl, eval=FALSE}
+#download the file
+download.file(
+  url = "https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip",
+  destfile = "miseqsopdata.zip")
+
+#unzip the to get individual fastq files
+
+unzip("miseqsopdata.zip")
+
+#record path to data
+
+data_dir <-"MiSeq_SOP"
+
+```
+
+
+
+```{r dl2, echo=FALSE, results='hide', message=FALSE,warning=FALSE}
+
+if(length(which(grepl("MiSeq_SOP", list.dirs(getwd(), recursive = F)))) > 0){
+    #If the dir is present record it
+    data_dir <-"MiSeq_SOP"
+  
+    } else{
+      #If the zip file is there but no dir unzip and record
+    if("miseqsopdata.zip" %in% list.files(getwd())){
+      unzip("miseqsopdata.zip")
+      data_dir <-"MiSeq_SOP"
+      } else{
+        #If nothing download, unzip record
+        download.file(
+          url = "https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip", 
+          destfile = "miseqsopdata.zip")
+        
+        unzip("miseqsopdata.zip")
+        data_dir <-"MiSeq_SOP"}}
+
+```
+
+Let's verify that all files are present and accounted for.
+
+```{r see_files, echo=TRUE}
+
+list.files(data_dir)
+
+```
+
+The folder contains multiple FASTQ files along with FASTA files and other files required for the `mothur` SOP. Several important features are worth noting: 
+
+* The data has been demultiplexed, so you'll work with pre-sorted samples. 
+
+* Each sample has R1 and R2 files, giving you practice merging paired-end sequences. Unlike other packages `DADA2` is good with trimming PE reads. 
+
+*These sequences represent 2×250bp paired-end sequencing, but the target region (V4 of 16S rRNA) is just over 250bp
+  * Merged products expected to be in the range of 250bp-260bp long.
+
+* The R1 and R2 files starting with "Mock" represent a mock community—a synthetic community with known species composition.
+
+>If possible, including such as controls is good practice in sequencing studies because they allow you to evaluate sequencing accuracy against expected results. This particular mock community was constructed from 21 known bacterial strains by the [Human Microbiome Project](https://www.hmpdacc.org/HMMC/). The corresponding HMP FASTA file contains the expected results for comparison.
+
+Now let's examine the metadata file, which contains information about the samples you'll analyze.
+
+```{r meta, warning=FALSE}
+read.delim(base::paste(data_dir,"mouse.dpw.metadata", sep = "/" ))[
+  order(read.delim(base::paste(data_dir,"mouse.dpw.metadata", sep = "/" ))[[2]]),]
+
+```
+
+The first column contains sample names, and the second represents days past weaning (time since weaning from mother's milk). Samples range from day 0 (weaning day) to 150 days. The file naming scheme is clear and informative: for example, sample F3D148 represents Female #3 at Day 148 past weaning.
+
+You'll also need to download the taxonomic reference dataset for sequence annotation—the equivalent of gene annotation in RNA-seq analysis. Here, the anotation will be a taxonomic assignment. 
+
+```{r dl3, eval=FALSE}
+#Taxonomy file
+download.file(
+  url = "https://zenodo.org/record/4587955/files/silva_nr99_v138.1_wSpecies_train_set.fa.gz?download=1",
+  destfile = "silva_nr99_v138.1_wSpecies_train_set.fa.gz")
+
+```
+
+<br>
+
+
+## **Required packages**
+
+This lab requires the `DADA2` and `phyloseq` packages. `DADA2` is a wrapper package that uses ShortRead and other Bioconductor packages to process amplicon metagenomics sequences. `Phyloseq` will handle part of the downstream analysis, particularly data viz.
+
+```{r install and load dada2, echo = TRUE, eval = F, message=FALSE}
+
+BiocManager::install("dada2")
+
+BiocManager::install("phyloseq")
+
+```
+
+Next, let's load the required libraries.
+
+```{r load libs, eval=FALSE}
+
+lapply(c("dada2","phyloseq","vegan","tidyverse",
+         "Biostrings"), library, character.only = T)
+
+```
+
+```{r p2, echo=FALSE,message=FALSE,warning=FALSE, results='hide'}
+
+lapply(c("dada2","phyloseq","vegan","tidyverse",
+         "Biostrings"), library, character.only = T)
+
+```
+
+<br>
+
+## **Assignment requirements**
+
+Your `GitHub` repo for this assignment should include:
+
+1. An RMD file with a complete, functioning pipeline analyzing amplicon metagenomics data from start to finish
+   + Ensure only needed steps are included
+   + Include proper header formatting like previous RMD documents with HTML output
+   + Ensure all additional figures required by this lab are produce
+   + Ensure to stage, commit, and push to `GitHub` often
+   
+2. Knitted HTML file with all figures and output tables included
+
+3. All supplementary files (PDFs, PNGs, Excel/CSV files) specified during the lab
+
+
+<br>
+
+# **Getting started**
+
+## **Creating file lists for forward (R1) and reverse (R2) reads**
+
+First, let's generate file lists to feed into DADA2 functions.
+
+```{r read fastq files forward and reverst, include = TRUE, echo = TRUE, eval = TRUE, message=FALSE}
+
+# All forward and reverse fastq file names have the exact format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq
+#Note the pattern
+
+fnFs <- sort(list.files(data_dir, pattern="_R1_001.fastq", full.names = TRUE))
+fnRs <- sort(list.files(data_dir, pattern="_R2_001.fastq", full.names = TRUE))
+
+```
+
+Next lets extract sample names from the list of file names, banking on the standardized naming scheme of the files.
+
+```{r snames2}
+#basename removes the folder names
+sample.names <- stringr::str_split_fixed(basename(fnFs),"_",2)[,1]
+
+sample.names
+
+```
+
+<br>
+
+## **Quality check**
+
+Garbage in garbage out, here too we must inspect the quality of of the reads used for the analysis, remove low quality reads, and 
+trim low quality bases. 
+
+### **Quality scores and mean read quality**
+
+As with previous labs quality check involves evaluating Q-scores across reads and positions within reads focusing on late cycles.
+
+**Why is that?**
+
+Therefore, we need to inspect position-specific Q-scores to determine trimming requirements. We also want to examine mean read 
+quality to identify low-quality reads for removal.
+
+Let's start with forward reads (R1):
+
+```{r q forward reads, echo = TRUE, out.width = '100%', fig.align = 'center'}
+plotQualityProfile(fnFs[1:2])
+```
+
+This complex figure contains multiple information layers: The grayscale heatmap shows the frequency of each quality score at each base position. The green line indicates mean quality scores per position. Orange lines represent quality score distribution quartiles. The red line shows the proportion of reads extending to each position (cycle 250bp). The function also reports read counts per sample.
+
+***
+> Remember: During Illumina sequencing, nucleotides are added in cycles, with all sequences growing by one base per cycle. The flat red line is expected since all reads should have the same length. In other platforms without synchronized nucleotide addition and PCR amplification (e.g., Oxford Nanopore), reads can vary in length.
+***
+
+Forward reads look good, but it's common practice to trim the final nucleotides in Illumina sequences to avoid poorly-controlled errors that can occur there. Although quality profiles don't suggest additional trimming is needed, let's truncate forward reads at position 240 (removing the last 10 nucleotides) when you get to the triming step.
+
+Now let's examine reverse read quality:
+
+```{r Q reverse reads, echo = TRUE, out.width = '100%', fig.align = 'center'}
+plotQualityProfile(fnRs[1:2])
+```
+
+Reverse reads show significantly worse quality, especially in later cycles. This is expected in Illumina sequencing due to inefficient waste product removal in later cycles and waste cary over from the sequencing of the forward reads. In early paired-end sequencing iterations when this technology was first introduced, R2 reads suffered from reduced quality for exactly this reason. These sequences were generated in 2013 using V2 chemistry, essentially when PE sequencing was newly introduced, explaining the poor R2 quality.
+
+Based on these profiles, we'll truncate reverse reads at position 160 where quality distribution crashes. Since R1 and R2 almost completely overlap for this library, reads should still align despite removing nearly 100 bases from R2. Additionally, trimming will improve error correction and sequence clustering into ASVs/OTUs downstream.
+
+
+
+#### **Question 1**
+
+In real-world analysis, you would inspect all files, not just the first two. Make sure that your code chunk checks all forward and reverse files. 
+
+
+<br>
+
+
+### **Read trimming and quality filtering**
+
+Now that we understand read quality patterns, we can trim low quality bases, and filter low-quality reads. Since the filtering 
+function requires an output destination, let's create a folder for filtered reads.
+
+> **Note: Remember to add the trimmed files (or the filtered folder) to your `.gitignore` file.**
+
+```{r assigning files, echo = TRUE}
+#R1
+filtFs <- file.path("filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+names(filtFs) <- sample.names
+#R2
+filtRs <- file.path("filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+names(filtRs) <- sample.names
+```
+
+Next, let's filter the samples using DADA2's default settings. Keep in mind these settings aren't absolute and may need adjustment for real-world datasets.
+
+Let's examine the `filterAndTrim` function arguments: 
+`maxN` indicates the maximum number of ambiguous bases—DADA2's default is 0 since
+the algorithm doesn't allow Ns. 
+`TruncLen`truncates sequences to our chosen length based on Q-scores
+`TruncQ` Truncates from the first position with particularly poor quality that isn't bad enough to be called an N.
+For example Q-score of 2 represents approximately 67% error probabilit, this is Illumina's threshold for extremely poor quality
+reads. When using this option, you might also add `minLen` to remove reads trimmed too short due to poor quality. We won't use it
+here, letting the `maxEE `argument and read alignment handle this.
+
+
+The rm.phix=TRUE removes sequences belonging to Illumina's internal standards. The maxEE parameter sets the maximum number of "expected errors" allowed in a read, providing better filtering than simple mean quality scores.
+
+***
+
+>**Note: If using UNIX-based OS (e.g., macOS), set multithread=TRUE whenever it appears to parallelize processing. Unfortunately, Windows doesn't support R's parallelized apply functions called internally here.**
+
+***
+
+```{r filtering through files, echo = TRUE}
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
+              maxN=0, maxEE=c(2,2), truncQ = 2 ,rm.phix=TRUE,
+              compress=TRUE, multithread = TRUE)
+
+```
+
+
+`out` is a dataframe that keeps record of how many reads are left in each of the filtered samples. Let's check what percent of reads was last per sample by dividing the number of reads out vs number of reads in.  
+
+```{r how much was lost 1, echo=TRUE}
+#Some reshuffling of the data, get percent of reads left per sample as well as absolute numbers
+out2 <- as.data.frame(out) %>% mutate(prop = (100*(reads.out/reads.in)))
+
+# So far looks good
+head(out2)
+
+#Mean percent of seqs left
+mean(out2$prop)
+#Min percent of seqs left
+min(out2$prop)
+
+#But what's the sample with the lowest number of reads?
+min(out2$reads.out)
+
+```
+The first 6 files look good—the minimum proportion of retained sequences is almost 90%, and the sample with the fewest reads has close to 3k sequences. Everything looks solid. Congratulations, you passed the first sanity check!
+
+<br>
+
+### **Denoising and unique sequence estimation**
+
+As mentioned, amplicon sequencing typically aims to provide insights into microbial communities, including trends in "species" richness and diversity—important aspects of community structure and ecological function (which can relate to host health or disease).
+
+The concept of prokaryotic microbial "species" is unclear since most don't reproduce sexually. The criterion relies on sequence similarity. Traditionally, clustering 16S rRNA sequences with 97% similarity (called [OTUs](https://www.drive5.com/usearch/manual/otus.html)) is considered equivalent to studying communities at the species level. However, estimating species numbers and their sequence abundances per sample depends heavily on the [clustering algorithm used](https://www.drive5.com/usearch/manual/uparseotu_algo.html). Most traditional clustering algorithms tend to overestimate diversity in microbial samples, potentially leading to data misinterpretation. This highlights the importance of mock communities as controls—if your clustering algorithm overestimates species in your mock community, you're at least aware of pipeline biases.
+
+One approach uses greedy clustering algorithms. Another approach doesn't cluster sequences at 97% similarity but instead attempts to determine the true number of unique sequences in your dataset before errors were introduced, then groups sequences based on error models. This method is sensitive enough to differentiate sequences with single nucleotide variants. We don't call these sequences OTUs but ASVs (amplicon sequence variants), which more closely resemble [haplotypes](https://www.genome.gov/genetics-glossary/haplotype#:~:text=A%20haplotype%20refers%20to%20a,between%20these%20variants%20are%20rare.) than species. This is DADA2's approach.
+
+ASVs also have limitations. Most bacteria have multiple copies of the 16S rRNA gene (averaging ~7 copies), and different copies are usually not identical (refered to as haplotypes), meaning this approach might treat different copies from the same organism as as if they came from different organisms..
+
+<br>
+
+#### **Denoising process** 
+
+To determine ASV numbers in samples, DADA2 must first identify and correct error patterns in the data—essential to prevent inflated richness and diversity estimates. DADA2 uses a parametric error model to study data error rates. The `learnErrors` method learns error models from data by alternating between error rate estimation and sample composition inference until converging on a jointly consistent solution. Like many machine learning problems, the algorithm requires an initial guess, it uses the maximum possible error rates (assuming only the most abundant sequence is correct and all others are errors).
+
+```{r assigning files F, echo = TRUE}
+errF <- learnErrors(filtFs, multithread=T)
+errR <- learnErrors(filtRs, multithread=T)
+```
+
+We can visualize the learned errors:
+
+```{r visualizing Error for F, echo = TRUE, eval = TRUE, warning=FALSE}
+plotErrors(errF, nominalQ=TRUE)
+```
+
+Error rates for each possible substitution (A→C, A→G, etc.) are shown. Points represent observed error rates for each consensus quality score. The black line shows estimated error rates after algorithm convergence. The red line shows expected error rates under nominal Q-score definitions. Here, estimated error rates (black line) fit well to observed rates (points), and error rates decrease with increased quality as expected. Everything looks reasonable.
+
+## **Question 2**
+
+* Have a code chunk that generates the same output but for the reveres read.
+
+* Export the plot as a PDF and push to your `GitHub` repo
+
+* Do you see similar results for the revers reads?
+
+
+#### **ASV inference**
+
+Now that `DADA2` understands and has corrected error rates, we can assess ASV numbers in samples.
+
+>Note that we are assesing the ASVs for the forwared and revers prior to marging because we don't want to marge sequences that don't end up geing biologically relevant (i.e. first we correct and understand the true sequence diversity in the data and only after that marge reads).
+
+
+```{r sample inference F, echo = TRUE}
+
+dadaFs <- dada(filtFs, err=errF, multithread = TRUE)
+
+dadaRs <- dada(filtRs, err=errF, multithread = TRUE)
+
+```
+
+Let's examine sample 1's ASV count:
+
+```{r inspecting, echo = TRUE, eval = TRUE}
+dadaFs[[1]]
+```
+
+The `DADA2` algorithm inferred 128 true sequence variants from 1979 unique sequences in sample 1, that means that almost 95% of 
+these sequences were not truly unique but rather the result of an error introduced during sequencing or PCR and the `DADA2` 
+algorithm was able to figure out which sequence they truly represent. That sounds super high and really messed up, but if you 
+looked at the abundance of these unique sequences you would see that they most likely account for less than 1% of the actual 
+sequences (i.e. abundant sequences are true diversity and rare sequences are most likely diversity dues to error).  
+
+ 
+<br>
+ 
+### **Paired-end read merging**
+
+After obtaining high-quality, trimmed, and denoised - error corrected reads, it's time to merge the paired-end sequences. Merging 
+is performed by aligning forward reads with reverse-complement corresponding reverse reads. By default, merged sequences are only 
+output if forward and reverse reads overlap by at least 12 bases and are identical in the overlap region.
+
+```{r merging reads, echo = TRUE, eval = TRUE, message=FALSE}
+mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
+
+# Inspect the merger data.frame from the first sample
+DT::datatable(mergers$F3D0,options = list(scrollX = TRUE, autoWidth = TRUE))
+```
+
+The mergers object is a list of data frames from each sample. Each data frame contains the merged sequence, its abundance, and the indices of the forward and reverse sequence variants that were merged. Paired reads that didn't exactly overlap were removed by `mergePairs`, reducing spurious output.
+
+<br>
+
+### **Sequence table construction**
+
+To analyze the data, it needs to be tabulated. Let's generate an ASV table for studying trends across days past weaning.
+
+```{r seq table, echo = TRUE}
+seqtab <- makeSequenceTable(mergers)
+
+dim(seqtab)
+
+```
+
+The sequence table is a matrix with rows corresponding to samples and columns corresponding to ASVs. Column names are the actual sequences themselves (which is cumbersome but serves a purpose—we'll change this later). As shown by the dim function output, the table contains 293 ASVs.
+
+<br>
+
+#### **Sanity checks are important**
+
+When analyzing data, it's good practice to periodically verify you're progressing correctly. Now that we have a count table, let's check if we're working with appropriately-sized sequences.
+
+The V4 region of 16S rRNA is approximately 250-260bp long. Let's examine the sequence length distribution for each ASV:
+
+```{r avslen, echo=TRUE}
+
+table(nchar(getSequences(seqtab)))
+
+``` 
+
+All ASV sequences are 251-255bp long, which falls within the expected range. Let's proceed to everyone's favorite quality control step: chimera removal.
+
+
+<br>
+
+### **Chimera removal**
+
+We've addressed polymerase errors during PCR and sequencing with the `DADA2` denoising algorithm. However, library preparation steps can also introduce errors, particularly chimeras, the integration of two different templates to one PCR product. Studies show ASVs make chimera detection easier than OTUs (though this depends on [who you ask](https://www.drive5.com/usearch/manual/chimeras.html)). `DADA2` identifies chimeric sequences by testing whether sequences can be exactly reconstructed by combining left and right segments from two more abundant "parent" sequences.
+
+```{r remove chimeras, echo = TRUE, eval = TRUE}
+seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=F, verbose=TRUE)
+#Proportion ASVs were removed due to chimeras?
+100-(dim(seqtab.nochim)[2]/dim(seqtab)[2]*100)
+sum(seqtab.nochim)/sum(seqtab)*100
+```
+
+Chimeras represent about 21% of merged sequence variants (~300 ASVs reduced to 235), which seems high but is expected since chimeras can account for up to 30% of unique OTUs/ASVs. However, when accounting for abundances, chimeric sequences represent only ~4% of merged sequence reads (or non-chimeric sequences represent 96.4% of the total number of reads).
+
+<br>
+
+#### **Read retention through the pipeline: final sanity check**
+
+Throughout the workflow, we've removed sequences due to poor quality at multiple steps. What if we removed too many? A general rule of thumb is maintaining a minimum of 1000 reads per sample for reasonable diversity and richness estimates. As a final sanity check, let's examine reads per sample and retention through each step. Outside of trimming, no step should result in massive read loss, not even chimera removal. If such a step exists, this would be a good time to reflect on chosen quality control settings.
+
+```{r track reads, echo = TRUE}
+
+# function that sums the number of unique occurrences in this case seqs
+getN <- function(x){ 
+  
+  sum(getUniques(x))
+  
+}
+
+#Using apply to run the function on all list elements.
+track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
+
+#adding colnames
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+
+#Adding row names
+rownames(track) <- sample.names
+
+track <- as.data.frame(track) %>% mutate(prop_kept = round(nonchim/input*100,2))
+
+DT::datatable(track)
+
+
+```
+
+We've averted an existential crisis—the majority of reads per sample were retained (minimum was over 70%) and all samples have above 1000 reads.
+
+<br>
+
+#### **Data polishing part 1**
+
+Before proceeding, let's ensure our ASV table is in a workable format. We'll transform the matrix to a data table and change column names from sequences to numbered ASVs (1-235).
+
+```{r polish1a}
+
+ASV_tbl <- as.data.frame(seqtab.nochim) %>% 
+  `colnames<-`(base::paste("ASV", seq(1:ncol(seqtab.nochim)), sep = ""))
+
+DT::datatable(ASV_tbl, options = list(scrollX = TRUE, autoWidth = TRUE))
+```
+
+Much better!
+
+Next, let's remove the mock community since it won't be part of the final analysis and transform the table:
+
+```{r polish1b}
+
+ASV_tbl <- as.data.frame(t(ASV_tbl[-nrow(ASV_tbl),]))
+
+#lets remove the ASVs that were only present in the mock communities
+
+ASV_tbl <- ASV_tbl %>% mutate(rs = rowSums(ASV_tbl)) %>% 
+  filter(rs > 0) %>% dplyr::select(-rs)
+
+```
+
+We lost 14 ASVs present only in the mock community—not surprising since most mock community strains are human pathogens not expected in mice.
+
+Next, let's generate a DNAStringSet variable for later use in exporting a FASTA file containing representative sequences for each ASV, useful for future database queries like GenBank.
+
+```{r polish1c}
+#Using DNAStringSet from Biostrings to read the seqs 
+ASV_seqs <- DNAStringSet(base::colnames(seqtab.nochim) %>% 
+  `names<-`(base::paste("ASV",seq(1:ncol(seqtab.nochim)),sep = "")))
+
+```
+
+<br>
+
+### **Taxonomic assignment (sequence annotation)**
+
+It's common at this point, especially in 16S/18S/ITS amplicon sequencing, to assign taxonomy to sequence variants. DADA2 uses a naive Bayesian taxonomic classifier method. The assignTaxonomy function takes sequences to be classified and a reference sequence training set with known taxonomy, outputting taxonomic assignments with bootstrap confidence cutoffs. The default value is 50, meaning in 50% of cases the ASV was classified as a certain taxonomic group. Classification proceeds through Domain, Kingdom, Phylum, Class, Order, Family, Genus, Species with bootstrapping at each level. When values drop below 50, classification stops and subsequent categories receive NAs.
+
+DADA2 authors maintain formatted training FASTA files from multiple datasets. We'll use the SILVA taxonomic dataset as it's probably the best-maintained and curated ribosomal RNA dataset available.
+
+```{r taxonomy, echo = TRUE}
+taxa <- assignTaxonomy(seqtab.nochim, "silva_nr99_v138.1_wSpecies_train_set.fa.gz", multithread=TRUE)
+
+```
+
+<br>
+
+#### **Data polishing part 2**
+
+Let's convert the taxa matrix to a data frame and change row names from sequences to numbered ASVs:
+
+```{r polish 2a}
+
+
+taxa2 <- as.data.frame(taxa) %>% 
+  `row.names<-`(base::paste("ASV", seq(1:nrow(taxa)), sep = ""))
+
+DT::datatable(taxa2,options = list(scrollX = TRUE, autoWidth = TRUE))
+
+```
+
+Now let's inspect taxonomic assignments. All ASVs were successfully classified at least to the domain level—all classified as Bacteria, none as unknowns or Eukarya. However, some were classified as cyanobacteria/chloroplast (unexpected in mouse gut) or mitochondria. Let's remove these and merge the workable ASV table with the taxonomy table, filtering out non-prokaryotic sequences.
+
+```{r polish2b}
+#Remove non_prokaryotic ASVs
+taxa2 <- taxa2 %>% filter(Family != "Mitochondria") %>% 
+  filter(Order != "Chloroplast")
+
+#Prepare for joining
+taxa3 <- taxa2 %>% mutate(ASVs = row.names(taxa2)) %>% 
+  dplyr::select(ASVs, everything())
+
+ASV_tbl2 <- ASV_tbl %>% mutate(ASVs=row.names(ASV_tbl)) %>%
+  dplyr::select(ASVs, everything())
+  
+
+#Join taxa table this will be used for analysis outside of phyloseq
+taxa3 <- taxa3 %>% inner_join(ASV_tbl2, by = "ASVs")
+
+#taxa2 will be used for Phyloseq
+taxa2 <- taxa2 %>% filter(rownames(taxa2)%in%taxa3$ASVs)
+
+#Filter the original ASV table 
+ASV_tbl <- ASV_tbl %>% filter(row.names(ASV_tbl) %in% taxa3$ASVs)
+
+# get a table of relative abundance of taxa per sample
+#Since the samples are columns gotta use the sweep function rather than just divide
+
+taxa3[,(ncol(taxa2)+2):ncol(taxa3)] <- sweep(
+  taxa3[,(ncol(taxa2)+2):ncol(taxa3)],2,
+  colSums(taxa3[,(ncol(taxa2)+2):ncol(taxa3)]),'/')*100
+
+#Sanity check, do they sum to 100%
+colSums(taxa3[,(ncol(taxa2)+2):ncol(taxa3)])
+
+
+```
+
+Now that we've cleaned the ASV table by removing the mock community and non-prokaryotic ASVs, we can clean up the StringSet and export the FASTA file:
+
+```{r fasta_cleanup, echo=TRUE}
+ASV_seqs[names(ASV_seqs)%in%ASV_tbl2$ASVs]
+
+writeXStringSet(ASV_seqs[names(ASV_seqs)%in%ASV_tbl2$ASVs], "mouse_ASVs.fa")
+
+#lets check that the file is ok
+
+readLines("mouse_ASVs.fa")[1:10]
+
+```
+
+The file looks legitimate.
+
+### **Question 3**
+
+* Give the file a new name and make sure it is pushed to your `Github` repo
+
+* Select two ASVs - one from phylum Firmicutes and one from phylum Actinobacteria, for which the taxonomic classifier couldn't 
+determine genus and species 
+
+* Identify their sequences in the fasta file and BLAST them against the *nr* database.
+
+* What are the top hits for each sequence? Could you resolve the species? Include the answer including screenshots of the results in your `.Rmd` file and knited html report.
+
+
+<br>
+
+### **Accuracy evaluation**
+
+One sample included here was a "mock community" containing a mixture of 20 known strains that was sequenced (this mock community is supposed to contain 21 strains, but P. acnes is absent from the raw data). Reference sequences corresponding to these strains were provided in the downloaded zip archive. Let's return to that sample and compare the sequence variants inferred by DADA2 to the expected community composition.
+
+Evaluating DADA2's accuracy on the mock community:
+
+```{r imock accuracy, echo = TRUE, eval = TRUE}
+unqs.mock <- seqtab.nochim["Mock",]
+unqs.mock <- sort(unqs.mock[unqs.mock>0], decreasing=TRUE) # Drop ASVs absent in the Mock
+cat("DADA2 inferred", length(unqs.mock), "sample sequences present in the Mock community.\n")
+
+mock.ref <- getSequences(file.path(data_dir, "HMP_MOCK.v35.fasta"))
+match.ref <- sum(sapply(names(unqs.mock), function(x) any(grepl(x, mock.ref))))
+cat("Of those,", sum(match.ref), "were exact matches to the expected reference sequences.\n")
+```
+
+This mock community contained 20 bacterial strains. DADA2 identified 20 ASVs, all of which exactly match the reference genomes of expected community members. The residual error rate after the DADA2 pipeline for this sample is 0%.
+
+<br>
+
+## **Sample analysis**
+
+Boy, that was a long QC process, but now we are confident in our data.
+
+The [`phyloseq`](https://joey711.github.io/phyloseq/) package provides useful wrapper functions for `ggplot2`, `vegan`, and other packages. It serves as a starting point for microbiome data analysis.
+
+`Phyloseq` objects require an ASV/OTU table, a taxa table, a `Biostrings` `StringSet`, and a metadata table. We have all components, including a basic metadata table. Let's inspect and enhance it by adding some categories:
+
+```{r data frame, echo = TRUE, eval = TRUE}
+#lets see what it looks like
+
+mdta <- read.delim(base::paste(data_dir,"mouse.dpw.metadata", sep = "/" ))
+#Are the sample names similar to the sample names we have in the ASV table?
+length(mdta$group %in% colnames(ASV_tbl))
+#set the row names and massage the table
+
+mdta <- mdta %>% mutate(category = if_else(dpw > 100 , "Late","Early")) %>% 
+  mutate(gender = if_else(str_detect(group, "F"),"F","M")) %>%
+  mutate(subject = str_extract(str_split_fixed(group, "D", 2)[,1],"(\\d)+")) %>%
+  `row.names<-`(mdta$group)
+
+```
+
+Let's construct the `phyloseq` object and add the `Biostrings` element:
+
+```{r construct phyloseq, echo = TRUE, eval = TRUE}
+#Generating the phyloseq object
+ps <- phyloseq(otu_table(as.matrix(ASV_tbl), taxa_are_rows=T), 
+               sample_data(mdta), 
+               tax_table(as.matrix(taxa2)))
+
+ps <- merge_phyloseq(ps, ASV_seqs)
+
+ps
+
+```
+
+We're now ready to use `phyloseq` to analyze the microbial community from the mice.
+
+<br>
+
+### **Alpha diversity visualization**
+
+Alpha diversity measurements, such as species richness and diversity, help identify broad trends between communities. For example, large drops in species richness (how many species are present) or diversity (how many species are present and how evenly distributed they are) between early and late groups can prompt questions about causative factors like nutrition. We can also use calculated species richness to estimate sampling adequacy.
+
+`Phyloseq` has a convenient wrapper function for vegan's estimate function. Let's calculate samples' richness and diversity:
+
+```{r alpha diversity, echo = TRUE, eval = TRUE,warning=F}
+#Lets calculate richness and diversity
+#Shannon and Simpson are diversity estimators, ACE is a richness estimator, observed is how many ASVs we have (198)
+rnd <- estimate_richness(
+  ps, measures=c("Observed", "ACE","Shannon", "Simpson")) %>% 
+  dplyr::select(-se.ACE)
+
+
+
+DT::datatable(rnd[1:2])
+
+```
+
+Let's examine the first two columns of the table, showing the observed number of ASVs vs what we would expect given an infinit sample size with the ACE species richness estimator.
+
+```{r examin_richnes, echo = TRUE, eval = TRUE}
+
+DT::datatable(rnd[1:2])
+
+```
+
+
+The ratio of observed ASVs to the ACE estimation show a 1:1 ratio. This means that the sampling depth (number of sequences) was sufficient to represent the species richness in the community which is both cool scientifically and great for downstream. We can be confident that concoctions we draw are based on an accurate representation of the community. 
+
+
+#### **Question 4**
+
+Export this table as a CSV file push it to your `GitHub` repository. 
+
+Next, let's plot the diversity and richness estimations
+
+```{r plot div, out.width='100%'}
+
+rnd <- rnd %>% mutate(group = row.names(rnd))%>% inner_join(mdta, "group")
+#make a long table
+rndl <- rnd %>% gather("Estimator", "Value", 1:4) %>% 
+  mutate(rd = if_else(Estimator == "Observed" | Estimator == "ACE", 
+                      "Richness","Diversity"))
+
+ggplot(rndl, aes(x=dpw, y=Value, color = Estimator, fill= Estimator))+
+  geom_bar(stat = "identity", position = position_dodge())+
+  facet_grid(rd~category, scales = "free")
+
+```
+
+We see a slight dip in species richness and to a degree in diversity as well as we progress in days past weaning. There seems to ge a bounce back after day 142. However, meaningful insights are difficult to extract from such a small dataset.
+
+#### **Question 5**
+
+* Create a code chunk that sets the theme to black and white and uses a colorblind-friendly palette from the RColorBrewer library. 
+
+* Save the improved plot as PDF and push it to `GitHub`.
+
+### **Beta diversity**
+
+```{r ordinate, eval = TRUE, message=FALSE, out.width='100%'}
+# Log transforming the data prior to using bray curtis so that overly abundant ASVs will not skew the results
+ps.prop <- transform_sample_counts(ps, function(otu) log1p(otu))
+#Perform the ordination
+ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray")
+
+plot_ordination(ps.prop, ord.nmds.bray, color="category", title="Bray NMDS")
+```
+
+Ordination reveals clear separation between early and late samples, but you can improve this visualization.
+
+
+### **Taxa distribution**
+
+Another approach to gain community insights is to look for changes in the distribution of the most abundant taxa across samples.
+
+```{r bar plot, echo = TRUE, eval = TRUE, message=FALSE, out.width='100%'}
+top20 <- names(sort(taxa_sums(ps), decreasing=TRUE))[1:20]
+ps.top20 <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU)*100)
+ps.top20 <- prune_taxa(top20, ps.top20)
+plot_bar(ps.top20, x="dpw", fill="Family") + facet_wrap(~category, scales="free_x") +
+  ylab("Relative abundance (% of seqs/sample)")
+```
+
+First, got to respect just how ugly is the default color scheme for this package. Second, the proportions of the top 20 ASVs appear more uniform between late and early samples and might explain the early-late differentiation. However, this graph needs improvement. Let's create a version of this graph that's less dependent on color schemes and is more intuitive to interpret.
+
+First, let's process the taxa table so values are relative abundance (i.e. percent of total sequences per sample) for family level taxonomy. 
+
+```{r tax_massage, echo=TRUE}
+fam <- as.data.frame(taxa3 %>% dplyr::select(Family, where(is.numeric)) %>% 
+  group_by(Family) %>% summarise_all(sum))
+
+head(fam)
+
+```
+
+Note, numbers are now percent of reads per sample, but did we do a good job? If so, every column with sample data should add to 100.
+
+```{r relab}
+
+#Does it sum to 100%
+colSums(fam[,2:ncol(fam)])
+
+
+```
+
+Looks like we did a good job.
+
+Next, we'll create an "Others" category summing all low-abundance families (i.e. those representing less then 1% of the total sequences per sample):
+
+```{r taxlong, echo=TRUE}
+fam_o <- fam
+
+fam[2:ncol(fam)][fam[2:ncol(fam)]<1] <- 0
+fam_o[2:ncol(fam_o)][fam[2:ncol(fam_o)]>1] <- 0
+
+Others <-colSums(fam_o[2:ncol(fam_o)])
+
+fam[nrow(fam)+1,2:ncol(fam)] <- Others
+fam[nrow(fam),1] <- "Others"
+
+tail(fam)
+
+#Get a long table needed for ggplot2
+fam_l <- fam %>% gather("group","relab",2:ncol(fam)) %>%
+  inner_join(mdta,"group")
+
+```
+
+Note the other category. 
+
+
+Now let's create the plot:
+
+```{r taxplot, echo=TRUE}
+
+txplot <- ggplot(fam_l, aes(x = dpw, y=Family, size = relab))+ 
+  geom_point()+
+  facet_wrap(~category, scales = "free_x")
+txplot
+
+```
+Much better! Without relying on problematic color schemes, we can see that there is a lot of similarity in the abundant taxa across all samples. We can also see that some families such as Murivaculacea are very abundant. We can also notice that there seem to be a bit more variability in the composition of the groups across samples in the really group for example the family Lachnospiraceae.
+From here, usually research focuses on literature review trying to understand what each of the fluctuating group does.
+
+# **Summary**
+
+Wow, what an exciting ride! What have we learned during this lab?
+
+* QC for metagenomics reads is similar to what done so far, with the exception of being able to denoise data and correct for errors
+
+* You analyzed the microbiome of two groups of mice
+
+* The beta-diversity estimates demonstrated that there is a difference in the composition of each of the groups (i.e. early looks like early and late looks like late)
+
+* The alpha diversity showed a dip in "species" richness estimation as mice progress past weaning
+   * might explain the difference we see in composition, i.e. difference in composition comes from having fewer "species"
+
+* Family level relative abundance shows that abundant families are very similar across groups, so maybe the difference in composition is driven by changes to less abundant taxonomic groups rather than to the abundant groups
+
+* What does it all mean to mice? More study is needed. 
+
+* Congrats on completing the last formal lab!
