@@ -1,0 +1,263 @@
+---
+title: "Week 1, Day 4: The Reproducible Environment - You Do"
+subtitle: "Forking, Cloning, and Reproducible Environments"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 30px;
+  }
+td {  /* Table  */
+  font-size: 14px;
+}
+ul { /* List */
+  font-size: 18px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: Black;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: Black;
+}
+
+code.r{ /* Code block */
+    font-size: 14px;
+}
+.tocify {
+    border: none;
+}
+
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```
+
+# **The Scenario: Distributed Development**
+
+In the world of bioinformatics, you are rarely the only person working on a project. You might find a great pipeline on the other side of the world and want to add a feature to it.
+
+The Roles:
+
+In this lab, everyone plays both roles. You are simultaneously:
+
+-   **The Project Owner:** You own your original Day 3 repository. You will be reviewing and merging changes suggested by your partner.
+
+-   **The Contributor:** You have forked your partner's repository. You are an expert "volunteering" your time to improve their code.
+
+# **Part 1: The Social Handshake (Tutorial)**
+
+## **Step 1: Partner Up & Fork**
+
+1.  **Assign Roles:** Decide who is **Partner A** and who is **Partner B**.
+
+2.  **Exchange Links:** Share your **Week 1 Day 3** GitHub repository link with each other.
+
+3.  **Fork Each Other:**
+
+    -   Go to your partner's GitHub repository link.
+
+    -   Click the **Fork** button (top right).
+
+    -   Choose your own account as the destination.
+
+## **Step 2: Clone & Local Edit**
+
+1.  **Both Partners:** In RStudio, start a New Project via Version Control. Paste the URL of **YOUR FORK**.
+
+2.  **Both Partners:** Open the `README.md` file. Add a comment: "Collaborator check: \[Your Name\] was here!"
+
+3.  **Both Partners:** Commit this change and **Push** to GitHub.
+
+## **Step 3: The Pull Request (PR)**
+
+1.  **Both Partners (as Contributors):** On your GitHub fork page, click **Contribute** -\> **Open Pull Request**.
+
+2.  **Both Partners (as Owners):** Go to your **original** repository. Click the **Pull Requests** tab, review the changes, and click **Merge Pull Request**.
+
+# **Part 2: Sharing the Tool Shed (Conda Tutorial)**
+
+Sharing code is only half the battle. If your collaborator doesn't have the same software installed, your script is a paperweight. We solve this by sharing the **Conda Environment**.
+
+## **Exporting: Creating the Manifest**
+
+To ensure we are actually reproducing each others work, we will use different tools.
+
+### **The Task: Environment Creation (Recall Challenge)**
+
+1.  **Open the Terminal** in your **original** Day 3 project.
+
+2.  **Generate your specific environment:**
+
+> **Critical Recall Task:** Based on what you learned on Day 1, use the terminal to create, activate, and export your environment to a YAML file.
+
+-   **Partner A:** Create an environment named `partner_a_filtlong` containing the package `filtlong` (from the `bioconda` channel).
+
+-   **Partner B:** Create an environment named `partner_b_nanoplot` containing the package `nanoplot` (from the `bioconda` channel).
+
+**Your workflow must include:**
+
+-   Creating a directory named `envs` in your project root.
+
+-   **Exporting for Cross-Platform Compatibility:** Use the `--from-history` flag.
+
+```{bash exp}
+#| eval: false
+# Example export command:
+conda env export --from-history > envs/your_env_name.yml
+
+```
+
+3.  **Share & Merge:** Push the `envs/` folder to GitHub and send/merge a Pull Request so both partners have the new YAML files in their original repositories.
+
+## **Importing: The "Aha!" Moment**
+
+1.  **Pull** the latest changes from your partner's original repo into your fork.
+
+2.  **Recreate the environment from their file:**
+
+> **The "Aha!" Moment:** This is the moment where theory meets reality. If Partner A successfully runs `NanoPlot --help` and Partner B successfully runs `filtlong --help`, it proves you have achieved **reproducibility**.
+
+```{bash imp}         
+#| eval: false
+# Partner A (Importing Partner B's tool):
+conda env create -f envs/nanoplot_env.yml -n partner_b_nanoplot
+conda activate partner_b_nanoplot
+NanoPlot --help
+
+# Partner B (Importing Partner A's tool):
+conda env create -f envs/filtlong_env.yml -n partner_a_filtlong
+conda activate partner_a_filtlong
+filtlong --help
+
+```
+
+# **Part 3: The Capstone Challenge - Week 1 Synthesis**
+
+Now that you have mastered the "social" side of Git, it’s time to build a professional-grade project. You and your partner will create **one final shared repository** that demonstrates everything you've learned this week.
+
+## **Task 1: The Project Setup**
+
+1.  **Partner A:** Create a brand new GitHub repository named `Genomics_Micro_Final_Wk1`. Initialize it with a README. Add **Partner B** as a collaborator.
+
+2.  **Partner B:** Clone this repository to your local machine. **Important:** This must be done in RStudio by starting a **New Project via Version Control**.
+
+## **Task 2: The Quarto Document (The "Report")**
+
+In this new repository, create a Quarto file (`.qmd`) named `reproducible_workflow.qmd`. This document must be a joint effort where all R analysis is documented and explained.
+
+### **0. Data Preparation (Creating the Dataset)**
+
+Since we are simulating a real project, we need a dataset. Before starting the analysis, **Partner A** should run the following code chunk in their console to create the "yeast genome metadata" file and push it to the repo.
+This should be in your quarto document under data generation. 
+
+```{r csv_write}
+#| eval: false
+# Run this to generate the dataset for the project
+set.seed(4315)
+yeast_metadata <- data.frame(
+  sample_id = paste0("Scer_", 1:100),
+  genome_size_mb = rnorm(100, mean = 12.1, sd = 0.5),
+  gc_content = rnorm(100, mean = 38.2, sd = 1.2),
+  scaffold_count = sample(10:50, 100, replace = TRUE),
+  sequencing_depth = runif(100, 20, 100)
+)
+write.csv(yeast_metadata, "yeast_genome_metadata.csv", row.names = FALSE)
+
+```
+
+:::{.callout-note}
+Note the use of the `set.seed()` function in the code chunk above. We are using it because we are generating random data with the functions `rnorm()` that generates random normally distributed data and `runif()` that generates uniformly distributed data. To ensure that your collaborators will work with the same numbers, we need to tell R to generate random numbers in a reproducible way, and that's what set.seed() does. The number inside is arbitrary but so long as everyone uses the same number, the result of these functions will be reproducible. 
+:::
+
+### **1. Computational Environment (Conda & Docker)**
+
+-   **Partner A (The Assembly Evaluator):** \* Document the `filtlong` Conda setup.
+
+    -   Pull and run `staphb/quast:5.3.0`. Explain why we use QUAST.
+
+    -   Include the `docker pull` and `docker run --help` commands.
+
+-   **Partner B (The Basecaller):** \* Document the `nanoplot` Conda setup.
+
+    -   Pull and run `nanoporetech/dorado:latest`. Explain why we use Dorado.
+
+    -   Include the `docker pull` and `docker run --help` commands.
+
+> **Architecture Reminder:** Use `--platform linux/amd64` if the image fails to run on the Mac lab computers.
+
+### **2. The R Data Challenge (Wrangling & Visualization)**
+
+> **Hint:** Before running the code below, make sure all necessary R packages (tidyverse) are loaded into your session!
+
+In your Quarto document, you must both perform data analysis. **Requirement:** Use the pipe operator `%>%` for all wrangling steps and `read_csv()` for imports.
+
+-   **Partner A Task (The Scatter Plot Expert):** \* **Wrangle:** Import the data. Use `%>%` to filter for sequences with `genome_size_mb > 12` and create a new column `log_depth` using `mutate`.
+
+    -   **Recall:** Select the columns `gc_content`, `genome_size_mb`, and `sequencing_depth`. Convert this subset to a **Matrix**. Calculate the mean of the `gc_content` from this matrix.
+
+    -   **Export:** Save your filtered dataframe as `partner_a_filtered.csv` and your matrix as `partner_a_matrix.csv`.
+
+    -   **Plot:** Create a **scatter plot** of `genome_size_mb` vs. `gc_content`.
+
+    -   **Action:** Explain your logic, then **Commit and Push** all CSVs and the .qmd file.
+
+-   **Partner B Task (The Histogram Expert):**
+
+    -   **Wrangle:** Import the data. Use `%>%` to filter for `gc_content < 40%`.
+
+    -   **The Conditional Step:** Use `if_else()` inside `mutate` to create a categorical column `quality_status` (e.g., `if_else(sequencing_depth > 50, "High", "Low")`).
+
+    -   **Recall:** Create a **vector** named `high_quality_samples` containing `sample_id` names that passed your filter AND are labeled "High".
+
+    -   **Export:** Save your filtered dataframe as `partner_b_filtered.csv`.
+
+    -   **Plot:** Create a **histogram** of `sequencing_depth`. Bonus: Color by `quality_status`.
+
+    -   **Action:** Explain your logic, then **Commit and Push** your CSV and the .qmd file.
+
+## **Task 3: Version Control "Final Lap"**
+
+1.  **Collaboration:** Work on the `main` branch. Before starting, always **Pull** to get your partner's work (and their new CSVs).
+
+2.  **Review:** Leave a "Peer Review" comment in the Quarto doc text explaining one thing you learned from your partner's code.
+
+# **Final Submission**
+
+Share the **URL of your Final Project Repository** with your instructor.
+
+**Grading Criteria (The Check-Off):**
+
+-   \[ \] Clean `envs/` folder with both unique YAML files.
+
+-   \[ \] Quarto doc contains distinct sections for QUAST and Dorado.
+
+-   \[ \] Wrangling code uses `%>%` and `read_csv()`.
+
+-   \[ \] Repository contains `partner_a_filtered.csv`, `partner_a_matrix.csv`, and `partner_b_filtered.csv`.
+
+-   \[ \] GitHub history shows commits from both partners.

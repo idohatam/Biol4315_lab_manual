@@ -1,0 +1,342 @@
+---
+title: "Week 2, Day 4: Assembly & Mapping Logic - Practice"
+subtitle: "De Novo Assembly and Structural Validation- Yeast Genome Edition"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+body{ font-size: 18px; font-family: Arial, Helvetica, sans-serif; line-height: 30px; }
+td { font-size: 14px; }
+ul { font-size: 18px; }
+h1.title { font-size: 38px; color: Black; }
+h1 { font-size: 28px; color: Black; }
+h2 { font-size: 22px; color: Black; }
+h3 { font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: Black; }
+code.r{ font-size: 14px; }
+.tocify { border: none; }
+pre { font-size: 14px; }
+</style>
+```
+
+# **The Scenario: The Assembly Arm-Race**
+
+Today, we complete the lifecycle of genome assembly. You are no longer just following a tutorial; you are conducting a comparative experiment. You and your partner will test two different assembly strategies to see which yields a more biologically accurate representation of the *Saccharomyces cerevisiae* genome.
+
+# **Part 0: Logistics & Shared Infrastructure**
+
+Before starting, you must establish your collaborative environment.
+
+## **1. The Shared Repository**
+
+1.  **Partner A:** Go to your `Week2_Yeast_Project` repository on GitHub.
+
+2.  **Settings:** Go to **Settings** -> **Collaborators** -> **Add people**. Add **Partner B** & **Partner C**.
+
+3.  **Partner B/C:** Accept the invitation via email or GitHub notifications.
+
+4.  **Both:** Initialize your **RStudio Project** linked to this repository.
+
+    -   *How to:* Go to **File** -> **New Project** -> **Version Control** -> **Git**.
+
+    -   Paste the repository URL.
+
+    -   Once the project opens, click **Pull** in the Git pane to ensure you are synced.
+
+## **2. The Workflow Strategy (Independent Work, Joint Report)**
+
+To prevent merge conflicts while you are both working, we will use a "Modular" approach:
+
+-   **Partner A:** Create a file named `arm_a_baseline.qmd`.
+
+-   **Partner B:** Create a file named `arm_b_iterative.qmd`.
+
+-   **Partner C:** Create a file named `arm_c_polished.qmd`.
+
+-   **The Final Merge:** At the end of the session, **Partner B** (as the Lead Editor) will merge the content from all arms into one cohesive document: `Final_Assembly_Report.qmd`.
+
+Make sure that the code and answers to all the steps are in your `.qmd` files. 
+
+## **3. Git Hygiene: Protecting Your Repository**
+
+Large biological data files should **never** be pushed to GitHub. However, **result reports** (HTML, text summaries) from tools like QUAST and BUSCO should be included.
+
+1.  Open your `.gitignore` file from the Files pane.
+
+2.  **Ignore Data:** Add the following to ensure your raw and processed data stays local:
+
+* `.gitignore`
+
+* `fastq` files
+
+* `bam` files
+
+* `.gz` files
+
+Any other file that's >50mb
+
+3.  **Verification:** Check your Git pane. If you still see large files with a status icon, they are being tracked and must be removed.
+
+## **4. Reference Download and Preparation (Programmatic Renaming)**
+
+If you haven't yet download the S. cerevisiae reference genome from `RefSeq`.
+Same as with the assembly, we are doing it via R so it is easy to chain to other components of the workflow. 
+
+```{r}
+#| label: reference-dl
+#| eval: false
+#Address
+URL <-"https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz"
+
+#Destenatoin file (output)
+
+dest_file <- "GCF_000146045.2_R64_genomic.test.fna.gz"
+
+#Download the file with wget
+download.file(URL, method = "wget", destfile = dest_file)
+
+```
+
+
+The NCBI `RefSeq` reference genome uses IDs like `NC_001133.9`, but genome browsers (and `Gviz`) prefer UCSC conventions like `chrI` or `chr1`. To ensure our entire workflow is reproducible, we will include a code chunk to "fix" our reference headers.
+
+:::{.callout-note}
+We didn't cover if-else statements in our introductory course, but we are using one here to check if our file is complete.
+Note the syntax, they can be useful once you start developing more elaborate workflows. 
+:::
+
+```{r}         
+#| label: reference-prep
+#| eval: false
+
+# 1. Uncompress and Read the raw NCBI file as simple text
+con <- gzfile("GCF_000146045.2_R64_genomic.fna.gz", "rt")
+ygen <- readLines(con)
+
+close(con)  # <-- this is for closing the connection to the gz file, saves on resources. 
+
+
+
+# 2. Define the new UCSC-style headers (chrI through chrXVI + chrM)
+new_headers <- c(paste0(">chr", as.roman(1:16)), ">chrM")
+
+# 3. Find and Replace
+header_lines <- grep(">", ygen)
+#Look at the header for chromosome 1
+header_lines[1]
+
+# Safety Check: Yeast has 16 nuclear chromosomes + 1 mitochondrial
+if(length(header_lines) == 17) {
+  ygen[header_lines] <- new_headers
+  writeLines(ygen, "S288C_UCSC.fna")
+  message("SUCCESS: Reference renamed to UCSC standards.")
+} else {
+  stop("Error: Chromosome count mismatch! Check your input file.")
+}
+
+```
+
+# **Part 1: The Experimental Design**
+
+We are testing the effect of **iterative internal polishing** on assembly contiguity and accuracy.
+
+-   **Arm A (The Baseline):** `Flye` with 3 internal iterations + Scaffolding + `Medaka` polishing.
+
+-   **Arm B (The Iterative Arm):** `Flye` with 5 internal iterations + Scaffolding + `Medaka` polishing.
+
+-   **Arm C (The Polished Arm)** `Flye` with 5 internal iterations + Scaffolding + 2 Rounds of `Medaka` polishing.
+
+
+**Partner A will execute Arm A. Partner B will execute Arm B. Partner C will execute Arm C.**
+
+# **Part 2: The Reconstruction (Bash)**
+
+## **Step 1: Assembly with Flye & Log Audit**
+
+1.  **Run Flye:** Construct your command using `yeast_filtered.fastq.gz`. Ensure you enable `--scaffold` and set the correct number of `--iterations`.
+
+2.  **Audit the Polishing:** Open `flye.log`. Record the number of "errors corrected" for each iteration.
+
+3.  **Extract Final Stats:** Copy the summary lines (Size, Contigs, N50) into your `.qmd`. Compare your total assembly size to the expected \~12.1 Mb genome.
+
+## **Step 2: Polishing with Medaka**
+
+Take your final `assembly.fasta` from Flye and run one round of `medaka_consensus`.
+
+-   **Note on Model:** Our data is from a legacy chemistry. **Do not set the `-m` flag**; let Medaka auto-detect the correct model for you.
+
+# **Part 3: Technical & Biological Audit (Docker)**
+
+Now, evaluate your results. **Important:** Remember to commit and push these reports to GitHub so your partner can see them!
+
+## **1. QUAST (Technical Quality)**
+
+Run QUAST using your new `S288C_UCSC.fna` as the reference.
+
+-   **Task:** Once finished, **push the results folder to GitHub**.
+
+-   **Metric focus:** Extract the **N50**, **Total Length**, and number of **Misassemblies**.
+
+Compare the two assemblies, do you see any differences in coverage, accuracy, contiguity?
+
+## **2. BUSCO (Biological Completeness)**
+
+Run BUSCO using the `saccharomycetaceae_odb12` database.
+
+-   **Task:** Once finished, **push the summary report to GitHub**.
+
+* What were your BUSCO scores for each assembly? Is one more complete than the other?
+
+# **Part 4: Structural Validation (R & Gviz)**
+
+## **Step 1: High-Efficiency Alignment & Indexing**
+
+We map our assembly back to the reference using a high-efficiency pipe to save disk space.
+
+### **The Table of Contents: The .bai file**
+
+Once the BAM file is sorted, we must create an **index** file (`.bai`). This is the "Index Card" that tells a computer exactly where each read is located, enabling the "Google Maps" style scrolling in **Gviz** or **IGV**.
+
+```{bash}
+#| label: minimap
+#| eval: false
+# Map and Sort in one step
+# minimap2 -a (output SAM) | samtools sort (input from pipe)
+minimap2 -a -x asm5 data/reference/S288C_UCSC.fna medaka_output/consensus.fasta | samtools sort -o assembly_mapped.sorted.bam -
+
+# Create the index
+samtools index assembly_mapped.sorted.bam
+
+```
+
+## **Step 1.5: Global Coverage Audit**
+
+```{bash}
+#| label: coverage
+#| eval: false
+# Run the coverage report
+samtools coverage assembly_mapped.sorted.bam -o assembly_cov.txt
+
+```
+
+```{r}         
+#| label: coverage-audit
+#| eval: false
+# Read the coverage report
+assembly_cov <- read.table("assembly_cov.txt", sep = "\t", header = TRUE, comment.char = "")
+print(assembly_cov)
+
+```
+
+* Are there any differences in coverage of chromosomes between each of the assemblies?
+
+## **Step 2: Programmatic Discovery & Selection**
+
+Before we visualize, we will calculate the mapped ranges for **every chromosome**. However, for our visual audit, we will select one specific "Target Chromosome" to focus on.
+
+**Selection Criteria for Visualization:**
+
+1.  Identify chromosomes with a **length \> 500,000 bp**.
+
+2.  From that group, choose the one with the **highest number of mapped contigs** (the `mapped` column in `idxstatsBam`).
+
+```{r}         
+#| label: mapping-discovery
+#| eval: false
+library(Rsamtools)
+library(GenomicAlignments)
+
+# 1. Audit the Stats: Find chromosomes > 500kb with high density
+stats <- idxstatsBam("assembly_mapped.sorted.bam")
+print(stats)
+
+# 2. Extract ranges for the entire genome
+bam_file <- "assembly_mapped.sorted.bam"
+alignment_ranges <- bam_file |> readGAlignments() |> GRanges()
+
+# Look at the ranges for ALL chromosomes to see your global success
+ranges(alignment_ranges)
+
+```
+
+## **Step 3: The Custom Visual Audit**
+
+Use `Gviz` to plot your assembly against the reference.
+
+::: {.callout-important}
+
+### **The "Why" Behind the Code: Messy Biology vs. Clean Plots**
+
+You might notice that your assembly is missing huge chunks of the genome (low coverage). **This is intentional!** To let you run this lab on your own computer in minutes, we gave you a tiny **'snapshot'** of the data.
+
+In addition, this data comes from an older generation of sequencing technology (Nanopore R7). It has a higher error rate, leading to more fragmented contigs.
+
+Lastly, Yeast genomes are plastic. When the software (`minimap2`) tries to force our 'square peg' contig into the 'round hole' of the reference genome, it realizes the ends don't fit.
+
+**What this means for your project:**
+When `minimap2` aligns these messy reads, it uses **Soft Clipping**. Think of it like a sticker that is too long for the page: the aligner sticks down the part that matches, and lets the rest 'hang off the edge.'
+
+If we try to plot the BAM file directly, `Gviz` sees those hanging edges, gets confused about coordinates, and often crashes.
+
+**The Fix:** We load the data into R as a `GRanges` object first (Step 2). This acts like a **pair of scissors**—it trims off the unaligned 'hanging edges' and keeps only the matching parts. This allows us to visualize exactly where our DNA matches the reference without the software panicking.
+:::
+
+**Your Task:**
+
+1.  Use the `alignment_ranges` object you created in Step 2 to build your `AlignmentsTrack`.
+
+2.  Refer back to your `ranges()` output from Step 2. Pick the chromosome you identified in the selection step.
+
+3.  Manually enter the chromosome name and the coordinates into `plotTracks()`.
+
+```{r}         
+#| label: visual-audit
+#| eval: false
+library(Gviz)
+
+# 1. Create the Data Track using the GRanges object (The "Scissors" approach)
+align_track <- AlignmentsTrack(alignment_ranges, name = "Assembly Alignments", fill = "darkblue")
+
+# 2. Create the Ruler
+axis_track <- GenomeAxisTrack()
+
+# 3. Plot
+# Replace the chromosome name and numbers with the ones you discovered!
+plotTracks(list(axis_track, align_track), 
+           from = "[ENTER_START_NUMBER]", 
+           to = "[ENTER_END_NUMBER]", 
+           chromosome = "[ENTER_CHR_NAME]")
+
+```
+
+Did you end up selecting different chromosomes? What does your inspection reveal? Was one approach more successful in alligning more accurately along the reference genome?
+
+# **Part 5: The Grand Synthesis (Partner B Task)**
+
+Partner B will merge the modular reports into `Final_Assembly_Report.qmd`.
+
+-   **Head-to-Head Table:** Compare polishing errors, N50, Misassemblies, BUSCO scores, and Chromosome Coverage.
+
+-   **Stacked Visualization:** Stack the `Gviz` tracks for Arm A, Arm B and Arm C on top of each other against the reference.
+
+# **Final Assignment**
+
+-   **The Log Audit:** Did errors corrected decrease significantly by the 5th iteration?
+
+-   **Completeness vs. Accuracy:** Did iterative polishing (Arm B & C) increase biological completeness (BUSCO) or accuracy (QUAST)?
+
+-   **The Coverage Check:** Look at `assembly_cov`. What % of the chromosomes did you cover?
+
+-   **The Size Check:** How does your size compare to \~12.1 Mb?
+
+-   **The Visual Audit:** Did the stacked tracks reveal any structural differences resolved by Arm B or C?
+
+**Submission:** Render to HTML. Push all code and results. Submit the shared link.

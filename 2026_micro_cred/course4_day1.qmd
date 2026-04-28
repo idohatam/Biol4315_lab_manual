@@ -1,0 +1,290 @@
+---
+title: "The basics of transcriptomics pt1"
+subtitle: "Experimental Design, RNA QC, and Splice-Aware Alignment"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+body{ font-size: 18px; font-family: Arial, Helvetica, sans-serif; line-height: 30px; }
+td { font-size: 14px; }
+ul { font-size: 18px; }
+h1.title { font-size: 38px; color: Black; }
+h1 { font-size: 28px; color: Black; }
+h2 { font-size: 22px; color: Black; }
+h3 { font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: Black; }
+code.r{ font-size: 14px; }
+.tocify { border: none; }
+pre { font-size: 14px; }
+</style>
+```
+# **Part 1: The Digital Mise-en-Place**
+
+Before we can ask biological questions, we must build our laboratory bench. This week is a complete, start-to-finish project.
+
+### **1. Collaborative Repository & Project Setup**
+
+This week, we are maintaining our professional collaborative workflow. Choose your roles for the initial setup:
+
+**Partner 1 (Repo Manager):**
+
+1.  Go to GitHub and create a new repository named `Transcriptomics_Week4`.
+
+2.  Go to **Settings \> Collaborators** and invite Partner 2.
+
+3.  Clone the repository and open a **New RStudio Project**.
+
+**Partner 2 (Project Partner):**
+
+1.  Accept the invitation and clone the repository.
+
+2.  Open the **RStudio Project** in that cloned directory.
+
+::: {.callout-important}
+
+### **Professional Tip: Avoid File Conflicts**
+
+To ensure you don't overwrite each other's work, **always name your working files differently.**
+
+-   **Partner 1:** Name your Quarto files `transcriptomics_day1_p1.qmd`
+
+-   **Partner 2:** Name your Quarto files `transcriptomics_day1_p2.qmd`
+:::
+
+### **2. The Environment Audit**
+
+We need `hisat2` and `samtools` in the terminal, and several Bioconductor packages in R. Run the following to ensure your R environment is ready.
+
+```{r}         
+#| eval: false
+#| message: false
+
+if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+
+cran_pkgs <- c("tidyverse", "pheatmap")
+bioc_pkgs <- c("DESeq2", "clusterProfiler", "Rsubread", "systemPipeRdata", "Rqc", "QuasR")
+
+new_pkgs <- c(cran_pkgs, bioc_pkgs)[!(c(cran_pkgs, bioc_pkgs) %in% installed.packages()[,"Package"])]
+if(length(new_pkgs)) BiocManager::install(new_pkgs, update = FALSE)
+
+lapply(c(cran_pkgs, bioc_pkgs), library, character.only = TRUE)
+```
+
+Check that `samtools` and `hisat2` are installed in your base environment.
+
+```{bash}
+#| eval: false
+
+hisat2 --vesrion
+samtool --version
+
+```
+
+If not install them in your base environment using `bioconda` as channel.  
+
+
+# **Part 2: Data Acquisition**
+
+### **1. The Reference & Reads**
+
+We are downloading the *Arabidopsis thaliana* (TAIR10.1) genome (FNA) and structural map (GTF). **You will map the RNA-seq reads to the reference genome and use the structural annotation map to figure out how many reads map to which gene.**
+
+```{bash}         
+#| eval: false
+mkdir -p data/reference data/raw data/trimmed reports
+
+# Download TAIR10.1
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz -P data/reference/
+wget -nc https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.gtf.gz -P data/reference/
+gunzip data/reference/*.gz
+```
+
+```{r}         
+#| eval: false
+library(systemPipeRdata)
+fq_path <- systemPipeRdata::pathList()$fastqdir
+file.copy(list.files(fq_path, full.names = TRUE), "data/raw/")
+```
+
+Switch to your **Terminal** to decompress the reads:
+
+```{bash}         
+#| eval: false
+gunzip data/raw/*.gz
+```
+
+### **2. Professional Practice: Git Hygiene**
+
+Genomic data files are too large for GitHub. Open your `.gitignore` file and add:
+
+```{bash}
+#| eval: false
+data/
+reports/
+*.gz
+*.fna
+*.gtf
+*.fastq
+*.sam
+*.bam
+*.bai
+```
+
+# **Part 3: The Theory - Beyond the Blueprint**
+
+### **1. What is Transcriptomics?**
+
+If **Genomics** (Weeks 1-3) is the study of the organism's permanent blueprint (the DNA), **Transcriptomics** is the study of the "active instructions" (the mRNA).
+
+While the genome tells you what a cell *could* do, the transcriptome tells you what it *is* doing. A genome is static; a transcriptome is dynamic and responsive to environmental changes, stress, or pathogens.
+
+### **2. The Pivot to Short-Reads (Illumina)**
+
+In Week 2, we used Long-Reads (Nanopore) to assemble a genome. For Transcriptomics, we use **Short-Reads**.
+
+-   **Accuracy:** We need perfect base calls to quantify expression levels without sequencing noise.
+
+-   **Depth:** We need millions of data points to capture rare transcripts and quantify differences with statistical power.
+
+### **3. The "Sandbox" Approach: Data Sampling**
+
+In the Howard et al. 2013 paper, the researchers used over **500 million read pairs**. Aligning and counting that much data on a personal laptop would take days.
+
+To make this feasible for a 4-day course, we are using a **Subsampled Dataset** of \~100,000 reads per sample.
+
+-   **The Reality:** The pipeline you build today is identical to the one used in the paper.
+
+-   **The Trade-off:** With 100K reads, we only see the "tip of the iceberg"—the most highly expressed genes. We won't find rare isoforms, but we will find the massive defense pathways the plant activates during infection.
+
+### **4. Birds-Eye View Workflow**
+
+Bioinformatics is modular. You have already mastered many of these steps; today we just change the context:
+
+1.  **Read QC:** (Reinforcing Week 2) Assessing and filtering data using `Rqc`.
+
+2.  **Genome Indexing & Mapping:** (New Tool: HISAT2) Aligning RNA reads to a DNA reference.
+
+3.  **Counting:** Using the GTF "map" to count reads per gene.
+
+4.  **Normalizing Counts:** Adjusting for sequencing depth to ensure fair comparisons.
+
+5.  **DGE Analysis:** Statistical testing to find genes that are "significantly" different.
+
+6.  **Gene Ontology:** (Reinforcing Week 3) Grouping significant genes by biological function.
+
+### **5. Biological Context: The Howard et al. 2013 Dataset**
+
+The dataset explores the transcriptional landscape of *Arabidopsis thaliana* during infection with *Pseudomonas syringae* pv. tomato (Pst).
+
+#### **Experimental Design: The Time-Course Strategy**
+
+Transcription is a wave, not a single event. To capture this, the researchers used a multi-timepoint sampling strategy with biological duplicates for every condition.
+
+| Treatment Group         | Type        | Time Points (h) | Replicates per Time | Total Samples | Focus                                    |
+|-------------------------|-------------|-----------------|---------------------|---------------|------------------------------------------|
+| **Mock**                | Control     | 1, 6, 12        | 2                   | 6             | Baseline stress response.                |
+| **Virulent (Pst)**      | Susceptible | 1, 6, 12        | 2                   | 6             | Successful infection/Immune suppression. |
+| **Avirulent (avrRps4)** | Resistant   | 1, 6, 12        | 2                   | 6             | Effector-Triggered Immunity (ETI).       |
+
+**Why is this sampling scheme important?**
+
+1.  **Temporal Dynamics:** Some defense genes turn on in minutes (1h), while the "Hypersensitive Response" (cell death) peaks much later (12h). A single timepoint would miss half the story.
+
+2.  **Replication:** Biology is messy. Having duplicates for every timepoint allows us to calculate **statistical variance**. Without it, we can't tell if a change is due to the bacteria or just a "weird" plant.
+
+3.  **Comparative Power:** By comparing Avirulent vs. Virulent across time, we can pinpoint exactly when the plant "recognizes" the intruder and switches from general defense to specific resistance.
+
+# **Part 4: The Practice - R-Based QC and Trimming**
+
+We are returning to `Rqc` but adding the `QuasR` package for sophisticated filtering.
+
+### **Task 1: Generate the QC Report**
+
+```{r}         
+#| eval: false
+library(Rqc)
+raw_files <- list.files("data/raw", pattern = ".fastq", full.names = TRUE)
+qc_res <- rqc(path = "data/raw", pattern = ".fastq", outdir = "reports/rqc_raw")
+```
+
+### **Task 2: Strict Filtering with QuasR**
+
+Industry standards require us to remove low-quality "noise."
+**Our Criteria:** 1. **Remove** any read with more than 1 "N".
+2. **Remove** any read shorter than 30bp.
+3. **Trim** the last 3 bases (standard practice for Illumina chemistry drop-off).
+
+```{r}         
+#| eval: false
+library(QuasR)
+
+# Filter and output to 'trimmed' folder with new names
+preprocessReads(filename = raw_files,
+                outputFilename = paste0("data/trimmed/", basename(raw_files), ".trimmed.fastq"),
+                truncateEndBases = 3, 
+                minLength = 30, 
+                maxN = 1)
+```
+
+# **Part 5: Mapping Strategy - Splicing Matters**
+
+Why aren't we using **Minimap2** or **Bowtie2**?
+
+In Week 2, we used **Minimap2** as our primary long-read aligner. While Minimap2 is exceptionally versatile, it is highly optimized for the long, continuous reads typical of Nanopore or PacBio data.
+
+*Arabidopsis* genes contain **introns**, and our mature mRNA has these introns spliced out. If a 100bp short read spans across an exon-exon junction, a standard DNA-centric aligner like **Bowtie2** (which is a very popular and fast short-read aligner) or Minimap2 will treat the thousand-base genomic gap as a massive indel and often fail to map the read entirely.
+
+We use **HISAT2** because it is **Splice-Aware**. It is designed specifically to recognize these junctions in short-read data. The output will be a **SAM file**, which we will convert and count tomorrow to quantify gene expression.
+
+# **Part 6: Building the Index via `system2()`**
+
+In R, we can drive terminal tools using `system2()`.
+
+### **What is an Index?**
+
+A `.bai` file is a "bookmark" for an existing BAM file. A **HISAT2 Index** is like the **Alphabetical Index** at the back of a book. It allows the aligner to find exactly where a sequence belongs without reading the whole genome.
+
+### **Task 3: Running `hisat2-build`**
+
+```{r}         
+#| eval: false
+
+# Reference and Index paths
+ref_genome <- "data/reference/GCF_000001735.4_TAIR10.1_genomic.fna"
+index_prefix <- "data/reference/athal_index"
+
+# Drive the terminal using R: 8 CPUs for speed
+system2("hisat2-build", args = c("-p 8", ref_genome, index_prefix))
+```
+
+# **Bonus Challenges**
+
+### **Bonus 1: Planning the Map**
+
+Switch to your **Terminal**. Run:
+
+```{bash}
+#| eval: false
+hisat2 -h
+```
+
+Try to construct the command you will need tomorrow for **unpaired** reads.
+*Hint: Look for `-x` (index), `-U` (unpaired reads), `-p` (threads), and `-S` (output SAM).*
+
+### **Bonus 2: Advanced `system2` Design**
+
+In your `.qmd` file, try to write the `system2()` call for your proposed mapping command above.
+
+# **Final Submission**
+
+1.  **Reflection:** In your `.qmd`, explain in your own words the difference between a `.bai` index and a HISAT2 index. Why can't we use a `.bai` to map reads?
+
+2.  **Git Check:** Commit and push your `.qmd`

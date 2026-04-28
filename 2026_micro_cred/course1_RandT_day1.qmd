@@ -1,0 +1,896 @@
+---
+title: "Week 1, Day 1: The Computational Lab Bench"
+subtitle: "Building a Reproducible Genomics Environment"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format: 
+  html:
+    toc: true
+    #toc_depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-hight: 30px;
+  }
+td {  /* Table  */
+  font-size: 14px;
+}
+ul { /* List */
+  font-size: 18px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: Black;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: Black;
+}
+
+code.r{ /* Code block */
+    font-size: 14px;
+}
+.tocify {
+    border: none;
+}
+
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+```
+
+```{r setup}
+#| include: false
+library("tidyverse")
+```
+
+# **1. The Philosophy: Why are we here?**
+
+## **Why R for Genomics?**
+
+You might ask, "Why not just use Excel?"
+
+1.  Scale: Excel crashes at 1 million rows. A small genomics dataset has 20 million reads.
+
+2.  Reproducibility: In a wet lab, if you spill a reagent, you start over. In Excel, if you accidentally delete a cell, you might never know. In R, your "Analysis" is a script—a recipe. Anyone, anywhere, can run your recipe and get the exact same result.
+
+3.  The Ecosystem: R has Bioconductor, a massive repository of tools specifically designed for Omics. Whether you are studying RNA-seq, variants, or phylogenetics, someone has likely already written the math for you.
+
+### **Why RStudio?**
+
+If R is the engine that does the work, RStudio is the dashboard that lets you drive the car.
+
+1.  **A Polyglot IDE:** RStudio isn't just for R. As you advance, you will use it to write Python, Bash (Terminal), SQL, and even C++. It is a single home for all your coding languages.
+
+2.  **Project Organization:** RStudio manages your files for you. It solves the nightmare of "File Not Found" by keeping your code and data bundled in self-contained **Projects**.
+
+3.  **Growth:** RStudio grows with you. The interface scales from beginner to pro.
+
+### **The Goal: A "Clean" Bench**
+
+We are not just learning to code; we are building a **Reproducible Lab Bench**.
+
+-   **Organized:** We know where data goes (and where it doesn't).
+
+-   **Versioned:** We can track changes (Git - coming Day 3).
+
+-   **Isolated:** We don't let one project break another.
+
+------------------------------------------------------------------------
+
+# **2. The Project: Your Workspace**
+
+### **Best Practices**
+
+We *never* just open RStudio and start typing. We use **Projects**. A Project is a self-contained folder. It solves the "File Not Found" error because R always looks inside the project folder first.
+
+**Rules of the Road:**
+
+1.  **Naming Matters:**
+
+    -   *Bad:* `My Project`, `analysis`, `test`.
+
+    -   *Good:* `2025_01_genomics_course`.
+
+    -   *Rule:* No spaces, use underscores `_`, be descriptive.
+
+2.  **Internal Structure:** Inside your project, we will eventually create standard folders:
+
+    -   `data/` (Raw files - never modify these!)
+
+    -   `scripts/` (Your code)
+
+    -   `output/` (Plots and results)
+
+### **Action: Setup**
+
+1.  Go to `File` -\> `New Project` -\> `New Directory` -\> `New Project`.
+
+2.  Name it: `genomics_week1`.
+
+3.  Place it somewhere logical (e.g., `~/Documents/Courses`).
+
+------------------------------------------------------------------------
+
+### **A. The Console (The Scratchpad)**
+
+Bottom-Left. This is where code runs.
+
+-   **Try it:** Type `1 + 1` and hit Enter.
+
+-   **Result:** `2`. It happened, and now it's gone. The result and code are not reusable.
+
+### **B. The Terminal (The Underbelly)**
+
+Look at the tabs next to "Console". Click **Terminal**.
+
+-   This is not R. This is your computer's operating system (Unix/Linux).
+
+-   We will use this on Day 3 to install heavy-duty tools like Conda and Docker.
+
+-   **Try it:** Type `pwd` (Print Working Directory) and hit Enter. It shows you exactly where you are in the file system.
+
+### **C. The Script (The Notebook)**
+
+Top-Left. (`File` -\> `New File` -\> `R Script`). This is where we write code we want to keep, reuse and share.\
+The text editor supports not just simple text files but also Rmarkdown and quarto formats for advanced and reproducible reports.
+
+Code in the text editor will not run unless you send it to the console, it allows you to edit and comment the code for readability. You don't need to copy and paste to terminal in order to do it, you can send it directly. Let's see how.\
+\
+Below is a script that adds 2 and 2.
+
+-   **Comments:** Lines starting with `#` are for humans. R ignores them.
+
+-   **Execution:** You don't "run the file" (although you can) you send lines *from* the Script *to* the Console.
+
+-   **Try it:** copy the lines of code to your file, Highlight and press `Cmd+Enter` (Mac) or `Ctrl+Enter` (Win).
+
+```{r e1}
+# I am calculating 2 + 2
+2 + 2
+
+```
+
+### **D. The Environment (The Tube Rack)**
+
+Top-Right.
+
+Calculations disappear unless we assign them to a variable using `<-`, this stores them in memory (the environment).
+
+-   **Try it:** Copy the code bellow and run it
+
+``` {r v_assignment}
+# Assigning variables
+val_a <- 3 + 3
+val_b <- 4 + 4
+```
+
+-   Look at the Environment pane. You see `val_a` and `val_b`. They are "in the tube rack," ready to be used.
+
+-   To inspect them you need to call them, type `val_b` in your script file and run it, look at the console.
+
+### **Exercise 1: The Script Logic**
+
+*Practice assigning variables and calling them.*
+
+Start a `.R` script file, save it and name it descriptively.
+
+1. Write a comment line explaining that you are multiplying 4 and 3.
+
+2. Assign the result of 4 * 3 to a variable named 'C'
+
+3. Call 'C' to display the result
+
+::: {.callout-tip}
+
+Remember, comments start with a hashtag \#\
+
+Assignment uses the arrow `<-`
+
+:::
+
+------------------------------------------------------------------------
+
+# **4. Data Containers: Vectors**
+
+## **Everything is a Vector**
+
+In R, even a single number is a vector of length 1.
+
+We create vectors using c() (combine).
+
+## **Type 1: Numeric Vectors**
+
+These hold numbers. We can do math on them.
+
+
+```{r vector1}         
+# A vector of read counts
+counts <- c(10, 55, 12, 0)
+```
+
+**Try it:**
+
+* Copy the code and run it
+
+* Multiply counts by 10 `counts10 <- counts*10`
+
+* Call counts10, what's the result?
+
+* Now try `val_a * val_b`, what did you get? 
+
+:::{.callout-tip collapse=true}
+# Tip
+What you performed is called a vectorized operation, it is the fastest and most memory efficiant operation in R. If you can get away with a vectorized operation, use it!
+:::
+
+## **Type 2: Character Vectors (Strings)**
+
+These hold text. In R, text is always wrapped in quotes `" "`.
+
+
+```{r vector2}         
+# A vector of sample names
+samples <- c("Control_1", "Control_2", "Treat_1", "Treat_2")
+```
+
+### **The "Immutable" String**
+
+This is a critical concept.
+
+A character vector can hold very long strings (like a DNA sequence), but the string itself is a single "block" or a single element in a vector. We can use `length()`to count the number of elements (or "blocks") in our vector. 
+
+```{r strings1}         
+dna_note <- c("This is a long DNA sequence description.")
+length(samples) #length 4, four elements 
+length(dna_note) # Result: 1 (It is one item)
+```
+
+How do we touch the inside of a string?
+
+We cannot simply use [] to grab a letter. We need to use specialized functions.
+
+::: {.callout-tip}
+
+## **What are functions?**
+R operates using functions. Functions are R elements that carry a set of instructions on objects fed into them
+for example + is a function that adds the number to the left of it to the number to the right.
+`length()` is a function that counts the number of elements in a vector supplied to it.
+What to know what you need to supply to a function in order for it to work?
+use the ? e.g. ?length(). Advanced R users can write customized functions.
+
+:::
+
+**Back to strings**
+
+Here we use `substr()` on of R specialized functions to handle strings, it can subset strings. 
+
+
+```{r strings2}         
+# Use a function to substring (The Right Way)
+substr(dna_note, start = 1, stop = 4)
+# Result: "This"
+```
+
+### **Exercise 2: Vectors & Subsetting**
+
+*Practice creating a character vector and extracting a specific element.*
+
+In your `.R` file:
+
+1. Create a character vector named 'bases' containing: "A", "C", "T", "G"
+
+
+2. Subset the vector to retrieve just the 3rd element ("T")
+
+------------------------------------------------------------------------
+
+# **5. Manipulating Vectors: No Undo Button**
+
+In R, there is no `Ctrl+Z`. If you overwrite a variable, the old value is gone forever.
+
+### **A. Copying Vectors (Safety Net)**
+
+Sometimes you want to experiment without losing your original data.
+
+
+```{r bckup1}         
+# Create a backup
+counts_backup <- counts
+
+# Check them
+counts
+counts_backup
+```
+
+### **B. Modifying Elements**
+
+We can change specific values by addressing them with `[]`.
+
+
+```{r bckup2}         
+# Change the 4th element of 'counts' to 100
+counts[4] <- 100
+
+# Look at the result
+counts
+
+# Look at the backup
+counts_backup
+```
+
+**Observation:** `counts` changed. `counts_backup` did NOT change. This is why assigning "checkpoints" to new variables is a powerful habit in bioinformatics.
+
+### **Exercise 3: The "No Undo" Button**
+
+*Proving that creating a backup protects original data.*
+
+
+1. Create a numeric vector 'depths' with values: 10, 20, 30
+
+2. Create a copy named 'depths_original'
+
+3. Change the 2nd element of 'depths' to 500
+
+4. Print 'depths_original' to prove it is safe
+
+------------------------------------------------------------------------
+
+# **6. The Matrix: The Computational Engine**
+
+Matrices are tabulated data containers,they are 2 dimensional but are considered and treated like a vector.
+Matrices are great for mathematical operation on data however:
+
+:::{.callout-important}
+-   **Rule:** A matrix must contain only ONE type of data (either numeric or character but never both).
+
+-   **Why do we care?** Matrices are much more memory-efficient. When we do heavy lifting—like Principal Component Analysis (PCA) or Differential Expression (DESeq2)—R converts your data into a matrix to do the math.
+:::
+
+### **Creating a Matrix**
+
+We can create matrices by gluing vectors together which creates a table, but again remember 2D vector.
+
+-   `cbind()`: Glue columns together (side by side).
+
+-   `rbind()`: Glue rows together (top to bottom).
+
+
+```{r mat1}         
+vec1 <- c(1, 2, 3)
+vec2 <- c(10, 20, 30)
+
+# Bind as Columns
+mat_c <- cbind(vec1, vec2)
+mat_c
+
+# Bind as Rows
+mat_r <- rbind(vec1, vec2)
+mat_r
+```
+
+### **Subsetting a Matrix `[row, column]`**
+
+The address system for every 2D object in R is strict: `[ROW, COLUMN]`.
+
+Here's how we access rows, columns, and "cells" in a matrix:
+
+```{r mat2} 
+#generating the matrix
+#1:9 generates a vector with the sequence 1-9 nrows and ncols split it to rows and columns
+my_matrix <- matrix(1:9, nrow=3, ncol=3)
+#         NOTICE this^
+```
+
+>Did you notice anything different in the code snipit above?
+
+lets inspect it and see how the vector was devided...
+```{r mat3}
+my_matrix
+```
+
+Now lets access things
+
+```{r mat4}
+# 1. Get a specific cell (Row 2, Col 3)
+my_matrix[2, 3]
+
+# 2. Get an ENTIRE Row (leave column blank)
+my_matrix[2, ]  
+
+# 3. Get an ENTIRE Column (leave row blank)
+my_matrix[ , 3]
+
+# 4. Get part of a column, here rows 1-2 of column 3
+my_matrix[1:2, 3]
+
+```
+
+### **Exercise 4: The matrix**
+
+1. Use the following code to generate and inspect a matrix
+
+```{r matex}
+#| eval: false
+my_matrix <- matrix(seq(1,500, by = 2), nrow = 25, ncol = 10)
+
+#Check that the matrix is indeed a matrix and holds numeric values
+class(my_matrix)
+is.numeric(my_matrix)
+```
+
+:::{.callout-note}
+
+`seq()` is a function that creates vectors holding a sequence of numerical values.
+The arguments are: `first number`, `last number`, `by` represents the value by which sequential elements increase or decrease. 
+In this case, all the odd numbers between 1 and 500
+:::
+
+2. Use the `head()` function to inspect the matrix, what does this tell you about the way the vector was fitted into the matrix?
+
+3. Multiply all elements of the matrix by 1000, use the function `head()` to inspect the matrix
+
+4. Use the function log10() to log transform the matrix and use `head()` to inspect it
+
+5. Change the 6th value in the 10th column to 3, inspect if last item in `head()` has changed to 3.
+
+6. Change the 1st value of the 1st column to "a", inspect the matrix with `head()` and `is.numeric()`. What happened?
+
+------------------------------------------------------------------------
+
+# **7. The Dataframe**
+
+The dataframe is the standard container for tabulated datasets. While each column is treated as a vector, it allows columns to house different data types i.e. col1 can be numeric while col2 can be character. 
+
+
+## **Creating a dataframe**
+
+Here's how we generate a dataframe. 
+
+```{r df1}         
+# Create a tiny gene table
+genes <- data.frame(
+  GeneID = c("GeneA", "GeneB", "GeneC"),
+  Expression = c(100, 250, 50)
+)
+```
+
+## **Inspecting a Dataframe**
+
+The easiest way to inspect a dataframe is to call it... however that's not very practical with large datasets. 
+A good way to inspect a dataframe is by using the `head()` function which prints the first 6 lines of a dataframe or a matrix.
+
+```{r df2}
+
+head(genes)
+
+```
+
+
+## **Accessing and modifying individual columns with `$`**
+
+Individual columns are vectors and `$` operator allows to select individual select columns. 
+
+The syntax is `dataframe$column`.
+
+We can also use it to modify a column, and even add a new column.
+
+The syntax to modify is: `dataframe$column <- New_Values`, it is important to note that the new value vector has to be the same length as the number of rows in the dataframe. 
+Lets look at an example where we multiply expression by 10
+
+
+```{r df3}         
+# R reads this: "Take the Expression column, multiply by 10, and overwrite the old column."
+genes$Expression <- genes$Expression * 10
+
+head(genes)
+```
+
+### **Exercise 5A: Dataframe Manipulation**
+
+*Modifying a column in place using `$`.*
+
+Copy the code to generate the gene dataframe into your `.R` file
+
+1. Use the log() function to transform the 'Expression' column 
+and overwrite the old column using the $ operator.
+
+2. Print the dataframe to check your work
+
+3. Use head to inspect the dataframe
+
+
+Now let's have fun with it.
+
+### **Exercise 5B**
+
+1. Try and use the square bracts `[]` to access the `genes` dataframe in the same way you did the matrix
+
+2. Anything that can be accessed can be modified try modifying the expression value of geneA to 500 using the `[]`
+
+3. Try using the `$` to create a new column in your dataframe called log_expression where the expression values are log transformed
+
+  * Hint 1: use the `log()` function
+  
+  * Hint 2: `dataframe$NewColumn <-`
+
+------------------------------------------------------------------------
+
+# **8. Packages & The Tidyverse: A Shared Philosophy**
+
+## **What is a Package?**
+
+R comes with "Base" tools (like a screwdriver and hammer).
+
+Packages are specialized toolkits you "buy" from the store (like a PCR machine or a sequencer).
+Specialized packages contain functions that expend R's capability and use-case beyond just base R. 
+There are two major repositories that house R packages, CRAN - general repository and Bioconductor
+a repository for omics and computational biology. We will use a lot of Bioconductor packages throughout this micro c
+redential. Another place to get packages is `GitHub`, usualy those are packages in development stage.
+
+Here's how to install and load a package:
+
+1.  **Install (Buy it):** You do this **once** per computer.
+
+```{r pinst, eval=FALSE}        
+# Type this in the CONSOLE (not your script):
+install.packages("tidyverse")
+```
+
+
+2.  **Load (Plug it in):** You do this **every time** you open RStudio.
+
+```{r pload, eval=FALSE}         
+# Type this at the top of your SCRIPT:
+library("tidyverse")
+
+```
+
+Alternatively, it's possible to specify which package the function should be taken from withouth loading the package. 
+This is a good practice also if two loaded packages contain functions with identical names. 
+
+```{r palt}
+
+tidyverse::tidyverse_logo()
+```
+
+### **What is the "Tidyverse"?**
+
+The Tidyverse is not just one package; it is a **Mega-Package**. When you load it, you are actually loading 9 different packages at once (including `dplyr` for logic, `ggplot2` for art, and `readr` for files) all belonging to the same universe of data handling. They all share the same philosophy in design and handle of data ([read more about it](https://tidyverse.org/)).
+
+The "Tidy Data" Philosophy
+
+All Tidyverse packages agree on a few strict rule:
+
+1.  **Every Variable** is a **Column**.
+
+2.  **Every Observation** is a **Row**.
+
+3.  **Every Value** is a **Cell**.
+
+------------------------------------------------------------------------
+
+## **9. The Three Verbs of Tidy Data Wrangling**
+
+We will use `dplyr` (part of the Tidyverse). It relies on "Verbs" that do exactly what they say.
+
+First, let's use one of R's builtit datasets a playground dataframe.
+
+::: {.callout-note}
+### 🚗 **The mtcars Dataset**
+The `mtcars` (Motor Trend Car Road Tests) dataset is a classic R built-in containing fuel consumption and 10 performance metrics for 32 automobiles from 1973–74. It is widely used in teaching to demonstrate how variables like horsepower and weight influence fuel efficiency (MPG).
+The following code uses the `data()` function to call it.
+:::
+
+```{r cars}         
+#Load the mtcars dataset and assign it to variable mtcars
+data(mtcars)
+```
+
+Let's make sure that we are working with a dataframe using the `class()` function
+
+```{r cars2}
+class(mtcars)
+```
+
+Next, let's use the tidyverse version of `head()` -`glimpse()`- to inspect mtcars. 
+
+```{r cars3}
+
+#note how I am specifying the package? You don't have to do that, but sometimes its good practice. 
+dplyr::glimpse(mtcars)
+
+```
+
+
+### **Exercise 6:**
+
+1. In your `.R` script file write the code that loads mtcars
+
+2. Use both `glimpse()` and `head()` on it to compare the output
+
+3. Make a copy of `mtcars` call it `mtcars2`
+
+***
+
+### **Verb 1: `select()` (Pick Columns)**
+
+Purpose: You only need to work with specific columns.
+
+Syntax: select(data, Column1, Column2, ...)
+
+```{r select0}
+#This is refereed to as subseting, creating a subset
+mt_cars_select <- select(mtcars, mpg, carb)
+
+head(mt_cars_select)
+```
+
+Alternatively, remove what you don't want
+
+```{r select1}
+mt_cars_select <- select(mtcars, -2:10)
+head(mt_cars_select)
+```
+
+
+:::{.callout-tip collapse=true}
+# Tip
+The `:` operator is a function that generates a vector holding sequence of numbers increasing or decreasing by 1.   
+:::
+
+### **Verb 2: `filter()` (Pick Rows)**
+
+Purpose: You want to keep only data that meets a condition.
+
+Syntax: filter(data, Column `>` Value)
+
+Common logical operators: `>` (Greater), `<` (Less), `==` (Equal), `!=` (Not equal).
+
+```{r, filt}         
+# Only keep cars with hp higher than 180
+strong_cars <- filter(mtcars, hp > 180)
+
+head(strong_cars)
+```
+
+### **Verb 3: `mutate()` (Create/Modify Columns)**
+
+Purpose: Calculate a new value for every row.
+
+Syntax: mutate(data, New_Column_Name = Calculation)
+
+
+```{r mutate1}         
+# Add log10 counts
+strong_cars <- mutate(strong_cars, loghp = log10(hp))
+head(strong_cars)
+```
+
+:::{.callout-note}
+
+#### **Bonus question:**
+How would you do this with the `$` operator or the `[]`? 
+
+:::
+
+`mutate()` can also be used to modify an existing column similar to the `$` operator. 
+
+```{r mutate2}
+strong_cars <- mutate(strong_cars, cyl = cyl+0.1)
+head(strong_cars)
+```
+
+------------------------------------------------------------------------
+
+# **10. The Pipe `%>%` (Putting it together)**
+
+Imagine you want to Select, Filter, AND Mutate.
+
+The pipe (`%>%` from the `tidyverse` or `|>` from base R) means "AND THEN".
+
+It takes the result of the previous line and automatically passes it to the next function.
+
+The logic of the code bellow:
+
+Take Data \$\\rightarrow\$ Filter it \$\\rightarrow\$ Select Columns \$\\rightarrow\$ Mutate it.
+
+```{r pipe}         
+# Add this "Pipeline" to your script
+clean_cars <- mtcars %>%                 # Take the mtcar data, AND THEN
+  filter(hp > 180) %>%                 # Filter out weak cars, AND THEN
+  select(1:7) %>%             # Keep only the first 7 columns, AND THEN
+  mutate(logdisp = log10(disp))       # Calculate Log10 of displacement and place it in a new column
+
+head(clean_cars)
+```
+
+### **Exercise 7: The Tidyverse pipe**
+
+*Writing a full pipeline.*
+
+1. In your `.R` script create the dataframe.
+
+```{r e6e, eval=FALSE}
+samples <- data.frame(
+  ID = c("S1", "S2", "S3"),
+  Depth = c(5, 15, 20),
+  Qual = c("Fail", "Pass", "Pass")
+)
+```
+
+2. Write a pipe chain using samples as input:
+- Filter for Qual == "Pass"
+- Mutate a new column 'Norm' (Depth / 10)
+- Select only 'ID' and 'Norm'
+- Assign to variable 'final_samples'
+
+3. Use `glimpse()` to inspect the variable `final_samples`
+
+------------------------------------------------------------------------
+
+# **11. Plotting Data with Tidyverse - the grammar of graphics**
+
+Base R has a simple yet efficient `plot()` function. However, the gold standard for plotting data in R
+is the package `ggplot2`, which is part of the Tidyverse. 
+
+With `ggplot2` we don't just "draw" plots; we build them layer by layer. 
+This approach is called the Grammar of Graphics (that's the "gg" in ggplot2).
+
+We will use the built-in dataset mtcars to demonstrate.
+
+## **The Layered Approach:**
+
+To build a plot, we need to answer three questions:
+
+1. **Data:** What is the dataframe?
+
+2. **Aesthetics (aes):** What columns map to the X-axis, Y-axis, Color, or Size?
+
+3. **Geometries (geom):** What shapes do we want (Points? Bars? Lines?)?
+
+We connect these layers using the + sign.
+
+### **Step 1: The Canvas (Data & Aesthetics)**
+
+This sets up the graph but doesn't draw anything yet. It just tells R what goes where.
+
+```{r ggp1, eval=FALSE}
+
+# Note: aes() stands for "Aesthetics"
+ggplot(data = mtcars, aes(x = wt, y = mpg)) 
+```
+Translation: "Start a plot using the mtcars data. 
+Map the Weight column (wt) to the X-axis and Miles Per Gallon (mpg) to the Y-axis."
+
+### **Step 2: The Ink (Geometries)**
+
+Now we tell R how to represent that data. We want a scatter plot, so we use `geom_point()`.
+
+```{r ggp2, eval=FALSE}
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point()
+```
+
+:::{.callout-important}
+#### **The + Rule:** 
+The plus sign must always be at the end of the line. It tells R, "Wait, I'm not done yet!"
+:::
+
+### **Step 3: The Polish (Themes & Labels)**
+
+Finally, we customize the look. We can add titles, change labels, and apply a "Theme" to make it publication-ready.
+
+
+```{r ggp3}
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  labs(title = "Heavier Cars are Less Efficient", x = "Weight (1000 lbs)", y = "MPG") +
+  theme_minimal()
+```
+
+
+**Bonus question:**
+How would you store this to memory for further work?
+
+
+### **Mapping vs. Setting**
+
+This is the **_/#/1_** mistake beginners make.
+
+Inside `aes()`: If you want color to change based on data (e.g., color by number of cylinders).
+
+```{r gg_aes, eval=FALSE}
+# Color changes based on the 'cyl' column
+geom_point(aes(color = factor(cyl))) 
+```
+
+Outside `aes()`: If you want to set a color for everything (e.g., make all dots blue).
+
+```{r gg_set, eval=FALSE}
+# All dots are blue
+geom_point(color = "blue")
+```
+
+
+### **Exercise 8: Building a Plot**
+
+Use the mtcars dataset to visualize the relationship between Horsepower and Fuel Efficiency.
+
+1. Start with ggplot() using mtcars.
+2. In aes(), map 'hp' (Horsepower) to x and 'mpg' (Miles/Gallon) to y.
+3. Add geom_point().
+4. Map the color of the points to 'factor(cyl)' (Cylinders) INSIDE aes().
+5. Add theme_classic().
+Remember to use the + sign at the end of each line
+
+------------------------------------------------------------------------
+
+# **12. Importing Data: Local vs. Cloud**
+
+In real life, you don't type data by hand. You import files.
+
+### **A. Pathing: The "Address" of your file**
+
+-   **Windows Users:** Windows uses Backslashes `\`, but R still requires you to use a Forward Slashes `/` (e.g., `data/file.csv`) when you path.
+
+-   **The Project Advantage:** Because we are in an R Project, we use **Relative Paths** (`data/file.csv`) instead of **Absolute Paths** (`C:/Users/Name/...`).
+
+### **B. `read.csv` vs `read_csv`**
+
+`.csv` file is a text file where values are separated by a comma, it is an efficient way to store tabulated data and is used extensively in bioinformatics. R has multiple functions to import csv files. Here we will cover two.  
+
+-   `read.csv()`: The Base R version. Reliable.
+
+-   `read_csv()`: The Tidyverse version. Faster, smarter, and doesn't mess up your column names.
+
+### **C. Importing localy from the cloud**
+
+Here's how to import the practice.csv file from your Rstudio project's files folder. 
+
+```{r importlocal}
+#| eval: FALSE
+#' Storing the path as a variable makes it reusable
+
+path <- "files/practice.csv"
+local_data <- read.csv(path_unix)
+
+```
+
+You can read data directly from a URL as well.
+
+```{r importgit}
+
+#For comfort store the link as a character vector, useful especially if need to use multiple times
+url <- "https://raw.githubusercontent.com/idohatam/Biol-3315-files/refs/heads/main/practice.csv"
+
+# This imports it directly into a dataframe
+cloud_data <- read.csv(url)
+
+head(cloud_data) # Look at the first 6 rows
+```
+
+
+### **Exercise 9: Data import**
+
+1. Use the previous examples to import practice.csv locally and from `GitHub` with both `read_csv()` and `read.csv()`. Make sure to store under descriptive variable names.
+
+2. Use `class()` and `glimpse()` to inspect the variables imported by the different functions (chose either cloud or local since the files are identical no need to inspect both). Can you spot any differences in the structure of the variables? Do they belong to different classes?

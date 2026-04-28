@@ -1,0 +1,291 @@
+---
+title: "The basics of transcriptomics pt3"
+subtitle: "Differential Gene Experession Analysis and Visualization"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+body{ font-size: 18px; font-family: Arial, Helvetica, sans-serif; line-height: 30px; }
+td { font-size: 14px; }
+ul { font-size: 18px; }
+h1.title { font-size: 38px; color: Black; }
+h1 { font-size: 28px; color: Black; }
+h2 { font-size: 22px; color: Black; }
+h3 { font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: Black; }
+code.r{ font-size: 14px; }
+.tocify { border: none; }
+pre { font-size: 14px; }
+</style>
+```
+# **The Final Frontier: Day 4 Overview**
+
+You have spent the week building a high-performance bioinformatics pipeline. You have moved from raw, cryptic sequencing reads to a cleaned, normalized, and statistically rigorous list of genes that are significantly differentially expressed.
+
+However, a list of Gene IDs like `AT3G12340` is not a discovery—it is a puzzle. Today, we solve that puzzle. We will move beyond the math to ask: **What is actually happening inside the plant?**
+
+**Our goals for today:**
+
+1.  **Global Visualization:** Use Volcano Plots to see the "magnitude vs. significance" landscape.
+
+2.  **Pattern Recognition:** Use Heatmaps and Z-scores to visualize how gene expression fluctuates across time and treatments.
+
+3.  **Functional Annotation:** Translate Gene IDs into biological pathways using Gene Ontology (GO) Enrichment.
+
+4.  **Synthesis:** Interpret the temporal shifts (1h vs 12h and 1h vs 6h) to see how the plant's transcriptome changes over a half-day and see if we can still spot any infection markers.
+
+# **Part 0: Computational Environment**
+
+Today we require "Annotation Databases." These are massive dictionaries that map TAIR Gene IDs to their common names and biological functions.
+
+1.  Create `transcriptomics_day4.qmd`.
+
+2.  Load the following packages:
+
+```{r}
+#| message: false
+#| warning: false
+
+# Check and install missing critical packages if they don't exist
+if (!requireNamespace("org.At.tair.db", quietly = TRUE)) BiocManager::install("org.At.tair.db", update = FALSE)
+if (!requireNamespace("viridis", quietly = TRUE)) install.packages("viridis")
+
+# Define the required packages
+# clusterProfiler: For GO enrichment
+# org.At.tair.db: The Arabidopsis annotation database
+# viridis: For colorblind-friendly palettes
+pkgs <- c("tidyverse", "DESeq2", "pheatmap", "EnhancedVolcano", 
+          "clusterProfiler", "org.At.tair.db", "RColorBrewer", "viridis")
+
+# Load all packages efficiently using lapply
+lapply(pkgs, library, character.only = TRUE)
+
+# Load your dds_results and count matrix from Day 3
+# Ensure these objects are in your environment before proceeding
+print("Biological Discovery Environment: READY")
+```
+
+# **Part 1: The Volcano Plot**
+
+The Volcano Plot is a great way for visualization of DGE data. It allows us to see the entire transcriptome in a single image, highlighting the most extreme biological responders.
+
+### **1. Theory: The Trade-off**
+
+A Volcano Plot plots two variables:
+
+-   **X-axis (**$log_2$ **Fold Change):** This represents the **Magnitude** of change.
+
+-   **Y-axis (**$-log_{10}$ **p-value):** This represents the **Significance**.
+
+**Why** $-log_{10}$**?** A tiny p-value (e.g., $0.00001$) is very significant. On a standard scale, these tiny numbers would all cluster at zero. By taking the negative log, we turn $10^{-5}$ into $5$. The higher the point on the Y-axis, the more confident we are that the change is real.
+
+### **2. Example:1 2h vs. 1h Temporal Shif**
+
+```{r}         
+#| eval: false
+#| label: vplot
+
+EnhancedVolcano(res_1h_12h,
+                lab = rownames(res_1h_12h),
+                x = 'log2FoldChange',
+                y = 'padj',
+                title = 'Time Series: 12h vs. 1h',
+                pCutoff = 0.2, 
+                FCcutoff = 1.0,
+                pointSize = 3.0,
+                labSize = 4.0)
+```
+
+**Now You:** 
+
+1. Generate a Volcano plot for your 1h vs. 6h results.
+
+2. Visually identify if the "mountain" of genes looks broader or narrower than the 12h comparison.
+
+**Bonus:** Do it for 6h vs 12h
+
+
+# **Part 2: The Heatmap and Z-Scores**
+
+A heatmap allows us to visualize how specific genes behave across **all** replicates and conditions simultaneously.
+
+### **1. Theory: Why Z-Scores?**
+
+If Gene A has 10,000 counts and Gene B has 10 counts, plotting them on the same map is impossible—Gene A will be bright red and Gene B will look black/empty.
+
+To fix this, we use **Z-score normalization (Row Scaling)**. For every gene, we calculate:
+
+$Z = \frac{x - mu}{sigma}$
+
+A Z-score of **0** means the sample is exactly average. A Z-score of **+2** means the sample is much higher than its own average. This allows us to see **patterns of change** rather than raw magnitudes.
+
+### **2. Theory: Understanding Dendrograms & Clustering**
+
+When you generate a heatmap, you will see "trees" (lines) called **Dendrograms**.
+
+-   **Hierarchical Clustering:** This is the algorithm that builds the trees. It groups the most similar items together.
+
+-   **Row Clustering (Left):** This groups genes that have similar "behavior."
+
+-   **Column Clustering (Top):** This groups your samples. This is a critical QC step—your biological replicates **must** cluster together.
+
+### **3. Task: Visualizing the Top Responders (with Accessible Design)**
+
+In data science, **accessibility matters**. Using "Red-Green" palettes is problematic for colorblindness. Even "Red-Blue" palettes can vary in readability. We will use the `viridis` palette, which is **colorblind-friendly** and remains interpretable even when printed in black and white.
+
+```{r}         
+#| eval: false
+#| label: hmap
+
+# 1. Extract the VST-transformed counts for your significant 1h vs 12h genes
+# Assuming your filtered object is named 'sig_1h_12h'
+plot_mat_12h <- assay(vsd)[rownames(sig_1h_12h), ]
+
+# 2. Create the Heatmap
+pheatmap(plot_mat_12h, 
+         scale = "row", 
+         clustering_distance_rows = "euclidean",
+         clustering_method = "complete",
+         color = magma(100), 
+         show_colnames = TRUE,
+         main = "Significant Genes: 12h vs 1h")
+```
+
+**Now You:** Create a second heatmap for the 1h vs 6h significant genes. Do you see the same genes in this comparison? Are the patterns as distinct?
+
+**Bonus: The "Human Readable" Heatmap**
+
+Working with AT3G12340 is technically correct but biologically uninspiring. We can use the org.At.tair.db to translate these IDs into Symbols (like CCA1).
+
+Task: Re-run one of your heatmaps after running the following "translation" code:
+
+```{r}
+#| eval: false
+#| label: hmap2
+
+# 1. Map TAIR IDs to Symbols using the annotation database
+gene_symbols <- mapIds(org.At.tair.db, 
+                       keys = rownames(plot_mat_12h), 
+                       column = "SYMBOL", 
+                       keytype = "TAIR", 
+                       multiVals = "first")
+
+# 2. Replace the row names of your matrix
+# We use ifelse to keep the TAIR ID if a Symbol doesn't exist
+rownames(plot_mat_12h) <- ifelse(!is.na(gene_symbols), gene_symbols, rownames(plot_mat_12h))
+
+# 3. Now re-run your pheatmap() call with plot_mat_12h!
+```
+
+**Search Challenge**: Look through your named heatmap for:
+
+**Circadian Clock**: CCA1, TOC1, LHY.
+
+**Photosynthesis**: PSB genes, CAB genes.
+
+**Defense/PAMPs**: PR1, FLS2, WRKY transcription factors
+
+# **Part 3: Gene Ontology (GO) Enrichment**
+
+### **1. The Logic of Enrichment**
+
+Imagine a bag of 30,000 marbles (the genome). 10% are blue (Defense genes). If you grab 100 marbles (your significant genes) and **80%** of them are blue, that category is **Enriched**.
+
+### **2. Running enrichGO**
+
+```{r}         
+#| eval: false
+#| label: enrich
+
+# Select your significant UP-regulated genes from Avirulent
+sig_avr_up <- res_avr_mock %>%
+  as.data.frame() %>%
+  filter(padj < 0.2 & log2FoldChange > 1) %>%
+  rownames()
+
+# Run the enrichment using TAIR IDs
+ego_avr <- enrichGO(gene          = sig_avr_up,
+                    OrgDb         = org.At.tair.db,
+                    keyType       = "TAIR",
+                    ont           = "BP", # Biological Process
+                    pAdjustMethod = "BH",
+                    pvalueCutoff  = 0.05,
+                    qvalueCutoff  = 0.1)
+
+# Visualize with a dotplot
+# dotplot naturally uses the colorblind-friendly scales from ggplot2
+enrichplot::dotplot(ego_avr, showCategory=20) + ggtitle("GO Enrichment: Avirulent Response")
+```
+
+
+**2. Pro Tip:** Custom Plotting with geom_point
+
+If you want more control (e.g., changing colors or adding labels), you can convert the enrichResult object into a dataframe and use standard ggplot2.
+
+```{r}
+#| eval: false
+#| label: dplot_geom
+
+# 1. Convert to a dataframe
+ego_df <- as.data.frame(ego_12h) %>%
+  head(20) %>%
+  # Secret trick: GeneRatio is a string "5/40". 
+  # We use parse/eval to turn it into a decimal number (0.125).
+  mutate(GeneRatioNumeric = sapply(GeneRatio, function(x) eval(parse(text=x))))
+
+# 2. Plot with geom_point
+ggplot(ego_df, aes(x = GeneRatioNumeric, y = reorder(Description, GeneRatioNumeric))) +
+  geom_point(aes(size = Count, color = p.adjust)) +
+  scale_color_viridis_c(option = "magma", direction = -1) +
+  theme_minimal() +
+  labs(x = "Gene Ratio", y = "Biological Process", 
+       title = "Custom GO Enrichment Plot",
+       size = "Gene Count", color = "Adj. P-value")
+```
+
+
+**Now You:** 
+1. Perform GO enrichment for the 1h vs 6h comparison.
+2. Use the geom_point method to create a custom plot for your 1h vs 6h results.
+3. Compare the two plots. 
+3. What are the top 3 biological processes the plant activates during the time since infection intervals?
+4. Are there any pathways present in the **6h** response that are missing in the **12h** response?
+
+# **Part 4: The Final Synthesis**
+
+### **Final Project Task:**
+
+In your `.qmd`, summarize your results.
+
+-   How many genes did the plant activate in response to the two different pathogens?
+
+-   Based on your GO enrichment, did the plant recognize the virulent pathogen as effectively as the avirulent one?
+
+-   Reference one specific GO term or one specific gene from your Volcano plot to support your conclusion.
+
+# **Day 4 Wrap-Up: From Data to Knowledge**
+
+**Final Project Task:**
+
+In your .qmd, summarize your results.
+
+  *. How did the plant's transcriptome change between 1h vs. 6h and 1h vs. 12h? Is there a significant overlap in the genes identified across these shifts?
+
+  *. Despite the strong temporal signal, can you still spot evidence of a Pathogen Response (infection markers like PR1 or WRKY) hidden in these lists?
+
+  *. Reference one specific gene or GO term to support your conclusion.
+  
+# **Final Submission**
+
+
+### **Git Final Push:**
+
+Commit and push your final `.qmd`, `.html``.

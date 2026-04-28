@@ -1,0 +1,254 @@
+---
+title: "Course 3, Day 4: Functional Genomics"
+subtitle: "Genomic Variation & Variant Calling - The Practice"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme: cosmo
+    code-copy: true
+    self-contained: true
+---
+
+```{=html}
+<style type="text/css">
+body{ font-size: 18px; font-family: Arial, Helvetica, sans-serif; line-height: 30px; }
+td { font-size: 14px; }
+ul { font-size: 18px; }
+h1.title { font-size: 38px; color: Black; }
+h1 { font-size: 28px; color: Black; }
+h2 { font-size: 22px; color: Black; }
+h3 { font-size: 18px; font-family: Arial, Helvetica, sans-serif; color: Black; }
+code.r{ font-size: 14px; }
+.tocify { border: none; }
+pre { font-size: 14px; }
+</style>
+```
+
+# **Introduction: Putting it all together**
+
+Over the last two weeks, you have progressed from Quality Control (QC) to genome assembly, and through structural and functional annotation to initial variant calling. Today, we scale that work to the **complete genome** you assembled in Week 2 and annotated at the beginning of this week.
+
+Our primary goal is to map these genomic variants back to the **interesting pathways** you identified on Day 2 of this course. By doing so, we move beyond simple sequence analysis and begin to connect the "Delta" in the DNA to the actual metabolic and functional potential of your unique organism.
+
+::: {.callout-note}
+
+### **Note on Tooling Strategy**
+
+While **`medaka`** is a fantastic tool—it's incredibly fast, robust against the noise of our legacy 7.3 chemistry data, and runs seamlessly on local hardware—**`Clair3`** is really "the business" when it comes to high-precision variant calling for long-read data.
+
+It is important to keep in mind the distinction between sequencing technologies: while we focus on long reads today, **`GATK` (Genome Analysis Toolkit)** remains the gold standard for short-read (Illumina) variant calling. `Clair3` is a modern industry standard for both haploid and diploid assemblies using long-read data (Nanopore/PacBio). We aren't using it as our primary engine today simply because its heavy deep-learning frameworks (especially PyTorch, which has compatibility issues with Apple Silicon and often requires manual platform coercion to install correctly) can be a pain to install on local machines and the run times are significantly longer. However, like in Day 3, we prioritize getting results efficiently. For those of you who finish your analysis early, a **Bonus Module on Clair3** is available on the course website. If you want to see how the "big guns" of genomics handle your data, give it a play!
+:::
+
+# **Phase 1: Set up your project**
+
+As usual, you and your partner will establish a shared, synchronized environment using RStudio's Git integration.
+
+### **1. Repository Setup**
+
+-   **Partner 1 (Maintainer):** Create a new GitHub repository named `Course3_Day4_GroupX`. Add your partner as a **Collaborator** in the settings.
+
+-   **Partner 2 (Collaborator):** Accept the invitation.
+
+### **2. RStudio Integration**
+
+**Both Partners:**
+
+1.  Copy the HTTPS URL of your repo from GitHub.
+
+2.  In RStudio: **File \> New Project \> Version Control \> Git**.
+
+3.  Paste the URL. This "clones" the repo and creates a linked R Project.
+
+### **3. Safeguarding the Repo (.gitignore)**
+
+Genomic files are too large for GitHub. We must ignore them.
+
+1.  Open the `.gitignore` file in your project.
+
+2.  Add these lines and **Save**:
+
+```{bash}
+#| eval: false
+#| label: noname
+data/
+variant_output/
+*.fasta
+*.fastq
+*.bam
+*.bai
+*.vcf*
+.gitignore
+```
+
+3.  **Commit & Push:** Click the "Git" tab in RStudio, check the box for `.gitignore`, click **Commit**, and then **Push**.
+
+### **4. Collaborative Protocol**
+
+-   **Pull First:** Always click the blue **Pull** arrow before starting.
+
+-   **Unique Naming:** Name your files based on your assembly (e.g., `audit_1round.qmd` vs `audit_2rounds.qmd`).
+
+# **Phase 2: Scaling `medaka` Variant Calling**
+
+We will process the entire 12Mb genome using `medaka`. This tool is designed to handle the noise of Nanopore reads while providing a fast consensus.
+
+### **1. Environment Prep**
+
+Ensure your environment includes the necessary tools. Rather than creating a new environment, we will update the `medaka` environment you created during Week 2 for polishing.
+
+```{bash}         
+#| eval: false
+#| label: env_prep
+# Activate your existing medaka environment from Week 2
+conda activate medaka_env
+
+# Install the additional tools needed for today's functional analysis
+conda install -c bioconda -c conda-forge snpeff crossmap
+```
+
+### **2. Running Medaka Variant**
+
+-   **What:** Use your notes to map and call variants across all 16 chromosomes using `medaka`. SnpEff expects the chromosomes to be named roman numerals (i.e. >I, >II, >IV etc), so change the headers in your reference fasta file before you run `medaka` (hint: check your notes from course 2 day 4). 
+
+-   **Expected Output:** Direct your output  `variant_output/medaka_variants.vcf`.
+
+# **Phase 3: The Scavenger Hunt (SnpEff & Pathways)**
+
+Great, you called variants genome wide, not just in a single chromosome but what do they mean from a biological perspective? You're going to use `SnpEff` to gain insight to the biological effect of the SNPs you called. 
+
+### **1. Theory: How SnpEff Works**
+
+SnpEff is a **variant effect predictor**. It works by combining your VCF with a genomic database to perform a virtual translation experiment.
+
+#### **Ranking Severity (The Impact Levels)**
+
+-   **HIGH:** **The "Gene Breakers."** Mutations like **Nonsense** (Stop gained) or **Frameshifts** (indels that scramble the protein).
+
+-   **MODERATE:** **The "Tweakers."** Typically **Missense** mutations—the protein is made, but one amino acid is different.
+
+-   **LOW:** **The "Silent" Variants.** **Synonymous** mutations that don't change the protein sequence.
+
+-   **MODIFIER:** **The "Volume Knobs."** Variants in promoters/UTRs that may alter expression levels.
+
+### **2. Executing SnpEff**
+
+```{bash}         
+#| eval: false
+#| label: snpeff_run
+# Use the S. cerevisiae R64-1-1.99 database
+snpeff R64-1-1.99 variant_output/medaka_variants.vcf > variant_output/annotated_variants.vcf
+```
+
+### **3. Compare results: Polished vs. Unpolished**
+
+Now, sit with your partner and compare your `snpEff_summary.html` files (or your filtered VCFs) and answer these questions in your `qmd` file. Since both files will be manged, no need for the answers to be in both `.qmd` files. Make sure to push both summary html files to the repo. 
+
+-   **Assignment Question 1:** Look at the total number of **Indels** vs. **SNPs**. Did the assembly with **two** rounds of polishing have significantly fewer "HIGH" impact variants?
+
+-   **Assignment Question 2:** Identify a gene in your pathway (e.g., *ERG11*) that has a "HIGH" impact frameshift in the 1-round assembly. Check the 2-round assembly. Is the frameshift still there?
+
+    -   *Discussion:* If polishing removed the "HIGH" impact call, was the mutation likely a sequencing error (noise) that was corrected, or did polishing accidentally "overwrite" a real biological difference in your strain?
+
+-   **Assignment Question 3:** Compare the ratio of Missense (MODERATE) to Synonymous (LOW) variants between the two strategies. Does one strategy yield a "cleaner" biological signal?
+
+# **Phase 4: Connecting the variants and the assembly**
+
+Yesterday, you have visualized the variants on the reference genome, but what if you want to connect it to your assembly? To do that you need to use `CrossMap`. `CrossMap` allows to match coordinates from two coordinate containing files, e.g. BAM or VCF file. It basically builds a dictionary that connects the coordinates from one file with those from another. To do so you will need to align your assembly to the reference genome and output a `PAF` file.
+
+### **1. What is a PAF file?**
+
+Before we get a coordinate dictionary, we need a raw alignment map. This is the **PAF (Pairwise mApping Format)**. It matches coordinates on your Contigs to coordinates on the Reference Chromosomes.
+
+### **2. Mechanics of the .chain file**
+
+A `.chain` file is the "dictionary" that groups the PAF alignments into **chains of blocks**. `CrossMap` uses the chain to calculate the **offset** and translate a position from the Reference to your Isolate Contig.
+
+### **3. Generating the Map**
+
+```{bash}         
+#| eval: false
+#| label: chain_gen
+# 1. Align Assembly to Reference
+minimap2 -cx asm5 data/S288C_reference.fasta data/assembly_polished.fasta > data/asm_to_ref.paf
+
+# 2. Convert PAF map into a .chain dictionary
+conda install paf2chain
+paf2chain --input data/asm_to_ref.paf > data/isolate_to_ref.chain
+```
+
+### **4. Connecting the variants to the assembly**
+
+```{bash}         
+#| eval: false
+#| label: crossmap
+CrossMap vcf data/isolate_to_ref.chain variant_output/medaka_variants.vcf data/assembly_polished.fasta variant_output/isolate_centric.vcf
+```
+
+#### **Anatomy of CrossMap Output**
+
+-   **`isolate_centric.vcf`:** Your SNPs mapped to **your contigs**.
+
+-   **`isolate_centric.vcf.unmap`:** Variants that failed to "lift over" because those regions are **missing** from your 20% assembly.
+
+# **Phase 5: The Isolate-Centric Map (Gviz Synthesis)**
+
+Use this example to plot the variants along your longest contig.
+
+```{r}         
+#| eval: false
+#| label: final_viz
+library(Gviz)
+library(rtracklayer)
+library(GenomicRanges)
+library(GenomicFeatures)
+library(VariantAnnotation)
+
+options(ucscChromosomeNames=FALSE)
+
+# 1. Load Isolate Annotations (Day 1) and Lifted VCF (Today)
+isolate_txdb <- makeTxDbFromGFF("3scaff/pipefunannotate/predict_results/pipeSaccharomyces.gff3")
+gr_lifted <- readVcf("3scaff/variant_output/isolate_centric.vcf")
+gr_vcf <- rowRanges(gr_lifted)
+
+# 2. Make names consistent
+seqlevels(gr_vcf) <- sub("contig", "scaffold", seqlevels(gr_vcf))
+chrom <- YOUR LONGEST SCAFFOLD
+
+# 2. Create Tracks
+it_track <- GeneRegionTrack(isolate_txdb,
+                            name = "Isolate Genes",
+                            chromosome = chrom)
+
+iv_track <- AnnotationTrack(gr_vcf,
+                            name = "Ref-based SNPs",
+                            fill = "red",
+                            chromosome = chrom)
+# 3. Plot the Synthesis
+plotTracks(list(GenomeAxisTrack(), it_track, iv_track),
+           chromosome = chrom,
+           from = 1, to = 20000,
+           main = "The Isolate Map: Integrated Structure & Function")
+```
+
+### **Compare results: Reference vs Assembly**
+
+1. Make sure that the code for each partner is in the final `.qmd` file
+
+2. Were you able to connect a variant to a gene annotated to the contig? Is it the same gene on the reference?
+
+# **Final Submission**
+
+1.  **Pull:** Sync all final changes from your partner.
+
+2.  **The Final Stitch:** **Partner 2 (The Editor)** is now responsible for combining the analysis, code, and findings from both individual files (e.g., `audit_1round.qmd` and `audit_2rounds.qmd`) into a single, comprehensive master `.qmd` report.
+
+3.  **Knit:** Convert the final master `.qmd` file to HTML.
+
+4.  **Commit & Push:** Push the final master `.qmd` and its corresponding `.html` file to GitHub.
+
+5.  **Submit:** Paste the link to your GitHub repository in the course portal.
+
+**Congratulations. You have successfully characterized a unique organism from raw reads to functional prediction.**

@@ -1,0 +1,421 @@
+---
+title: "The basics of transcriptomics pt2"
+subtitle: "From raw sequencing reads to raw gene counts"
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme:
+      light: sandstone
+      dark: sandstone
+    code-copy: true
+    self-contained: true
+---
+# **Part 1: Environmental Check & Collaboration**
+
+Before we dive into the data, we must ensure our "Bench" is ready. Bioinformatics pipelines fail if the environment is not consistent.
+
+### **1. Activation & R Libraries**
+
+Ensure you have activated your Conda `base` environment in the terminal:
+
+```{bash}
+#| eval: false
+conda activate
+```
+
+Load the necessary R libraries for today if you restarted your R session from Day 1.
+
+```{r}
+#| eval: false
+
+library(tidyverse)
+library(systemPipeRdata)
+library(DT) # For interactive tables
+library(Rsubread)
+library(stringr)
+```
+
+### **2. Git Collaboration**
+
+Sync with your partner(s) to ensure your local repository contains all files from Day 1.
+
+-   **Pull** to get any updates.
+
+-   **Partner 1:** Create `transcriptomics_day2_p1.qmd`.
+
+-   **Partner 2:** Create `transcriptomics_day2_p2.qmd`.
+
+# **Part 2: The Metadata Architecture**
+
+### **1. Loading the Data**
+
+In most omics work, metadata tables (here called targets) are your source of truth. Here, it maps the cryptic filenames (e.g., `SRR446027`) to biological meaning (e.g Mock sample 1h replicate b). It could also contain other information such as date and time of sampling, sample source, the person sampling etc.
+Let's get the metadata for the data we got from the `systemPipeRdata` package.
+
+```{r}
+#| eval: false
+
+# Load the master metadata table provided by systemPipeRdata
+meta_data <- read.table(
+  system.file("extdata/param/targetsPE.txt", package = "systemPipeRdata"), 
+  header = TRUE, sep = "\t")
+```
+
+### **2. Inspecting the Structure**
+
+We are going to use the metadata to filter out files and samples, but before we filter, we need to understand how the researchers named their samples.
+
+**Exercise:** 1. Use your knowledge of the `glimpse()` and `head()` functions to inspect the `meta_data` object in your console. Identify the column types and the first few entries. 2. In your `.qmd` file, write a code chunk that uses the `datatable()` function from the `DT` package to render an interactive table in your report. This will allow you to search through the 18 samples and understand the relationship between the filenames and the biological factors.
+
+**Understanding the Columns:**
+
+-   **SampleName:** A shorthand identifier (e.g., `M1A` = Mock, 1hr, Rep A, where M = Mock, A = Avirulent, and V = Virulent).
+
+-   **Factor:** The group ID (e.g., `M1`).
+
+-   **SampleLong:** A descriptive string containing the condition, time, and replicate (e.g., `Mock.1h.A`). This is the most descriptive column, but it's "messy" for simple filtering.
+
+### **3. The Wrangling Challenge**
+
+Can you filter this table based on the strings "Virulent", "Mock", or "Avirulent"?
+
+**Spoiler alert:** You can't do it easily because those words are buried inside the `SampleLong` strings mixed with other characters. To solve this, we will use "pattern matching" to create a new, clean **Type** column.
+
+#### **A Refresher on `case_when()`**
+
+To create this new column, we will use a conditional statement called `case_when()`. While we haven't covered formal "If-Else" programming yet, `case_when()` is the Tidyverse way of saying:
+
+-   *If* X is true, then do A.
+
+-   *Else if* Y is true, then do B.
+
+-   *Otherwise*, do C.
+
+It allows us to check multiple conditions in sequence. In our case, we will use it alongside `grepl()` (which looks for a "snippet" of text) to label our samples as either Mock, Avirulent, or Virulent.
+
+Add this code to your `.qmd` file. We are using `mutate` combined with `case_when` and `grepl`:
+
+```{r}
+#| eval: false
+
+# Create a clean 'Type' column based on patterns in SampleLong
+# case_when allows us to create multiple conditions in a single step
+# grepl returns TRUE if the pattern (e.g., "Mock") is found in the string
+meta_data <- meta_data %>% 
+  mutate(Type = case_when(
+    grepl("Mock", SampleLong) ~ "Mock",
+    grepl("Avr", SampleLong) ~ "Avirulent",
+    grepl("Vir", SampleLong) ~ "Virulent"
+  ))
+```
+
+**Now You:** Write a code chunk in your `.qmd` file to verify that your new column was created correctly. You should use `select()` to isolate `SampleName`, `SampleLong`, and your new `Type` column, then use `head()`. Write it as a single line of code using the Base R pipe (`|>`) this time.
+
+### **4. The Filter Challenge**
+
+Now that you have a clean `Type` column, you need to isolate the samples you are responsible for processing today.
+
+**Task:** In your `.qmd` file, write a code chunk to create a new object called `my_targets` by filtering the `meta_data` object for your assigned conditions.
+
+-   **Partner 1:** You are responsible for **Mock** and **Virulent**.
+
+-   **Partner 2:** You are responsible for **Virulent** and **Avirulent**.
+
+-   **Partner 3:** You are responsible for **Mock** and **Avirulent**. (If in groups of 3 )
+
+::: callout-tip
+### **Hint: Using %in%**
+
+When filtering for more than one value in a column, it is much cleaner to use the `%in%` operator. For example: `filter(ColumnName %in% c("Option1", "Option2"))`.
+:::
+
+**Sanity Check:** Within the same code chunk in your `.qmd` file, write the code to print the `SampleName` column of your new `my_targets` object. Ensure you see 12 samples (2 replicates across 3 timepoints for each of your 2 groups) before proceeding to the pipeline.
+
+# **Part 3: The Pipeline Architecture**
+
+The goal of this section is to conceptualize and build a bioinformatics **pipeline**. In professional genomics, a pipeline is an automated series of data processing steps—an "assembly line" where raw sequences go in one end and refined data structures come out the other.
+
+For example, we can wrap terminal alignment tools inside a loop. This code structure iteratively repeats a sequence of functions, allowing us to process dozens of files with a single click. This approach ensures our work is perfectly reproducible and free from the human error inherent in manual processing.
+
+In order to do that, we will use the `system2()` function to talk to the terminal and `for` loops to iterate through our samples. These two tools allow us to build a bridge between R's data handling and the terminal's high-performance computation. However, before we dive into the full pipeline, we must understand how these functions work individually.
+
+### **1. Driving the Terminal with `system2()`**
+
+The `system2()` function is R's way of sending a command to your computer's terminal.
+
+**Anatomy of `system2("command", args = "...")`:**
+
+1.  **The Command:** The name of the software (e.g., `"ls"`, `"hisat2"`, `"samtools"`).
+
+2.  **Args:** A character vector of flags and files you would usually type in the terminal. If you need to provide multiple arguments, you must combine them into a single character vector using the `c()` function (e.g., `args = c("-l", "-h")`).
+
+**Try it yourself:** Run these examples in your console to see how R communicates with your OS.
+
+```{r}
+#| eval: false
+
+# Example 1: List files in your current directory with multiple flags
+system2("ls", args = c("-F", "-a"))
+
+# Example 2: Check the current date/time from the system clock
+system2("date")
+
+# Practical Question: Write a system2 call to check the version of samtools (--version)
+# Write this in your .qmd
+```
+
+### **2. The Anatomy of a `for` loop**
+
+A `for` loop is a control structure that tells R: "Do this same job for every item in this collection."
+
+#### **Breaking down the Syntax:**
+
+`for (iterator in collection) { ... body ... }`
+
+1.  **The Keyword (`for`):** Tells R we are starting a loop.
+
+2.  **The Iterator (`f` or `i`):** This is a **temporary placeholder variable**. You can name it anything. It acts as a "container" that holds exactly one item from the collection at a time.
+
+3.  **The Collection (`fruits` or `1:nrow()`):** This is the list of items you want to work through.
+
+4.  **The Body (`{ ... }`):** This is the "Work Zone." Everything inside these brackets happens once for every item in the collection.
+
+**Example 1: Looping over items** Think of the iterator `f` as a person picking up one fruit at a time from a basket.
+
+```{r}
+# The Collection: A basket of fruits
+fruits <- c("Apple", "Banana", "Cherry")
+
+# The Loop: 
+for (f in fruits) {
+  print(paste("I like", f))
+}
+```
+
+**Example 2: Looping over Indices (Coordinates)**  Often loops iterate over **numbers** (indices) rather than the data itself. We use the number `i` to look up specific rows in a table. Think of `i` as the **row number**. The following loop will print the `ith` row of the `SampleName` column. The code 1:nrow(my_targets) creates a vector of numbers (in this case from 1 - the number of rows in my_targets which is 12, so 1-12). The for loop says: "Now i is number 1." We can use that 1 to query position 1 in our data. Then, it says: "Now i is number 2," allowing us to query position 2, and so on until the end of the collection.
+
+Run the following code chunk in your console or .qmd file to see this in action:
+
+```{r}
+#| eval: false
+
+# The Collection: A sequence of numbers from 1 to the number of rows
+for (i in 1:nrow(my_targets)) {
+  # 1. Print the current value of the iterator i (the row number)
+  print(paste("Currently processing row number:", i))
+  
+  # 2. Look up the SampleName for row 'i' and print it
+  print(my_targets$SampleName[i])
+}
+```
+
+**What to expect:** When you run this, you should see a repeating pattern in your output. For every iteration, R will first print the index number (e.g., 1, 2, 3...) and then the name of the sample located at that specific row. This confirms that the loop is moving through your table one step at a time.
+
+**Challenge:** In your `.qmd`, write the loop above but modify it to practice variable assignment.
+
+1.  Inside the `{ }`, assign the `SampleName` from the current row to a variable named `s_name`.
+
+2.  Then, use `print(s_name)`.
+
+**Why do this?** Notice that by assigning the value to `s_name` inside the loop, you’ve already written Step 1 of your future pipeline! This practice helps you understand how to "extract" information dynamically as the loop runs.
+
+### **3. Building Paths with `paste0()` and `basename()`**
+
+Before we map, we need to construct file paths dynamically.
+
+**Learning `basename()`:** Look at the `FileName1` column in your `my_targets` table. It contains full paths like `./data/SRR446027_1.fastq.gz`. However, our trimmed files from Day 1 are stored in `data/trimmed/` and have the suffix `.trimmed.fastq` added to the end of the original filename.
+
+The `basename()` function takes a full path and strips away the directory information, leaving only the filename (e.g., `basename("./data/file.txt")` returns `"file.txt"`).
+
+**Task:** Write a small loop in your `.qmd` that constructs the path to the **trimmed** FASTQ file for every row.
+
+1.  Use `basename()` to get the filename from `my_targets$FileName1[i]`.
+
+2.  Use `paste0()` to put `"data/trimmed/"` at the beginning and `".trimmed.fastq"` at the end.
+
+3.  Print the result for every row to verify it looks like: `"data/trimmed/SRR446027_1.fastq.gz.trimmed.fastq"`
+
+### **4. Putting it Together: The Alignment Loop**
+
+We will now build the "Engine" of our pipeline. The logic follows these steps:
+
+1.  **Assign** the sample name to a variable.
+
+2.  **Define** the input and output file paths.
+
+3.  **Run** HISAT2 (Alignment).
+
+4.  **Run** Samtools Sort (Compression).
+
+5.  **Run** Samtools Index (Fast Retrieval).
+
+6.  **Cleanup** (Delete the large SAM files).
+
+**Your Task:** Complete the `system2` calls in the template below within your `.qmd`.
+
+```{r}         
+#| eval: false
+
+dir.create("data/alignments", showWarnings = FALSE)
+index_prefix <- "data/reference/athal_index"
+
+for (i in 1:nrow(my_targets)) {
+  
+  # Step 1: Assign the SampleName to the variable s_name
+  s_name <- my_targets$SampleName[i]
+  
+  # Step 2: Define path to input file and assign it to input_fq
+  # YOUR TASK: Use the basename() and paste0() logic you practiced in Step 3!
+  
+  # Step 3: Given Paths to sam and bam output files
+  sam_out  <- paste0("data/alignments/", s_name, ".sam")
+  bam_out  <- paste0("data/alignments/", s_name, ".sorted.bam")
+  
+  # Step 4: RUN HISAT2 (Alignment)
+  # Pay attention to args: -p 8, -x [index], -U [input], -S [output]
+  print(paste("Mapping:", s_name))
+  # system2("hisat2", args = c(...))
+  
+  # Step 5: RUN Samtools sort (Compression and ordering)
+  # Pay attention to args: sort, -@ 8, -o [output_bam], [input_sam]
+  print(paste("Sorting:", s_name))
+  # system2("samtools", args = c(...))
+  
+  # Step 6: Index the bam file (Fast retrieval)
+  # Pay attention to args: index, [input_bam]
+  # system2("samtools", args = c(...))
+  
+  # Step 7: DELETE THE SAM (Space management!)
+  file.remove(sam_out)
+}
+```
+
+### **5. Verification & Summary**
+
+Before moving to the next part, you must verify that your "Assembly Line" actually worked. Open your file explorer or use the terminal to check the `data/alignments` folder.
+
+**The Audit:**
+
+1.  Do you see 12 `.sorted.bam` files?
+
+2.  Do you see 12 `.sorted.bam.bai` (index) files?
+
+3.  Are the BAM files between **2MB and 8MB** in size? (If they are 0KB, your alignment failed!)
+
+Switch to your terminal and run this command to check file sizes:
+
+```{bash}
+#| eval: false
+du -h data/alignments/*.bam
+```
+
+# **Part 4: Generating the Count Matrix**
+
+Now that we have verified our alignments, we can move to the final goal of the bioinformatics pipeline: **Quantification.** We have the locations of our reads (the BAM files), but we need to know how many reads hit each gene.
+
+### **1. What is Rsubread?**
+
+To perform this task, we use the `Rsubread` package. This is an R-wrapper for the **Subread** suite, a high-performance software package designed specifically for mapping and counting genomic reads.
+
+Inside `Rsubread`, the specific tool we use is `featureCounts`. It is one of the fastest and most accurate tools in the industry for assigning reads to genomic features (like exons and genes). It uses the coordinates in our BAM files and compares them against the "map" provided by our GTF file.
+
+### **2. Task: Running the Counts**
+
+Add the following code to your `.qmd` file. This will process your 12 samples and summarize the data into a single matrix.
+
+```{r}         
+#| eval: false
+
+# 1. Gather your BAM files
+my_bams <- list.files("data/alignments", pattern = "\\.sorted\\.bam$", full.names = TRUE)
+
+# 2. Reference the GTF structural map
+gtf_file <- "data/reference/GCF_000001735.4_TAIR10.1_genomic.gtf"
+
+# 3. Generate the counts
+fc_results <- featureCounts(files = my_bams,
+                            annot.ext = gtf_file,
+                            isGTFAnnotationFile = TRUE,
+                            GTF.featureType = "exon",
+                            GTF.attrType = "gene_id",
+                            nthreads = 8)
+
+# 4. Extract the raw count matrix
+raw_counts <- fc_results$counts
+```
+
+**Now You:** Use the `datatable()` function from the `DT` package to output the `raw_counts` matrix in your report. Inspect the table. What do the rows represent? What do the columns represent?
+
+# **Part 5: Data Harmonization**
+
+### **Task 3: The Tidyverse Cleanup**
+
+The column names of `raw_counts` must match the `SampleName` in your metadata perfectly for downstream statistical analysis. Currently, your count matrix columns still contain the file paths and extensions (e.g., `data.alignments.M1A.sorted.bam`).
+
+```{r}         
+#| eval: false
+
+# Clean the names by removing file paths and extensions using stringr
+colnames(raw_counts) <- colnames(raw_counts) %>%
+  str_remove("data.alignments.") %>%
+  str_remove(".sorted.bam")
+```
+
+#### **The Final Sanity Check**
+
+Before we proceed to the statistical analysis tomorrow, we must perform a **Sanity Check**. We use the `all()` function combined with the `%in%` operator to ask R: "Are all the column names in my count matrix present in the SampleName column of my targets table?"
+
+If this returns `TRUE`, your data is perfectly synchronized. If it returns `FALSE`, you have a naming mismatch that will crash your analysis in the next steps.
+
+```{r}         
+#| eval: false
+
+# THE SANITY CHECK: This MUST return TRUE.
+all(colnames(raw_counts) %in% my_targets$SampleName)
+```
+
+# **Day 2 Wrap-Up: From Reads to Results**
+
+Congratulations! You have just completed the "heavy lifting" phase of an RNA-Seq project. Let’s recap what you achieved today and where it fits in the big picture:
+
+1.  **Metadata Wrangling:** You took raw experimental notes and transformed them into a tidy, computer-readable format using `mutate` and `case_when`. This is the foundation of all downstream group comparisons.
+
+2.  **Pipeline Automation:** You graduated from running single terminal commands to building a scalable **Bioinformatics Pipeline**. By mastering `system2` and `for` loops, you can now process 10, 100, or 1000 samples with the same effort.
+
+3.  **Genomic Mapping:** You aligned short sequences to a reference genome, paying special attention to splice-aware junctions—a critical step in eukaryotes.
+
+4.  **Quantification:** Using `featureCounts`, you turned abstract sequence alignments into a **Gene Expression Matrix**. This is the digital equivalent of counting which "instructions" (mRNA) were active in the cell.
+
+**What you have now:**
+
+-   A clean CSV file containing raw counts for 12 of the 18 experimental samples.
+
+-   A verified alignment folder filled with binary BAM files.
+
+**Where we are going tomorrow:** In Day 3, you and your partner will **merge** your count files to reconstruct the complete Howard et al. (2013) dataset. We will then transition into the world of **Biostatistics**. Using `DESeq2`, we will find the specific genes that allow *Arabidopsis* to survive infection and visualize those life-or-death decisions through Volcanos and Heatmaps.
+
+# **Final Submission**
+
+### **Task 4: Exporting your Data**
+
+Partner 1 and Partner 2 now possess different parts of the Howard et al. 2013 puzzle. Save your results as a CSV for merging tomorrow.
+
+```{r}         
+#| eval: false
+write.csv(raw_counts, "data/Partner_Specific_Counts.csv", row.names = TRUE)
+```
+
+### **Task 5: The Reflection**
+
+In your `README.md`, answer:
+
+1.  **Logic Check:** Why did we delete the SAM files in the loop?
+
+2.  **Tool Knowledge:** What does the GTF file provide that the Aligner doesn't have?
+
+3.  **Git Check:** Commit and Push your `.qmd`, `.html`, and `.csv`.
+
+4. **If you haven't yet:** send a link of your repo to your lab instructor.
