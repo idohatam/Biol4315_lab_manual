@@ -8,6 +8,7 @@ book:
   cover-image: assets/cover.png
   chapters:
     - index.qmd
+    - lab1/01-lab1.qmd
 
 format:
   html:

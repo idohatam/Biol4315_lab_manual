@@ -85,6 +85,10 @@ All Conda and Docker environments must be tested for ARM64 compatibility.
 - **Lab 5:**
   - Native R Bioconductor (`dada2`, `phyloseq`)
 
+**Note on Environments:** Most containers and conda environments are already set up on the host computer (e.g., `sequali_env`, `busco_env`, `ezlabgva/busco:v6.0.0_cv1`). Verify their existence locally during migration. If present, set `eval: false` for code chunks that set them up in the manual so they don't redundantly install during rendering.
+
+**Note on Klippy:** The `klippy` package used in the legacy `.Rmd` files is deprecated in favor of Quarto's built-in code copy buttons. Do not port `klippy` configurations.
+
 ## 5. Computationally Intensive Steps
 
 The following steps have been flagged as computationally intensive. During the rendering process, these will be executed as background processes to prevent timeout and system resource exhaustion:

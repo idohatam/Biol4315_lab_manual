@@ -29,7 +29,9 @@ The labs will be migrated in the following order to respect both pedagogical pro
 - **Tasks:**
   - Migrate content to `lab1/01-lab1.qmd`.
   - Fix LaTeX math, update Quarto call-outs (notes, quotes).
-  - Verify Docker/Conda setup instructions.
+  - Remove any `klippy` package usage.
+  - Set `eval: false` for `conda_whats_installed()` and git configuration chunks.
+  - Verify Docker/Conda setup instructions, setting `eval: false` for installation steps if already present on host.
 - **Agent Assignment:** 
   - Generalist (Syntax, layout, formatting)
   - Omics Specialist (Verify bioinformatics concept accuracy)
