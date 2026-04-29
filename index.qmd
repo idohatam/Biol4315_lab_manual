@@ -1,0 +1,7 @@
+# Welcome {-}
+
+This is the laboratory manual for **Biol 4315: Genomics and Transcriptomics** at Langara College.
+
+**Author:** Instructor
+
+*(Placeholder for cover image)*

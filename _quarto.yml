@@ -1,0 +1,22 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Biol 4315: Genomics and Transcriptomics Lab Manual"
+  author: "Instructor"
+  cover-image: assets/cover.png
+  chapters:
+    - index.qmd
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    toc: true
+    toc-depth: 2
+    number-sections: true
+
+execute:
+  eval: false

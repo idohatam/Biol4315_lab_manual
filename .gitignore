@@ -1,0 +1,16 @@
+data/
+lab*/data/
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.quarto/
+*_cache/
+*_files/
+log.txt
+self_reflection.md
+feedback.md
+.DS_Store
+
+/.quarto/
+**/*.quarto_ipynb
