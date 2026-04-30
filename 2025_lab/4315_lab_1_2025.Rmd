@@ -1,6 +1,67 @@
 ---
-title: 'Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup'
+title: 'Biol 4315 Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup'
+author: "Dr. Ido Hatam"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    collapsed: false
 ---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-hight: 30px;
+  }
+td {  /* Table  */
+  font-size: 14px;
+}
+ul { /* List */
+  font-size: 18px;
+}
+h1.title {
+  font-size: 38px;
+  color: Black;
+}
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: Black;
+}
+h2 { /* Header 2 */
+    font-size: 22px;
+  color: Black;
+}
+h3 { /* Header 3 */
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: Black;
+}
+
+code.r{ /* Code block */
+    font-size: 14px;
+}
+.tocify {
+    border: none;
+}
+
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+options(knitr.duplicate.label = "allow")
+```
+
+```{r klippy, echo=FALSE, include=TRUE, eval=TRUE}
+klippy::klippy(position = c("top","right"))
+```
+
 
 # **Introduction**
 
@@ -18,9 +79,7 @@ This lab is foundational to the rest of this course, and while it is a bit techn
 
 # **Computational Environment Setup**
 
-::: {.callout-note}
-**Goal:** Configure your lab computer and install required tools using the course R package.
-:::
+> _Goal: Configure your lab computer and install required tools using the course R package._
 
 1. Select your lab computer and start RStudio — You will use this same machine throughout the course so make sure to note wher you sit.
 
@@ -29,14 +88,13 @@ This lab is foundational to the rest of this course, and while it is a bit techn
 3. Follow the tutorial on the GitHub README page - 
    This will:
    - Install the computational environment R package 
-   - Install `Miniconda` (if not already installed)
-   - Install essential third-party tools for upcoming labs
-   - Install required R packages
+    - Install `Miniconda` (if not already installed)
+    - Install essential third-party tools for upcoming labs
+    - Install required R packages
 
 Once the R package is installed set up your computational environment by running:
 
 ```{r env_setup}
-#| eval: false
 conda_whats_installed()
 ```
 
@@ -59,12 +117,11 @@ Next setup a `conda` environment called `sequali_env`, and install the QC tool `
 
 ## **Setting up a Github account and connecting it to your computer git cliante**
 
-::: {.callout-note}
-**Goal:** Set up a GitHub account and connect it to your local git client.
-:::
+> _Goal: Set up a GitHub account and connect it to your local git client._
 
 The `Git` and `GitHub` component will follow a few parts from the book [Happy Git and GitHub for the R user](https://happygitwithr.com/index.html). The book is a great resource and I suggest you follow it if you wish to gain a deeper 
 understanding of version control. 
+
 
 1. If you haven’t already, create a `GitHub` account and sign-in to it.
 I suggest following the guidelines for user name proposed in [chapter 4 of Happy Git](https://happygitwithr.com/github-acct.html)
@@ -72,32 +129,27 @@ I suggest following the guidelines for user name proposed in [chapter 4 of Happy
 2. Configure Git on your computer with your `GitHub` username and email:
 Your lab computer should have git installed, you can test that the installation works by running the following code in the terminal (or in RStudio's terminal tab)
 
-```{bash check git}
-#| eval: false
+```{bash check git, class.source='klippy'}
 git -h
-```
 
+```
 3. Next lets configure `git` with your `GitHub` username and email.
 
-::: {.callout-important}
-**Note that it is important that you use the same email you used for your GitHub account**
-:::
+>**Note that it is important that you use the same email you used for your GitHub account**
 
-```{bash firstgit}
-#| eval: false
+```{bash firstgit, eval=F, class.source='klippy'}
 git config --global user.name 'GitHub username'
 git config --global user.email 'your_email@email.com'
 
 #this will check if your account has been set
 git config --global --list
+
 ```
 
 
 ## **Connecting Git and GitHub to RStudio using a GitHub first approach**
 
-::: {.callout-note}
-**Goal:** Connect RStudio to GitHub and practice collaborative version control.
-:::
+> _Goal: Connect RStudio to GitHub and practice collaborative version control._
 
 1. On your `GitHub` page start a repo call it Biol4315_funzis_repo_your_initials.
 
@@ -106,11 +158,9 @@ git config --global --list
    - Set the expiration time for this token to at least 90 days.
    - Click submit and generate a token. Once the token is generated, copy it.
   
-```{r token generation}
-#| eval: false
-#| message: false
-#| warning: false
+```{r token generation, eval=FALSE, message=F, warning=F}
 usethis::create_github_token()
+
 ```
 
 3. Run the following code it will prompt you to supply a password or a token, paste your token when prompt.
@@ -118,11 +168,9 @@ usethis::create_github_token()
    - This will make sure that RStudio can access your `GitHub` repo
    
 
-```{r cred}
-#| eval: false
-#| message: false
-#| warning: false
+```{r cred, eval=FALSE, message=F, warning=F}
 gitcreds::gitcreds_set()
+
 ```
 
 4. Clone your GitHub repo using RStudio, cloning is copying the repo to your computer so you can work on it 
@@ -132,12 +180,12 @@ locally.
    
    - Follow the code chunk to connect `git` and `GitHub` to RStudio
    
-![This is what the URL should look like](assets/Picture3.png){width=40% fig-align="center"}
+```{r fig3 ,eval = TRUE, echo=FALSE, out.width = '40%',out.height='40%' ,fig.align = 'center', fig.cap='This is what the URL should look like'}
+knitr::include_graphics('Picture3.png')
+```
 
-```{r cloneR}
-#| eval: false
-#| message: false
-#| warning: false
+   
+```{r cloneR, eval=F, class.source='klippy', message=FALSE,warning=FALSE}
 usethis::create_from_github(
   "https://github.com/YOU/YOUR_REPO.git",
   destdir = "~/path/to/where/you/want/the/local/repo/")
@@ -159,7 +207,7 @@ reason for each change.
 
 3. Start a new R script file, save it as `practice.R` stage and commit it.
 
-4. Push the commits to `GitHub` by pressing the push buttun on the git tab. 
+4.Push the commits to `GitHub` by pressing the push buttun on the git tab. 
 
 5. Refresh your `GitHub` page to make sure it is up to date.
 
@@ -192,9 +240,7 @@ That's it, you've just successfully collaborated on a project.
 
 # **Using RMarkdown for Documentation, Reports, and Reproducible Workflows**
 
-::: {.callout-note}
-**Goal:** Create your first `.Rmd` document, understand the structure, render it, and begin using it as your scientific notebook for this course.
-:::
+> _Goal: Create your first `.Rmd` document, understand the structure, render it, and begin using it as your scientific notebook for this course._
 
 ## **Why RMarkdown**
 
@@ -210,29 +256,34 @@ evolution of your genome project.
 
 2. Load the `rmarkdown` and `knitr` packages
 
-```{r loading them libraries}
-#| eval: false
-#| results: hide
+```{r loading them libraries, eval=FALSE,results='hide'}
 
 library(rmarkdown)
 library(knitr)
+
 ```
+
 
 3. Go to `File -> New File -> R Markdown...` name the title `Biol4315 Lab-1 Report`, and keep the format as html
 
 4. Inspect the document, at the top you will find a `YAML` header which holds the document meta-data such as title, author, and output format.
 
-![The `YAML` header](assets/Picture1.png){width=80% fig-align="center"}
+```{r ,echo=FALSE, eval=TRUE, out.width = '80%', fig.align = 'center', fig.cap = 'The `YAML` header'}
+knitr::include_graphics('Picture1.png')
+```
 
 5. Inspect the rest of the document note the code chunks and text chunks note the `##` which indicates a secondary title.
 
-![default code chunk settings](assets/Picture2.png){width=80% fig-align="center"}
+
+```{r ,echo=FALSE, out.width = '80%', fig.align = 'center', fig.cap = 'default code chunk settings'}
+knitr::include_graphics('Picture2.png')
+```
 
 6. Save the file, name it `Biol4315_lab1_report_your_initials.RMD`, stage and commit the new file.
 
 7. Render the `.Rmd` file by pressing Knit. Rendering runs all evaluated code chunks, since your code is documented in chunks the self contained document makes the output reproducible. 
 
-8. Inspect the html output.
+8.Inspect the html output.
 
 ## **Modifying your document**
 
@@ -250,11 +301,10 @@ library(knitr)
 
 ---
 
+
 # **Using Containerized Environments with Docker Desktop**
 
-::: {.callout-note}
-**Goal:** Understand what Docker is and how to run bioinformatics tools in isolated, reproducible environments.
-:::
+> _Goal: Understand what Docker is and how to run bioinformatics tools in isolated, reproducible environments._
 
 ## **What are Docker and containerized environments?**
 
@@ -268,34 +318,19 @@ In your genome assembly project, you’ll be using tools that are often deployed
 
 ## **Basic Docker commands**
 
-::: {.callout-important}
-**Note: For this part, make sure that docker desktop is running. If not, select it from the application launcher.**
-**If the application is running yet the terminal doesn't recognize docker as a command, you will need to set the path to docker manually using the following code**
-
-```{bash}
-#| eval: false
-#| label: docker_path
-
-echo 'export PATH="$HOME/.docker/bin:$PATH"' >> ~/.zshenv
-source ~/.zshenv
-```
-
-**After running this code make sure to restart the terminal window.**
-:::
+>**Note: For this part, make sure that docker desktop is runnig. If not, select if from the application launcher.**
 
 1. Open a terminal or shell in RStudio or your system
 
 2. Pull the BUSCO image:
 
-```{bash BUSCO1}
-#| eval: false
+```{bash BUSCO1, class.source='klippy'}
 docker pull ezlabgva/busco
 ```
 
 3. Check that it works by running:
 
-```{bash BUSCO2}
-#| eval: false
+```{bash BUSCO2, class.source='klippy'}
 docker run --rm --platform linux/amd64 ezlabgva/busco busco -h
 ```
 
