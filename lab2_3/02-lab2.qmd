@@ -4,7 +4,16 @@ title: "Lab 2: Quality Check, Processing & Alignment"
 
 <br>
 
-# **Quality Check and Processing of High-throughput Sequencing Reads**
+# **Quality control and processing of high-throughput sequencing reads**
+
+```{r}
+#| label: load_bg
+#| include: false
+#| eval: true
+if (file.exists("outputs/lab2_bg.RData")) {
+  load("outputs/lab2_bg.RData")
+}
+```
 
 <br>
 
@@ -29,7 +38,7 @@ title: "Lab 2: Quality Check, Processing & Alignment"
 
 # **Lab 2 QC for high-throughput sequencing data**
 
-## **Introduction to Quality check and processing of high-throughput sequencing reads**
+## **Introduction to quality check and processing of high-throughput sequencing reads**
 
 <br/>
 
@@ -62,7 +71,7 @@ score. Although there might be different definitions of the quality scores, a de
 quality scores". These scores represent the likelihood of the base being called wrong.
 
 
-## **Before we begin - Rstudio project and `GitHub` integration** 
+## **Before we begin - rstudio project and `GitHub` integration****
 
 1. Start a `GitHub` repo for this lab.
 
@@ -87,7 +96,8 @@ This lab focuses on both short-read (Illumina) and long-read (Oxford Nanopore) Q
 
 2. Run the `rqc()` function which performs a comprehensive quality check on short read files and obtains an object with sequence quality-related results. We are using example fastq files from the ShortRead package.
 
-```{r just the code again 1}
+```{r}
+#| label: just the code again 1
 #| results: hide
 #| fig-show: hide
 
@@ -96,15 +106,16 @@ library(Rqc)
 #Get the path to the file
 folder <- system.file(package="ShortRead", "extdata/E-MTAB-1147")
 
-# feeds fastq.qz files in "folder" to quality check function
+# Feeds fastq.qz files in "folder" to quality check function
 qcRes <- rqc(path = folder, pattern = ".fastq.gz", openBrowser=FALSE, outdir="outputs")
 ```
 
-### **Sequencing Quality per Base/cycle**
+### **Sequencing quality per base/cycle**
 
 Now that we have the qcRes object, we can plot various sequence quality metrics for our fastq files. We will first plot "sequence quality per base/cycle".
 
-```{r just the code again 2}
+```{r}
+#| label: just the code again 2
 #| fig-show: hide
 rqcCycleQualityBoxPlot(qcRes)
 ```
@@ -117,11 +128,12 @@ In our case, the x-axis in the plot is labeled as "cycle". This is because in ea
 
 Long sequences can have degraded quality towards the ends of the reads. Looking at quality distribution over base positions can help us decide to do trimming towards the end of the reads or not. A good sample will have median quality scores per base above 28. If scores are below 20 towards the ends, you can think about trimming the reads.
 
-### **Sequence Content Per Base/Cycle**
+### **Sequence content per base/cycle**
 
 Per-base sequence content shows nucleotide proportions for each position. In a random sequencing library there should be no nucleotide bias and the lines should be almost parallel with each other. The code below shows how to get this plot. The resulting plot is shown in the figure below.
 
-```{r just the code}
+```{r}
+#| label: just the code
 #| fig-show: hide
 rqcCycleBaseCallsLinePlot(qcRes)
 ```
@@ -148,7 +160,8 @@ means that there will be many copies of transcripts and many copies of the same 
 reads are due to PCR bias or an effect of high transcription, we should not remove duplicated reads in RNA-seq analysis. However, 
 in some other cases duplicated reads are more likely to be due to PCR bias and one might consider removing them. 
 
-```{r just the code again 3}
+```{r}
+#| label: just the code again 3
 #| fig-show: hide
 rqcReadFrequencyPlot(qcRes)
 ```
@@ -168,18 +181,19 @@ reports. This package simply calls the Java tool and parses its results. Below, 
 One of the great things about `fastQC` (and `sequali` as well which you will use later on) is that it produces reports compatible 
 with the [multiQC platform](https://seqera.io/multiqc/).
 
-```{r just the code again 4}
+```{r}
+#| label: just the code again 4
 #| results: hide
 #| fig-show: hide
 
-# Aggregating Multiple FastQC Reports into a Data Frame 
+# Aggregating multiple fastqc reports into a data frame
 library(fastqcr)
 # Demo QC directory containing zipped FASTQC reports
 qc.dir <- system.file("fastqc_results", package = "fastqcr")
 qc <- qc_aggregate(qc.dir)
 qc
 
-# Inspecting QC Problems
+# Inspecting QC problems
 
 
 # See which modules failed in the most samples
@@ -187,10 +201,10 @@ qc_fails(qc, "module")
 # Or, see which samples failed the most
 qc_fails(qc, "sample")
 
-# Building Multi QC Reports
+# Building multi QC reports
 qc_report(qc.dir, result.file = "outputs/multi-qc-report" )
 
-# Building One-Sample QC Reports (+ Interpretation)
+# Building one-sample QC reports (+ interpretation)
 qc.file <- system.file("fastqc_results", "S1_fastqc.zip", package = "fastqcr")
 
 
@@ -198,10 +212,11 @@ qc.file <- system.file("fastqc_results", "S1_fastqc.zip", package = "fastqcr")
 
 Now that we have run `FastQC` on our fastq files, we can read the results to R and construct plots or reports. The `qc_report()` function can create an Rmarkdown-based report from `FastQC` output.
 
-```{r just the code again 5}
+```{r}
+#| label: just the code again 5
 #| results: hide
 #| fig-show: hide
-# view the report rendered by R functions
+# View the report rendered by R functions
 qc_report(qc.file, result.file = "outputs/one-sample-report",
           interpret = TRUE)
 ```
@@ -216,7 +231,8 @@ control of long and short reads. Here we will use it inspect a sequencing run of
 
 2. Download a small sequencing run of a yeast genome from the European Nucleotide Archive using the following code
 
-```{bash fastq_dl}
+```{bash}
+#| label: fastq_dl
 wget -nc -P data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR153/006/ERR1539006/ERR1539006.fastq.gz
 ```
 
@@ -264,7 +280,7 @@ Use these visual summaries to judge whether the dataset is of sufficient quality
 [Example sequali output](https://sequali.readthedocs.io/en/latest/GM24385_1.fastq.gz.html)
 
 
-## **Filtering and Trimming Short reads Reads**
+## **Filtering and trimming short reads reads**
 
 As you will learn in lecture the strategies for dealing with problematic short and long reads are different. Due to differences in the technology that produces the sequences the treatment of short reads is much more straight forward so we will focus on it. 
 
@@ -287,31 +303,32 @@ We will first set up the file paths to fastq files and filter them based on thei
 character, which stands for unidentified base. With the same function we will also trim 3 bases from the end of the reads and also
 trim segments from the start of the reads if they match the "ACCCGGGA" sequence.
 
-```{r just the code again 6}
+```{r}
+#| label: just the code again 6
 #| results: hide
 #| fig-show: hide
 
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-# BiocManager::install("QuasR")
+# Biocmanager::install("quasr")
 
 library(QuasR)
 
-# obtain a list of fastq file paths
+# Obtain a list of fastq file paths
 fastqFiles <- system.file(package="ShortRead",
                           "extdata/E-MTAB-1147",
                           c("ERR127302_1_subset.fastq.gz",
                             "ERR127302_2_subset.fastq.gz")
 )
 
-# defined processed fastq file names in the outputs folder
+# Defined processed fastq file names in the outputs folder
 outfiles <- paste0("outputs/", c("processed_1_", "processed_2_"), basename(fastqFiles))
 
-# process fastq files
-# remove reads that have more than 1 N, (nBases)
-# trim 3 bases from the end of the reads (truncateEndBases)
-# Remove ACCCGGGA patern if it occurs at the start (Lpattern)
-# remove reads shorter than 40 base-pairs (minLength)
+# Process fastq files
+# Remove reads that have more than 1 N, (nbases)
+# Trim 3 bases from the end of the reads (truncateendbases)
+# Remove ACCCGGGA patern if it occurs at the start (lpattern)
+# Remove reads shorter than 40 base-pairs (minlength)
 preprocessReads(fastqFiles, outfiles, 
                 nBases=1,
                 truncateEndBases=3,
@@ -323,28 +340,29 @@ The `ShortRead` package also has low-level functions, which `QuasR::preprocessRe
 functions to filter reads in ways that are not possible using the `QuasR::preprocessReads()` function. Below we are going to read 
 in a fastq file and filter the reads where every quality score is below 20.
 
-```{r just the code again 7}
+```{r}
+#| label: just the code again 7
 #| results: hide
 #| fig-show: hide
 
 library(ShortRead)
 
-# obtain a list of fastq file paths
+# Obtain a list of fastq file paths
 fastqFile <- system.file(package="ShortRead",
                           "extdata/E-MTAB-1147",
                           "ERR127302_1_subset.fastq.gz")
 
-# read fastq file
+# Read fastq file
 fq = readFastq(fastqFile)
 
-# get quality scores per base as a matrix
+# Get quality scores per base as a matrix
 qPerBase = as(quality(fq), "matrix")
 
-# get number of bases per read that have quality score below 20
-# we use this
+# Get number of bases per read that have quality score below 20
+# We use this
 qcount = rowSums( qPerBase <= 20) 
 
-# Number of reads where all Phred scores >= 20
+# Number of reads where all phred scores >= 20
 fq[which(qcount == 0)]
 
 #We can finally write out the filtered fastq file with the ShortRead::writeFastq() function
@@ -352,13 +370,13 @@ fq[which(qcount == 0)]
 #mode = 'a' allows you to rewrite files that are already written
 ShortRead::writeFastq( fq[which(qcount == 0)], here::here("lab2_3/outputs/Qfiltered3.fastq"), mode = 'a') 
 
-# set up streaming with block size 1000
-# every time we call the yield() function 1000 read portion
-# of the file will be read successively. 
+# Set up streaming with block size 1000
+# Every time we call the yield() function 1000 read portion
+# Of the file will be read successively.
 f <- FastqStreamer(fastqFile,readerBlockSize=1000) 
 
-# we set up a while loop to call yield() function to
-# go through the file
+# We set up a while loop to call yield() function to
+# Go through the file
 while(length(fq <- yield(f))) {
   
     # remove reads where all quality scores are < 20 
@@ -376,7 +394,7 @@ while(length(fq <- yield(f))) {
 }
 ```
 
-# **Summary exercise Lab 2**
+# **Summary exercise lab 2**
 
 1. Give your Rmarkdown document an appropriate title (1 mark)
 
@@ -397,7 +415,8 @@ while(length(fq <- yield(f))) {
 8. Download the following illumina reads of a Campilobacter jejuni genome sequencing, make sure to have that in your rmarkdown document (1 Mark)
 
 
-```{bash cj_geome}
+```{bash}
+#| label: cj_geome
 wget -nc -P data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR112/040/ERR11203340/ERR11203340_1.fastq.gz
 wget -nc -P data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR112/040/ERR11203340/ERR11203340_2.fastq.gz
 ```

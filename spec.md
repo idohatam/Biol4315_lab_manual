@@ -100,3 +100,14 @@ The following steps have been flagged as computationally intensive. During the r
 - **Lab 3:** `flye` de-novo genome assembly, `minimap2` alignments against reference genomes, and `quast`/`busco` evaluations.
 - **Lab 4:** `hisat2` index generation, splice-aware mapping of PE reads, and `featureCounts` assignment.
 - **Lab 5:** `DADA2` core algorithm (`learnErrors`, `dada` sample inference) and taxonomy assignment (`assignTaxonomy`).
+
+## 6. General Styling & Structure
+
+- **Header Consistency:** All section and subsection headers must use sentence case (e.g., 'Quality control of reads' rather than 'Quality Control of Reads').
+- **Modern Quarto Syntax:** All R and Bash code chunks must use the modern `#|` syntax for chunk options (e.g., `#| label: chunk_label` and `#| eval: false`).
+
+## 7. The Code Execution Standard
+
+- **Verification Protocol:** Every code chunk must be executed and verified before pushing. Time-consuming steps (like genome assembly or extensive QC) must be extracted and run via an independent background `.R` script.
+- **Loading Background Results:** To ensure the rendered Quarto document reflects reality without redundantly executing heavy tasks, the background script must save its outputs (e.g., via `save.image()` to `.RData`), and the `.qmd` file must import these R objects back using an invisible code chunk (e.g., `#| include: false`).
+- **Eval Constraints:** Use `eval: true` for quick setup, QC, and data visualization chunks to ensure the student environment is functional. Heavy background-dependent chunks should have `eval: false`, but their outputs must still be verifiable by the instructor via the loaded workspace.

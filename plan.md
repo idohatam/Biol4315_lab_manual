@@ -37,7 +37,18 @@ The labs will be migrated in the following order to respect both pedagogical pro
   - Omics Specialist (Verify bioinformatics concept accuracy)
 - **Success Criteria:** `quarto render` passes; text format looks correct; all code chunks evaluated.
 
-### Phase 3: Migration of Labs 2 & 3
+### Phase 3: Refactoring Labs 1 & 2 and Verifying Execution
+- **Objective:** Fix styling issues and implement code execution standards.
+- **Tasks:**
+  - Audit and convert all headers to sentence case in Labs 1 and 2.
+  - Verify Quarto chunk `#|` syntax is used everywhere.
+  - Ensure `#| eval: true` is used where practical, and that heavy computational steps save `.RData` to be loaded invisibly (`#| include: false`).
+  - Run required `wget` and `sequali` tasks.
+  - Remove global `eval: false` from `_quarto.yml`.
+- **Agent Assignment:**
+  - Generalist (Styling, syntax, and execution verification)
+
+### Phase 4: Migration of Labs 2 & 3
 - **Objective:** Consolidate Labs 2 & 3 as sequential chapters sharing a project environment.
 - **Tasks:**
   - Migrate content to `lab2_3/02-lab2.qmd` and `lab2_3/03-lab3.qmd`.

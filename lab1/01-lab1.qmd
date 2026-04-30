@@ -16,7 +16,7 @@ This lab is foundational to the rest of this course, and while it is a bit techn
 
 ---
 
-# **Computational Environment Setup**
+# **Computational environment setup**
 
 ::: {.callout-note}
 **Goal:** Configure your lab computer and install required tools using the course R package.
@@ -35,7 +35,8 @@ This lab is foundational to the rest of this course, and while it is a bit techn
 
 Once the R package is installed set up your computational environment by running:
 
-```{r env_setup}
+```{r}
+#| label: env_setup
 #| eval: false
 conda_whats_installed()
 ```
@@ -55,9 +56,9 @@ Next setup a `conda` environment called `sequali_env`, and install the QC tool `
 
 ---
 
-# **Git & GitHub Setup**
+# **Git & GitHub setup**
 
-## **Setting up a Github account and connecting it to your computer git cliante**
+## **Setting up a github account and connecting it to your computer git cliante**
 
 ::: {.callout-note}
 **Goal:** Set up a GitHub account and connect it to your local git client.
@@ -72,7 +73,8 @@ I suggest following the guidelines for user name proposed in [chapter 4 of Happy
 2. Configure Git on your computer with your `GitHub` username and email:
 Your lab computer should have git installed, you can test that the installation works by running the following code in the terminal (or in RStudio's terminal tab)
 
-```{bash check git}
+```{bash}
+#| label: check git
 #| eval: false
 git -h
 ```
@@ -83,7 +85,8 @@ git -h
 **Note that it is important that you use the same email you used for your GitHub account**
 :::
 
-```{bash firstgit}
+```{bash}
+#| label: firstgit
 #| eval: false
 git config --global user.name 'GitHub username'
 git config --global user.email 'your_email@email.com'
@@ -93,7 +96,7 @@ git config --global --list
 ```
 
 
-## **Connecting Git and GitHub to RStudio using a GitHub first approach**
+## **Connecting git and GitHub to RStudio using a GitHub first approach**
 
 ::: {.callout-note}
 **Goal:** Connect RStudio to GitHub and practice collaborative version control.
@@ -106,7 +109,8 @@ git config --global --list
    - Set the expiration time for this token to at least 90 days.
    - Click submit and generate a token. Once the token is generated, copy it.
   
-```{r token generation}
+```{r}
+#| label: token generation
 #| eval: false
 #| message: false
 #| warning: false
@@ -118,7 +122,8 @@ usethis::create_github_token()
    - This will make sure that RStudio can access your `GitHub` repo
    
 
-```{r cred}
+```{r}
+#| label: cred
 #| eval: false
 #| message: false
 #| warning: false
@@ -134,7 +139,8 @@ locally.
    
 ![This is what the URL should look like](assets/Picture3.png){width=40% fig-align="center"}
 
-```{r cloneR}
+```{r}
+#| label: cloneR
 #| eval: false
 #| message: false
 #| warning: false
@@ -190,7 +196,7 @@ That's it, you've just successfully collaborated on a project.
 
 ---
 
-# **Using RMarkdown for Documentation, Reports, and Reproducible Workflows**
+# **Using RMarkdown for documentation, reports, and reproducible workflows**
 
 ::: {.callout-note}
 **Goal:** Create your first `.Rmd` document, understand the structure, render it, and begin using it as your scientific notebook for this course.
@@ -210,7 +216,8 @@ evolution of your genome project.
 
 2. Load the `rmarkdown` and `knitr` packages
 
-```{r loading them libraries}
+```{r}
+#| label: loading them libraries
 #| eval: false
 #| results: hide
 
@@ -250,7 +257,7 @@ library(knitr)
 
 ---
 
-# **Using Containerized Environments with Docker Desktop**
+# **Using containerized environments with Docker desktop**
 
 ::: {.callout-note}
 **Goal:** Understand what Docker is and how to run bioinformatics tools in isolated, reproducible environments.
@@ -287,14 +294,16 @@ source ~/.zshenv
 
 2. Pull the BUSCO image:
 
-```{bash BUSCO1}
+```{bash}
+#| label: BUSCO1
 #| eval: false
 docker pull ezlabgva/busco
 ```
 
 3. Check that it works by running:
 
-```{bash BUSCO2}
+```{bash}
+#| label: BUSCO2
 #| eval: false
 docker run --rm --platform linux/amd64 ezlabgva/busco busco -h
 ```
@@ -319,7 +328,7 @@ You should see the help menu, which confirms it installed correctly.
 
 ---
 
-# **Lab 1 Assignment**
+# **Lab 1 assignment**
 
 1. Make sure your `GitHub` repo is set.
 
@@ -329,6 +338,6 @@ You should see the help menu, which confirms it installed correctly.
 
 ---
 
-# **Coming Next Week**
+# **Coming next week**
 
 Next week, we’ll begin learning about sequencing data and how to assess the quality of both short- and long-read files. Be sure your `GitHub` repo is clean and working—you’ll be adding to it regularly!
