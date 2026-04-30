@@ -17,5 +17,11 @@ format:
       light: flatly
       dark: darkly
     toc: true
-    toc-depth: 2
+    toc-depth: 6
     number-sections: true
+execute:
+  eval: true          
+  echo: true          
+  warning: false      # Silences R/Bash warnings globally
+  message: false      # Silences R messages (like 'Loading tidyverse')
+  error: true
