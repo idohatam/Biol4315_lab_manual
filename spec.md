@@ -12,22 +12,26 @@ To ensure students can seamlessly replicate the code on their local machines (M4
 ├── assets/               # Book-level assets (e.g., cover.png)
 ├── lab1/
 │   ├── 01-lab1.qmd
-│   └── assets/           # Images for Lab 1
+│   ├── assets/           # Images for Lab 1
+│   └── outputs/          # Generated output files (Gitignored)
 ├── lab2_3/
 │   ├── 02-lab2.qmd
 │   ├── 03-lab3.qmd
 │   ├── assets/           # Images for Lab 2 & 3
-│   └── data/             # FASTQ and reference files (Gitignored)
+│   ├── data/             # FASTQ and reference files (Gitignored)
+│   └── outputs/          # Generated output files (Gitignored)
 ├── lab4/
 │   ├── 04-lab4.qmd
-│   └── data/             # Transcriptomics data (Gitignored)
+│   ├── data/             # Transcriptomics data (Gitignored)
+│   └── outputs/          # Generated output files (Gitignored)
 └── lab5/
     ├── 05-lab5.qmd
-    └── data/             # Metagenomics data (Gitignored)
+    ├── data/             # Metagenomics data (Gitignored)
+    └── outputs/          # Generated output files (Gitignored)
 ```
 
 **Relative Pathing Strategy:**
-By placing the `.qmd` files in these subdirectories, Quarto's working directory during rendering will naturally be the subdirectory itself. We will use the `here::here()` package in R chunks to establish robust pathing, or standard relative paths (`./data/...`) in bash chunks. All student-facing instructions will explicitly direct them to create an RStudio Project in their respective lab folders.
+By placing the `.qmd` files in these subdirectories, Quarto's working directory during rendering will naturally be the subdirectory itself. We will use the `here::here()` package in R chunks to establish robust pathing, or standard relative paths (`./data/...`, `./outputs/...`) in bash chunks. All student-facing instructions will explicitly direct them to create an RStudio Project in their respective lab folders with `data/` and `outputs/` subdirectories.
 
 ## 2. Asset Manifest
 

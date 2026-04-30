@@ -1,5 +1,7 @@
 data/
 lab*/data/
+outputs/
+lab*/outputs/
 .Rproj.user/
 .Rhistory
 .RData

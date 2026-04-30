@@ -15,8 +15,8 @@ The labs will be migrated in the following order to respect both pedagogical pro
 - **Objective:** Establish the Quarto book skeleton, ensure proper Git branching, and create the necessary folder structures.
 - **Tasks:**
   - Verify and checkout the `dev` branch.
-  - Create the directory structures (`lab1/`, `lab2_3/`, `lab4/`, `lab5/`, `assets/`, `data/`).
-  - Create `.gitignore` to explicitly ignore all `data/` subdirectories, intermediate build files, and session continuity files (`log.txt`, `self_reflection.md`, `feedback.md`).
+  - Create the directory structures (`lab1/`, `lab2_3/`, `lab4/`, `lab5/`, `assets/`, `data/`, `outputs/`).
+  - Create `.gitignore` to explicitly ignore all `data/` and `outputs/` subdirectories, intermediate build files, and session continuity files (`log.txt`, `self_reflection.md`, `feedback.md`).
   - Set up `_quarto.yml` for an HTML-only book using Flatly (Light) and Darkly (Dark) themes.
   - Create `index.qmd` with title page placeholders.
 - **Agent Assignment:** 
