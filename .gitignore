@@ -17,3 +17,4 @@ feedback.md
 /.quarto/
 **/*.quarto_ipynb
 lab*_bg.R
+lab3_bg.sh

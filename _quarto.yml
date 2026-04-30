@@ -10,6 +10,7 @@ book:
     - index.qmd
     - lab1/01-lab1.qmd
     - lab2_3/02-lab2.qmd
+    - lab2_3/03-lab3.qmd
 
 format:
   html:
