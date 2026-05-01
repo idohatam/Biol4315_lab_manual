@@ -727,6 +727,10 @@ When reading this heatmap, it is crucial to understand Z-score normalization (ro
 
 The color scale (typically ranging from blue/cool for downregulation to red/warm for upregulation) maps these Z-scores. The dendrograms on the left group genes that share similar expression behaviors across treatments, while the top dendrograms group the samples based on overall similarity.
 
+#### **Question 8**
+
+Pay attention to how the samples group together and compare this clustering pattern to what you observed in your earlier Spearman correlation analysis that used all genes. 
+
 ### **Gene Ontology (GO) Enrichment**
 
 You have successfully moved from raw sequencing reads to a statistically rigorous list of significantly differentially expressed genes. However, a list of Gene IDs like `AT3G12340` is not a biological discovery—it is a puzzle. To understand what is actually happening inside the plant, we translate Gene IDs into biological pathways using Gene Ontology (GO) Enrichment.
@@ -739,22 +743,31 @@ We will use `clusterProfiler` to perform this analysis and visualize the enriche
 #| label: enrich
 #| eval: true
 
-if(exists("ego_avr") && !is.null(ego_avr)) {
-  # Visualize with a dotplot
-  p_enrich <- enrichplot::dotplot(ego_avr, showCategory=20) + 
-              ggplot2::ggtitle("GO Enrichment: Avirulent Response (Up-regulated)")
-  print(p_enrich)
-} else {
-  print("GO Enrichment data not found or no significant genes to enrich.")
-}
+# Select significant UP-regulated genes from Avirulent vs Mock
+# Because we are working with a downsampled toy dataset, we use a relaxed pvalue cutoff
+sig_avr_up <- res_avr_mock %>%
+  as.data.frame() %>%
+  dplyr::filter(pvalue < 0.05 & log2FoldChange > 1) %>%
+  rownames()
+
+# Run the enrichment using TAIR IDs
+ego_avr <- enrichGO(gene          = sig_avr_up,
+                    OrgDb         = org.At.tair.db,
+                    keyType       = "TAIR",
+                    ont           = "BP", # Biological Process
+                    pAdjustMethod = "none",
+                    pvalueCutoff  = 0.05,
+                    qvalueCutoff  = 0.2)
+
+# Visualize with a dotplot
+enrichplot::dotplot(ego_avr, showCategory=20) + 
+  ggplot2::ggtitle("GO Enrichment: Avirulent Response (Up-regulated)")
 ```
+
+
 
 #### **Question 9: Interpreting Enrichment**
 
 Examine the biological processes enriched in your avirulent response plot. 
 * Can you identify terms related to defense and stress mechanisms in plants? 
 * Discuss what these specific GO terms tell you about the plant's physiological state when facing an avirulent pathogen.
-
-#### **Question 8**
-
-Pay attention to how the samples group together and compare this clustering pattern to what you observed in your earlier Spearman correlation analysis that used all genes. 
