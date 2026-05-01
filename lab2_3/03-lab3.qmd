@@ -460,6 +460,7 @@ axis_track <- GenomeAxisTrack()
 ```{r}
 #| label: viz1
 #| eval: true
+#| fig-cap: "Alignemtn of synthetic data derived from Chr 1 against chr 1, the largest \"contig\" is actually chr 1 itself. The top ruller is the genomic range of chr1, blue arrows are the contigs. Note that your figure will look different as it will not use synthetic data"
 
 # Plot
 plotTracks(list(axis_track, aln_track),
@@ -467,15 +468,19 @@ plotTracks(list(axis_track, aln_track),
            to = max(end(gr_alns)),
            main = "Contig Alignments to Chromosome 1")
 ```
-***
 
-> Congrats — you just built your own genome browser! While not as fancy or interactive as the UCSC genome browser, this R-based version is still incredibly powerful. It allows for customization, automation, and seamless integration with your analysis pipeline — all within a reproducible script.
 
-***
+::: {.callout-tip}
+## Congrats!
+
+You just built your own genome browser! While not as fancy or interactive as the UCSC genome browser or `IVG`, this R-based version is still incredibly powerful. It allows for customization, automation, and seamless integration with your analysis pipeline — all within a reproducible script.
+:::
+
 
 #### **Assignment question 5**
 
 - How many contigs did you have aligning to chromosome 1 (1 mark)?
+- Using the functions `range()` and `ranges()` try and estimate how much of chromosome 1 does your contigs cover, is it in line with the alignment results reported by `QUAST` (2 marks)?
 - Make sure to have the plot in your document (1 mark).
 
 ### **Assignment question 6: garbing the longest contig**
@@ -527,6 +532,14 @@ Using your sorted `BAM` file, create `Gviz` tracks that represent the aligned CD
 * Remember to plot the alignment track.
 * Remember to include your code and the plot in the document.
 * Commit and push changes to `GitHub`.
+
+:::{.callout-important}
+## Contig naming scheme
+
+Note that `Gviz` expect the naming scheme of your reference data, i.e. whatever you align against, to be named according to the UCSC genome browser convention. Since your contigs will not be, make sure to set `options(ucscChromosomeNames=FALSE)` before you use the function `AlignmentTrack()` with the bam file you created for this part. 
+Note as well that this is a global setting so it is worth while to make sure that you set it back to `TRUE` if you wish to re-plot the alignment against chromosome 1.  
+
+:::
 
 ***
 
