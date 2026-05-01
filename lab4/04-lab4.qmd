@@ -74,7 +74,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
 lapply(c(
   "docopt", "DT", "pheatmap", "GenomicFeatures", "DESeq2",
   "edgeR", "systemPipeR", "systemPipeRdata", "BiocStyle", "GO.db", "dplyr",
-  "tidyr", "stringr", "Rqc", "QuasR", "ape", "clusterProfiler", "biomaRt", "EnhancedVolcano"
+  "tidyr", "stringr", "Rqc", "QuasR", "ape", "clusterProfiler", "biomaRt", "EnhancedVolcano", "org.At.tair.db"
 ), require, character.only = TRUE)
 ```
 
@@ -105,7 +105,17 @@ The dataset contains three treatment groups:
 - Avirulent bacteria (AVR): Bacteria carrying avirulence genes that trigger strong plant defenses
 - Virulent bacteria (V): Wild-type pathogenic bacteria that can overcome some plant defenses
 
-Samples for RNA sequencing were collected at 1h, 6h, and 12h post infection.
+
+The experimental design uses a time-course strategy with biological duplicates for every condition:
+
+| Treatment Group         | Type        | Time Points (h) | Replicates per Time | Total Samples | Focus                                    |
+|-------------------------|-------------|-----------------|---------------------|---------------|------------------------------------------|
+| Mock                    | Control     | 1, 6, 12        | 2                   | 6             | Baseline stress response.                |
+| Virulent (Pst)          | Susceptible | 1, 6, 12        | 2                   | 6             | Successful infection/Immune suppression. |
+| Avirulent (avrRps4)     | Resistant   | 1, 6, 12        | 2                   | 6             | Effector-Triggered Immunity (ETI).       |
+
+Transcription is a dynamic wave, not a single event. Some defense genes turn on in minutes (1h), while the "Hypersensitive Response" (cell death) peaks much later (12h). A single timepoint would miss half the story. Having duplicates for every timepoint allows us to calculate statistical variance; without it, we cannot tell if a change is due to the bacteria or just biological noise. By comparing Avirulent vs. Virulent across time, we expect to pinpoint exactly when the plant recognizes the intruder and switches from general defense to specific resistance.
+
 
 RNAseq helps researchers understand how gene expression patterns differ under different condition. 
 Here, we assume that the infection with the virulent and avirulent strains will result in different patterns of gene expression and that samples from similar treatment will show similar pattern of gene expression. 
@@ -261,7 +271,11 @@ for (i in seq_along(meta_data$FileName1)) {
 
 ## **Alignments**
 
-Next on the workflow is mapping the processed reads to the reference A _thaliana_ genome (TAIR10.1) which you have downloaded. In the previous lab, you used `minimap2`, which is a linear aligner optimized to align large fragments against a reference. In this lab you will use `HISAT2` which is a graph aligner optimized for the alignment of short reads against a reference. We will go over graph aligners.
+Why aren't we using a popular short-read aligner like Bowtie2, or the long-read aligner Minimap2 from the previous lab? 
+
+*Arabidopsis* genes contain introns, and our mature mRNA has these introns spliced out. If a 100bp short read spans across an exon-exon junction, a standard DNA-centric aligner will treat the thousand-base genomic gap as a massive indel and often fail to map the read entirely. We use HISAT2 because it is a splice-aware aligner designed specifically to recognize these junctions in short-read RNA-seq data.
+
+Next on the workflow is mapping the processed reads to the reference A _thaliana_ genome (TAIR10.1) which you have downloaded. We will go over graph aligners.
 
 ### **Indexing the reference genome**
 
@@ -530,6 +544,8 @@ if(exists("dds1")) {
 }
 ```
 
+When you generate this plot, you will see "trees" or lines connecting the samples, called dendrograms. Hierarchical clustering is the algorithm that builds these trees, grouping the most similar items together. In this case, we are clustering the columns (samples). This is a critical quality control step: your biological replicates must cluster together. If they do not, it suggests technical variation might be overpowering the biological signal.
+
 <br>
 
 ### **Analyzing differential gene expression (DGE) with DESeq2**
@@ -620,6 +636,14 @@ comp[[1]]
 
 #### **Adding gene descriptions and getting specific with volcano plots**
 
+A volcano plot is a fantastic way to visualize differential gene expression data. It allows us to see the entire transcriptome in a single image, highlighting the most extreme biological responders. 
+
+The plot maps two variables:
+- **X-axis ($log_2$ Fold Change):** This represents the magnitude of change.
+- **Y-axis ($-log_{10}$ p-value):** This represents the statistical significance. 
+
+Why use the negative log10 for the p-value? A tiny p-value (e.g., 0.00001) is highly significant, but on a standard linear scale, all these tiny, significant numbers would clump together near zero. By taking the negative log10, we turn $10^{-5}$ into 5. Therefore, the higher a point sits on the Y-axis, the more confident we are that the change is real.
+
 ```{r}
 #| label: getgd
 #| eval: true
@@ -698,6 +722,38 @@ if(exists("res_vir_mock_annot")) {
   }
 }
 ```
+
+When reading this heatmap, it is crucial to understand Z-score normalization (row scaling). If we plotted raw counts, a gene with 10,000 counts would visually overpower a gene with 10 counts, making the latter look empty. By scaling rows to Z-scores, a score of 0 means the sample is exactly average for that specific gene, while a score of +2 means the expression is much higher than its own average. This allows us to see patterns of change rather than raw magnitudes.
+
+The color scale (typically ranging from blue/cool for downregulation to red/warm for upregulation) maps these Z-scores. The dendrograms on the left group genes that share similar expression behaviors across treatments, while the top dendrograms group the samples based on overall similarity.
+
+### **Gene Ontology (GO) Enrichment**
+
+You have successfully moved from raw sequencing reads to a statistically rigorous list of significantly differentially expressed genes. However, a list of Gene IDs like `AT3G12340` is not a biological discovery—it is a puzzle. To understand what is actually happening inside the plant, we translate Gene IDs into biological pathways using Gene Ontology (GO) Enrichment.
+
+What is enrichment? Imagine a bag of 30,000 marbles (representing the entire genome), where 10% are blue (defense genes). If you blindly pull out 100 marbles (your significant genes) and find that 80% of them are blue, that category is heavily enriched beyond random chance. 
+
+We will use `clusterProfiler` to perform this analysis and visualize the enriched biological processes using `enrichplot::dotplot()`.
+
+```{r}
+#| label: enrich
+#| eval: true
+
+if(exists("ego_avr") && !is.null(ego_avr)) {
+  # Visualize with a dotplot
+  p_enrich <- enrichplot::dotplot(ego_avr, showCategory=20) + 
+              ggplot2::ggtitle("GO Enrichment: Avirulent Response (Up-regulated)")
+  print(p_enrich)
+} else {
+  print("GO Enrichment data not found or no significant genes to enrich.")
+}
+```
+
+#### **Question 9: Interpreting Enrichment**
+
+Examine the biological processes enriched in your avirulent response plot. 
+* Can you identify terms related to defense and stress mechanisms in plants? 
+* Discuss what these specific GO terms tell you about the plant's physiological state when facing an avirulent pathogen.
 
 #### **Question 8**
 
