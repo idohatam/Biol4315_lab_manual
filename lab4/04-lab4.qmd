@@ -1,0 +1,704 @@
+---
+title: "Lab 4: Transcriptomics"
+---
+
+<br>
+
+# **Learning objectives**
+
+<details>
+<summary>Click to expand</summary>
+
+**By the end of this lab you will be able to:**
+
+- Process fastq files in batch 
+- Analyze RNA-Seq data and produce high quality insights
+- Write an analysis pipeline using a common workflow language 
+- Automate analysis and report writing
+</details>
+
+# **The set-up**
+
+Create a new `GitHub` repo for this lab.
+
+In RStudio:
+
+- Create a new R Project with version control and connect it to your `GitHub` repo.
+- Ensure your project contains a `data/` directory for raw inputs and an `outputs/` directory for generated results.
+- Start a new Quarto file named `04-lab4.qmd`.
+- Make sure to add `data/` and `outputs/` folders to the `.gitignore` files.
+
+Commit these two files immediately with a message like `Initial commit`.
+
+On the terminal make sure that `HISAT2` is properly installed by using `hisat2 -h`, if the set-up package didn't install `hisat2` on your lab computer you can do it manually using `conda`. No need to create a `conda` env for `hisat2`.
+
+Download the _Arabidopsis thaliana_ reference genome from refseq, and uncompress with `gunzip`.
+
+```{bash}
+#| label: wgt_genome
+#| eval: false
+
+mkdir -p data outputs
+wget -nc -P data/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz
+gunzip -k data/GCF_000001735.4_TAIR10.1_genomic.fna.gz
+```
+
+> Remember to add the `.gz` and the `.fna` file to the `.gitignore` file
+
+Download the GFF file with the gene annotation and uncompress it with `gunzip`.
+
+```{bash}
+#| label: wgt_gff
+#| eval: false
+
+wget -nc -P data/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.gtf.gz
+gunzip -k data/GCF_000001735.4_TAIR10.1_genomic.gtf.gz
+```
+
+> **Remember to add the `.gz` and the `GTF` file to the `.gitignore` file**
+
+Lastly load the required R packages for this lab:
+
+```{r}
+#| label: load_packages
+#| eval: true
+#| message: false
+#| warning: false
+
+# Ensure required packages are installed
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+# BiocManager::install(c("clusterProfiler", "EnhancedVolcano", "biomaRt"))
+
+lapply(c(
+  "docopt", "DT", "pheatmap", "GenomicFeatures", "DESeq2",
+  "edgeR", "systemPipeR", "systemPipeRdata", "BiocStyle", "GO.db", "dplyr",
+  "tidyr", "stringr", "Rqc", "QuasR", "ape", "clusterProfiler", "biomaRt", "EnhancedVolcano"
+), require, character.only = TRUE)
+```
+
+```{r}
+#| label: load_bg
+#| include: false
+#| eval: true
+
+if (file.exists("outputs/lab4_bg.RData")) {
+  load("outputs/lab4_bg.RData")
+}
+```
+
+# **What you will study in this lab**
+
+In this lab you will analyze RNA-seq data from [Howard *et al.* 2013](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0074183).
+This dataset contains 18 samples sequenced using PE illumina sequencing.
+The actual dataset is quite large [Accession: SRP010938](https://www.ncbi.nlm.nih.gov/sra/?term=SRP010938). 
+You will work with a subset of the dataset where each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the A. *thalina* genome.
+
+The RNA-seq data came from A. _thaliana_ plants infected with _Pseudomonas syringae_, a well-studied 
+plant-pathogen system. This experimental design allows us to understand how plants respond to different types 
+of bacterial challenges.
+
+The dataset contains three treatment groups:
+
+- Mock (Buffer control): Plants treated with buffer only - represents baseline gene expression but accounting to the physical stress of injection
+- Avirulent bacteria (AVR): Bacteria carrying avirulence genes that trigger strong plant defenses
+- Virulent bacteria (V): Wild-type pathogenic bacteria that can overcome some plant defenses
+
+Samples for RNA sequencing were collected at 1h, 6h, and 12h post infection.
+
+RNAseq helps researchers understand how gene expression patterns differ under different condition. 
+Here, we assume that the infection with the virulent and avirulent strains will result in different patterns of gene expression and that samples from similar treatment will show similar pattern of gene expression. 
+
+During the lab you will run through all steps of the analysis from QA/QC to analysis.
+Steps will include:
+
+ 1. Read processing:
+    + Adapter trimming and quality filtering
+    + FASTQ quality report
+ 2. Alignments against a reference genome
+    + Map reads to the A. _thaliana_ reference genome
+    + Alignment stats - proportion of reads that map to genome
+ 3. Read count and annotation
+    + Count the number of reads per sample that map to each gene
+    + Assign functional annotation to the genes
+ 4. Sample-wise correlation analysis and clustering
+   + Are samples of the same type similar to each other in genes expressed
+ 5. Analysis of differential expressed genes (DEGs)
+    + Are samples of the same type exhibit similar gene expression patterns
+ 6. GO term enrichment analysis
+    + What gene ontologies are found in each sample type
+ 7. Gene-wise clustering
+    + Do samples from the same type show expression of genes of similar ontology (e.g. more infection resistance genes)
+
+<br>
+
+# **About the lab and assignment**
+
+**Please read this part well**
+
+* Lab assignment questions are interspersed throughout the manual
+* Unlike other labs, _your answers to some of the question is key to completing the lab_
+* Make sure to pay attention to that, and answer these questions appropriately 
+
+# **Now, to the lab**
+
+## **Accessing the RNAseq data and sample data**
+
+36 sub sampled fastq files can be found in the external data folder of the `systemPipeRdata` package, representing 18 samples. The path to it can be found using the `pathList()` function looking for `$fastqdir`.
+
+```{r}
+#| label: pathlist
+#| eval: true
+
+#e.g.1 get the path 
+fq_path <- systemPipeRdata::pathList()$fastqdir
+
+#e.g.2 list the files 
+fq_files <- list.files(fq_path)
+head(fq_files)
+```
+
+As you can see the file names are not very descriptive, therefore we will also import the sample data (or meta data) table that will tell us which sample does each fastq file represent. 
+
+```{r}
+#| label: get_meta_data
+#| eval: true
+
+meta_data <- read.table(
+  system.file("extdata/param/targetsPE.txt", package="systemPipeRdata"), 
+  header = TRUE)
+```
+
+You can use `head()` to visualize the metadata table. Note that these fastq files represent paired end 
+sequencing meaning that each sequenced fragment was sequenced both from the forward and the the reverse 
+direction therefore every fragment is represented as a read in the fielname_1.fastq file which represents the 
+forward reads and in the filename_2.fastq file which represents the corresponding reverse reads. PE sequencing 
+offers a more robust way to obtain data and account for sequencing errors. That's the reason for having 36 files for 18 samples, each sample is represented by a forward and a reverse file.  
+
+### **Question 1**
+
+Note that the path to the fastq files are `./data/file.fastq`.
+
+* In your Quarto file, include a code chunk that reads the metadata table.
+* Include a code chunk that replaces the `./data/` in columns FileName1 and FileName2 with the actual path to the fastq files obtained earlier (this will be useful for your next question)
+* Use the DT package to output the metadata table onto your Quarto file. 
+
+```{r}
+#| label: answer1
+#| include: false
+#| eval: true
+
+meta_data <- meta_data %>%
+  mutate(
+    across(matches("FileName"),  
+           ~ stringr::str_replace_all(., "\\./data/", paste0(systemPipeRdata::pathList()$fastqdir, "/"))
+    )
+  )
+```
+
+***
+
+## **Read processing**
+
+Garbage in garbage out, our next steps involve QC of the fastq.gz files making sure that for downstream 
+analysis you will use good quality data.
+
+### **Question 2**
+
+* Use the `Rqc` package to generate a QC report for the reads include it as a code chunk in your Quarto file.
+
+From your `Rqc` report:
+
+* Generate 3 per-cycle Q-score box plots for files 1-12, 13-24, 25-36. Make sure the facets use a black and white theme. Are there any samples with much longer reads than others? What's the shortest number of cycles? Include the plots and the code chunk in your Quarto file.
+
+* Generate 3 base call frequency plots for files 1-12, 13-24, 25-36, does any sample have significant N calls?
+Include the plots and the code chunk in your Quarto file.
+
+### **Question 3**
+
+Write a code chunk that iterates over your PE files and uses the `QuasR` package to trim and filter the reads (hint this is where your metadata file be very useful). 
+
+::: {.callout-note}
+**Note: `QuasR`, and `ShortRead` for that matter, aren't optimized for matching filtered reads between PE reads especially if that includes adapter trimming. Therefore your code should only focus on file 1 from every PE files**
+:::
+
+* Make sure it removes the following adapter sequence "GCCCGGGTAA"
+* Make sure it trims the final 3 bases
+* Make sure that it removes reads with more than 1 N
+* Make sure that the output name now includes processed in it
+* Make sure that the files are outputted to a `outputs/processed_fastq` folder in your project directory
+* Don't forget to add this folder to the `.gitignore` file
+* Make sure that the file names and path in the metadata table are also updated
+* Include the code chunk in your Quarto file
+
+```{r}
+#| label: answer3
+#| eval: false
+
+dir.create("outputs/processed_fastq", recursive = TRUE)
+
+for (i in seq_along(meta_data$FileName1)) {
+  
+  fastqfiles <- c(meta_data$FileName1[i], meta_data$FileName2[i])
+  l <- length(stringr::str_split_1(meta_data$FileName1[i], "\\/"))
+  
+  outfiles <- c(paste0("outputs/processed_fastq/", stringr::str_split_1(meta_data$FileName1[i], "\\/")[l], "_processed.fastq.gz"),
+                paste0("outputs/processed_fastq/", stringr::str_split_1(meta_data$FileName2[i], "\\/")[l], "_processed.fastq.gz"))
+  
+  QuasR::preprocessReads(fastqfiles, outfiles,
+                  nBases=1,
+                  truncateEndBases=3,
+                  Lpattern="GCCCGGGTAA",
+                  minLength=40)
+  
+  meta_data$FileName1[i] <- outfiles[1]
+  meta_data$FileName2[i] <- outfiles[2]
+}
+```
+
+****
+
+## **Alignments**
+
+Next on the workflow is mapping the processed reads to the reference A _thaliana_ genome (TAIR10.1) which you have downloaded. In the previous lab, you used `minimap2`, which is a linear aligner optimized to align large fragments against a reference. In this lab you will use `HISAT2` which is a graph aligner optimized for the alignment of short reads against a reference. We will go over graph aligners.
+
+### **Indexing the reference genome**
+
+The first step in aligning the reads to the genome is to create an index list for the reference. The reads would be aligned against the index list, which makes the alignment process more computationally efficient. 
+
+::: {.callout-note}
+The indexing function does not accept compressed files, if you haven't yet, make sure to uncompress the TAIR10.1 genome assembly you have downloaded.
+:::
+
+Previously you called external tools directly from the terminal, now you will call system functions directly 
+from R. The code chunk below uses the R function `system2()`, which allows R to to invoke system commands, to 
+run the command `hisat2-build` which builds the index list. `system2()` accepts a few variables. `command` is the command being passed to the system, `args` is where the list of arguments the the command accepts are 
+specified. In this case:
+
+* `-p 8` the number of CPU cores to be used, in this case 8
+* the `.fna` file is the reference genome
+* the `outputs/hisat2_index/tair10_1_index` is the output directory to which the index files (`.ht2` files) will be written and the base name for said index files (`tair10_index`). Note that before that you will need to create the output directory.
+* `stdout = TRUE` and `stderr = TRUE` capture the output of the command either standard (`stdout`) and error (`stderr`)
+
+The function runs within the `tryCatch` function that provides basic error handling.
+
+```{r}
+#| label: hisat_index
+#| eval: false
+
+#create the output directory
+dir.create("outputs/hisat2_index", recursive = TRUE)
+
+at_genome <- "data/GCF_000001735.4_TAIR10.1_genomic.fna"
+
+#Use system2 to run hisat2 from within R
+tryCatch({
+  system2(command = "hisat2-build", 
+          args = c("-p","8", at_genome, "outputs/hisat2_index/tair10_1_index"),
+          stdout = TRUE, stderr = TRUE)
+}, error = function(e) {
+  paste("hisat2-build", "indexing failed with error:", e$message)
+})
+```
+
+### **Mapping the reads to the indexed genome**
+
+Now that the reference genome has been indexed the processed reads can be mapped to it using the `hisat2` 
+command. The `hisat2` command will map every set of PE files to the genome and output a `sam` file for each. 
+Those `sam` files would then need to be converted to sorted `bam` files using `samtools`. 
+
+Here's a basic structure for running a fastq files using `hisat2`:
+
+::: {.callout-important}
+**Note: you should replace the path to the hisat2_index and the processed fastq to match the correct path for your files**
+
+**Note2: hisat2 does not accept .gz file so make sure to gunzip your processed fastq files if you haven't yet**
+:::
+
+```{bash}
+#| label: h2_demo
+#| eval: false
+
+hisat2 -x outputs/hisat2_index/tair10_1_index outputs/processed_fastq/SRR446027_1.fastq.gz_processed.fastq -p 8 -S outputs/sam_files/file1.sam
+```
+
+`-x` denotes the reference base name
+`-U` denotes the first file of the PE files (if treating as single end)
+`-p` denotes number of CPU processors
+`-S` denotes the `sam` file output
+
+### **Question 4: aligning the reads**
+
+Add a code chunk to your Quarto file that:
+
+* Creates output directories for the sam and bam files name them `outputs/sam_files` and `outputs/bam_files` respectively, make sure to add them to your `.gitignore` file
+* Use the `system2` function to loops through the paired fastq files and feeds them to `hisat2` to get the sam files (hint, this is where your metadata table will become very useful)
+   * Remember that you're only using the file 1 files
+   * Use the `SampleName` column from the `meta_data` dataframe to make sure that the resulting `sam` files each are named after the sample they represent (e.g. `V1A.sam`)
+* Within the loop feed the required arguments to the `samtools` commands to subsequent `system2` calls so that the sam files would be converted to bam files and that the bam files would be sorted and indexed.
+   * Remember to add `_sorted` to the sorted `bam` files (e.g. `V1A_sorted.bam`)
+* Make sure to place the system2 calls within `tryCatch`.
+* Make sure that the `tryCatch` for all system calls is assigned to a variable to capture the output log from those calls
+   * Write that variable from the `hisat2` as `samplename_hisat2.log` in the bam_files folder using the `writeLines` function.
+
+### **Reading alignment stats**
+
+`hisat2` outputs log files with some alignment stats per `sam` file.
+The following code chunk iterates over each of the logs that will be outputted by your answer to question 4, grabs the last line which specifies the total percent of reads aligned and extracts the numeric value. 
+ 
+```{r}
+#| label: astats
+#| eval: true
+
+# get the folder
+hisat2_logs_dir <- "outputs/bam_files"
+
+# 1. Get a list of all HISAT2 log files
+log_files <- list.files(hisat2_logs_dir, pattern = "\\.hisat2\\.log$", full.names = TRUE)
+
+if(length(log_files) > 0) {
+  percent_aligned <- 1:length(log_files)
+
+  for (i in seq_along(percent_aligned)) {
+    percent_aligned[i] <- readLines(log_files[i])[length(readLines(log_files[i]))]
+  }
+
+  align_df <- data.frame(samplename = sort(meta_data$SampleName), percent_aligned)
+  align_df <- align_df %>% 
+    mutate(percent_aligned = as.numeric(stringr::str_split_i(align_df$percent_aligned, "%", 1))) 
+  
+  head(align_df)
+} else {
+  print("No HISAT2 log files found yet. Run the alignment step first.")
+}
+```
+
+Judging by the output, the first 6 samples each had around 95% of the reads aligned to the reference. This allows us to proceed being confident in our analysis.  
+
+#### **Assignment question 5: alignment stats**
+
+* Write a code chunk that uses the `DT` package to output the `align_df` dataframe as an interactive table on your Quarto file.
+* Write a code chunk that use `ggplot2` to plot a box plot of alignment percent, make sure it is part of your Quarto file.  
+
+## **Counting how many reads mapped for each gene**
+
+This lab handles transcriptomics data, one of the questions that can be answered by transcriptomics data is how do samples differ 
+with respect to gene expression. The first step to answering this question is by counting how many reads mapped to each gene in the 
+genome. the general concept is that the larger the count of reads that map to a gene the higher it's expression. Of course this is 
+just a general concept and some normalization will need to be applied, we will discuss this in depth during lecture. 
+To generate the count table we will use the `featureCounts` function from the `Rsubread` package. `Subread` is another aligner that is optimize to align short reads, and it can work with genomic intervals to map reads to annotation tables. 
+`featureCounts` require a `GTF` file as it's input for annotation table, `GTF` is a form of `GFF` file with a more strict structure compared to the general `GFF` format. You will use the `GTF` file you downloaded at the beginning of the lab.
+
+`featureCounts` can receive a list of bam files as input. Note that the use of the `$` regular expression when listing the `bam` file. This denotes that the string has to end with bam. This is because you also have `_sorted.bam.bai` files in your folder since you indexed the sorted `bam` files.
+
+```{r}
+#| label: count_tbl
+#| eval: false
+
+#list bam files
+bfiles <- list.files("outputs/bam_files", pattern = "_sorted.bam$", full.names = TRUE)
+
+#Counting how many reads correspond to each gene
+gene_count_list <- Rsubread::featureCounts(
+                        files = bfiles, 
+                        annot.ext = "data/GCF_000001735.4_TAIR10.1_genomic.gtf", 
+                        isGTFAnnotationFile = TRUE, 
+                        allowMultiOverlap = FALSE,  
+                        isPairedEnd = FALSE, nthreads = 8,
+                        minMQS = 10, 
+                        GTF.featureType = "exon",  
+                        GTF.attrType = "gene_id" 
+                        )
+```
+
+Let's examine the structure of the elements of the resulting list from `featureCounts`.
+First is the count table, this is going to be the input used in downstream analysis steps like differential gene expression.
+
+```{r}
+#| label: cnt_tbl_inspect
+#| eval: true
+
+if(exists("gene_count_list")) {
+  glimpse(gene_count_list$counts)[1:5,1:5]
+}
+```
+
+The row names show the accession number for each gene annotated in the TAIR database e.g. [AT1G01010](https://www.arabidopsis.org/results?mainType=general&searchText=AT1G01010&category=genes). The column names are your samples, values are read counts per gene per sample. 
+
+Next lets look at the annotation table, this table shows you the `Refseq` accession numbers for each exon that mapped to each gene, along with it's length, orientation and coordinates.
+
+```{r}
+#| label: ann_table_inspect
+#| eval: true
+
+if(exists("gene_count_list")) {
+  glimpse(gene_count_list$annotation)[1:5,]
+}
+```
+
+There's also a stats table that tells you how many reads per sample were mapped vs how many did not due to various reasons.
+
+```{r}
+#| label: ann_stats
+#| eval: true
+
+if(exists("gene_count_list")) {
+  glimpse(gene_count_list$stat)[,1:5]
+}
+```
+
+### **Question 6: the count table**
+
+Add a code chunk to your Quarto file that:
+
+* Assigns `$count` to a variable named `count_table`.
+* Removes the `_sort.bam` from the column names.
+* Filter out genes with no reads mapped to them across all samples.
+* Uses DT to output the variable as an interactive table.
+
+```{r}
+#| label: answer6
+#| include: false
+#| eval: true
+
+if(exists("gene_count_list")) {
+  count_table <- gene_count_list$counts |> 
+    `colnames<-`(str_remove_all(base::colnames(gene_count_list$counts), "_sorted.bam"))
+
+  a <- base::rowSums(as.data.frame(count_table))
+  count_table <- cbind(count_table, a) 
+  count_table <- count_table[count_table[,"a"]>0,]
+  count_table <- count_table[,-ncol(count_table)]
+  rm(a)
+}
+```
+
+## **Sample-wise correlation analysis and clustering**
+
+The previous step produced a raw count table that represents the number of transcripts per gene detected in each sample. This table will be subsequently used for differential gene expression (DGE) analysis and to cluster samples based on how similar their transcript compositions are. DGE will be done with the `DESeq2` package. 
+
+### **Data prep for DESeq2**
+
+`DESeq2` works with `dds` objects, those are `S4` objects that hold information from your count table and a metadata table.
+The metadata table rows has to carry the names of the count table columns and it has to be in the exact order as well. 
+Columns that will be used as grouping information for DEG comparison have to be `factors` and not regular character vectors.
+The code chunk below will guide you through this, you will create two dds objects, `dds1` with grouping based on Avirulent (Avr), Mock, and Virulent (Vir), and `dds2` which compares the sample types themselves (e.g. A6, M12, V0 etc).
+
+```{r}
+#| label: clusters
+#| eval: true
+
+if(exists("count_table")) {
+  coldata <- meta_data %>% dplyr::select(SampleName,SampleLong,Factor) %>% 
+    dplyr::mutate(SampleLong=str_split_i(SampleLong, "\\.",1)) %>% 
+    dplyr::rename(condition = SampleLong) %>%
+    dplyr::mutate(condition = factor(condition)) %>% 
+    dplyr::mutate(Factor = factor(Factor)) 
+    
+  base::rownames(coldata) <- coldata$SampleName
+  coldata <- coldata %>% mutate(SampleName = factor(SampleName))
+  coldata$type <- factor(rep("single-read", nrow(coldata)))
+
+  coldata <- coldata[base::match(base::colnames(count_table), rownames(coldata)),]
+
+  dds1 <- DESeqDataSetFromMatrix(countData = count_table,
+                                colData = coldata,
+                                design = ~ condition)
+
+  dds2 <- DESeqDataSetFromMatrix(countData = count_table,
+                                colData = coldata,
+                                design = ~ Factor)
+}
+```
+
+### **Sample correlation based on transcript abundance table**
+
+Next lets cluster the samples based on how well their expression patterns correlate. The count table is log transformed to remove 
+bias from highly abundant transcripts, and Spearman correlation is calculated.
+
+```{r}
+#| label: cluster
+#| eval: true
+
+if(exists("dds1")) {
+  d <- cor(assay(rlog(dds1)), method = "spearman")
+  hc <- hclust(dist(1 - d))
+
+  plot.phylo(as.phylo(hc), type = "p", edge.col = "blue", edge.width = 2,
+               show.node.label = TRUE, no.margin = TRUE)
+}
+```
+
+<br>
+
+### **Analyzing differential gene expression (DGE) with DESeq2**
+
+When looking at expression data we are looking at log2FoldChange. The log2FoldChange represents the magnitude of expression difference between conditions on a log scale. The p-value indicates the statistical significance, while the FDR (false discovery rate) corrects for multiple testing.
+
+```{r}
+#| label: deseq2_dge
+#| eval: true
+
+if(exists("dds1")) {
+  dds1_results <- DESeq(dds1)
+  dds2_results <- DESeq(dds2)
+
+  res1 <- DESeq2::results(dds1_results)
+  res2 <- DESeq2::results(dds2_results)
+}
+```
+
+#### **Comparing Vir, Mock, and Avr broad overview**
+
+```{r}
+#| label: comparing
+#| eval: true
+
+if(exists("dds1_results")) {
+  res_vir_mock <- DESeq2::results(dds1_results, contrast = c("condition", "Vir", "Mock"), alpha = 0.2)
+  res_avr_mock <- DESeq2::results(dds1_results, contrast = c("condition", "Avr", "Mock"), alpha = 0.2)
+  res_vir_avr <- DESeq2::results(dds1_results, contrast = c("condition", "Vir", "Avr"), alpha = 0.2)
+
+  filter_and_count <- function(res_obj, comparison_name, fc_threshold = 2) {
+    res_filtered <- res_obj[!is.na(res_obj$padj) & !is.na(res_obj$log2FoldChange), ]
+    sig_genes <- res_filtered[abs(res_filtered$log2FoldChange) >= log2(fc_threshold), ]
+    up_regulated <- sum(sig_genes$log2FoldChange > 0)
+    down_regulated <- sum(sig_genes$log2FoldChange < 0)
+    
+    return(data.frame(
+      Comparison = comparison_name,
+      Up_regulated = up_regulated,
+      Down_regulated = down_regulated
+    ))
+  }
+
+  results_summary <- rbind(
+    filter_and_count(res_vir_mock, "Vir vs Mock"),
+    filter_and_count(res_avr_mock, "Avr vs Mock"),
+    filter_and_count(res_vir_avr, "Vir vs Avr")
+  )
+
+  print(results_summary)
+
+  plot_data <- results_summary %>%
+    pivot_longer(cols = c(Up_regulated, Down_regulated), 
+                 names_to = "Regulation", 
+                 values_to = "Count") %>%
+    mutate(Regulation = factor(Regulation, levels = c("Up_regulated", "Down_regulated")))
+
+  p <- ggplot(plot_data, aes(x = Comparison, y = Count, fill = Regulation)) +
+    geom_bar(stat = "identity", position = "stack") +
+    coord_flip() +  
+    labs(
+      title = "Differentially Expressed Genes by Comparison",
+      subtitle = "Fold Change >= 2, alpha = 0.2",
+      x = "Comparison",
+      y = "Number of Genes",
+      fill = "Regulation"
+    ) +
+    theme_minimal() 
+  print(p)
+}
+```
+
+#### **Question 7**
+
+Run the following code:
+
+```{r}
+#| label: ass7
+#| eval: false
+
+comp <- systemPipeR::readComp(system.file("extdata/param/targetsPE.txt", package="systemPipeRdata"))
+comp[[1]]
+```
+
+* Run the same analysis on the comp pairs produced by this code, remember to use the `dds2` variable. 
+* Make sure that the code and figure are part of your Quarto file.
+* Make sure to push to `GitHub`.
+
+#### **Adding gene descriptions and getting specific with volcano plots**
+
+```{r}
+#| label: getgd
+#| eval: true
+#| fig-width: 16
+#| fig-height: 10
+#| out-width: "100%"
+
+if(exists("res_vir_mock") && exists("desc")) {
+  annotate_results <- function(res_obj, desc_df) {
+    res_df <- as.data.frame(res_obj)
+    res_df$gene_id <- rownames(res_df)
+    res_df <- left_join(res_df, desc_df, by = "gene_id") %>%
+      mutate(description = str_split_i(description,"\\[",1)) 
+    return(res_df)
+  }
+
+  res_vir_mock_annot <- annotate_results(res_vir_mock, desc)
+  res_avr_mock_annot <- annotate_results(res_avr_mock, desc)
+  res_vir_avr_annot <- annotate_results(res_vir_avr, desc)
+
+  volcano1 <- EnhancedVolcano(res_vir_mock_annot,
+                             lab = res_vir_mock_annot$description,
+                             x = 'log2FoldChange',
+                             y = 'pvalue',
+                             title = 'Vir vs Mock',
+                             pCutoff = 0.05,           
+                             FCcutoff = 1.0,
+                             pointSize = 4.0,
+                             labSize = 4.0,
+                             drawConnectors = TRUE)
+  print(volcano1)
+}
+```
+
+<br>
+
+### **Clustered heatmap based on significant DEGs**
+
+```{r}
+#| label: hm
+#| echo: false
+#| eval: true
+
+if(exists("res_vir_mock_annot")) {
+  get_sig_genes <- function(res_annot) {
+    sig_genes <- res_annot[
+      !is.na(res_annot$padj) & 
+      !is.na(res_annot$log2FoldChange) &
+      abs(res_annot$log2FoldChange) >= 1, ]
+    return(sig_genes$gene_id )
+  }
+
+  all_sig_genes <- unique(c(
+    get_sig_genes(res_vir_mock_annot),
+    get_sig_genes(res_avr_mock_annot),
+    get_sig_genes(res_vir_avr_annot)
+  ))
+
+  norm_counts <- counts(dds1_results, normalized = TRUE)
+  all_sig_genes <- all_sig_genes[all_sig_genes %in% rownames(norm_counts)]
+
+  de_counts <- norm_counts[all_sig_genes, ]
+  de_counts <- de_counts[rowSums(de_counts) > 0, ]
+  log_counts <- log2(de_counts + 1)
+
+  if(nrow(log_counts) > 1) {
+    pheatmap(log_counts,
+             scale = "row",              
+             clustering_distance_rows = "correlation",
+             clustering_distance_cols = "correlation", 
+             clustering_method = "complete",
+             show_rownames = FALSE,      
+             show_colnames = TRUE,
+             main = "Heatmap of Differentially Expressed Genes",
+             fontsize_col = 10)
+  }
+}
+```
+
+#### **Question 8**
+
+Pay attention to how the samples group together and compare this clustering pattern to what you observed in your earlier Spearman correlation analysis that used all genes. 
