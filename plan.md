@@ -53,12 +53,12 @@ The labs will be migrated in the following order to respect both pedagogical pro
 - **Tasks:**
   - Migrate content to `lab2_3/02-lab2.qmd` and `lab2_3/03-lab3.qmd`.
   - Setup explicit data download (`wget`) instructions (including the CDS FASTA).
-  - Run computationally intensive genome assembly and mapping in the background.
+  - Run computationally intensive genome assembly and mapping in the background, validating that physical output files exist (`outputs/busco_output`, `outputs/quast_output`, etc).
   - Fill missing gaps (e.g. medaka polishing from course 2).
 - **Agent Assignment:** 
   - Generalist (Migration and Markdown translation)
   - Omics Specialist (Data sanity checks, debugging computational pipelines)
-- **Success Criteria:** `quarto render` passes; genome assembly completes; mapping outputs exist.
+- **Success Criteria:** `quarto render` passes; genome assembly outputs exist and are manually verified; mapping outputs exist.
 
 ### Phase 4: Migration of Lab 4
 - **Objective:** Port transcriptomics workflow.

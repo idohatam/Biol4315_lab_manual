@@ -4,6 +4,25 @@ title: "Lab 3: Genome Assembly and Annotation Basics"
 
 <br>
 
+# **Learning objectives**
+
+<details>
+
+<summary>Click to expand</summary>
+
+**By the end of this lab you will be able to:**
+
+- Understand the basic process and challenges of genome assembly.
+- Understand the importance of polishing and scaffolding.
+- Use Flye to perform long-read de novo genome assembly and Medaka to polish it.
+- Evaluate assemblies using QUAST and BUSCO.
+- Interpret common assembly quality metrics.
+- Use GRanges for basic annotation-like tasks by mapping known genes to assembled contigs.
+
+</details>
+
+***
+
 # **The setup**
 
 Create a new `GitHub` repo for this lab.
@@ -96,25 +115,6 @@ if(length(header_lines) == 17) {
 ::: {.callout-note}
 **One final note before you begin:** the assignment questions for this lab are interspersed throughout the lab. There are 8 questions, make sure to answer all of them.
 :::
-
-***
-
-# **Learning objectives**
-
-<details>
-
-<summary>Click to expand</summary>
-
-**By the end of this lab you will be able to:**
-
-- Understand the basic process and challenges of genome assembly.
-- Understand the importance of polishing and scaffolding.
-- Use Flye to perform long-read de novo genome assembly and Medaka to polish it.
-- Evaluate assemblies using QUAST and BUSCO.
-- Interpret common assembly quality metrics.
-- Use GRanges for basic annotation-like tasks by mapping known genes to assembled contigs.
-
-</details>
 
 ------------------------------------------------------------------------
 
