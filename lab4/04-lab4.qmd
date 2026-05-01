@@ -739,6 +739,15 @@ What is enrichment? Imagine a bag of 30,000 marbles (representing the entire gen
 
 We will use `clusterProfiler` to perform this analysis and visualize the enriched biological processes using `enrichplot::dotplot()`.
 
+When we run the `enrichGO()` function, we have to provide a few key pieces of information:
+
+- `gene`: Our list of significant genes.
+- `OrgDb` and `keyType`: The annotation database we are using (`org.At.tair.db`) and the format of our gene names (`TAIR`).
+- `ont`: Which branch of the Gene Ontology we want to look at. Here we use `"BP"` for Biological Process, as we are interested in what the plant is doing (e.g., defense responses). 
+- `pvalueCutoff` and `qvalueCutoff`: The statistical thresholds for determining if a category is significantly enriched.
+
+You will also notice we set `pAdjustMethod = "none"`. In a real-world RNA-seq analysis, you would almost always use a multiple testing correction method like `"BH"` (Benjamini-Hochberg) to control your false discovery rate when running thousands of statistical tests simultaneously. However, because we are working with a heavily down-sampled toy dataset in this lab to save time, applying strict corrections leaves us with zero significant genes! To ensure we have results to explore and learn from, we are intentionally relaxing our statistical stringency by turning off the p-value adjustment for this pedagogical exercise. 
+
 ```{r}
 #| label: enrich
 #| eval: true
