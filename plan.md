@@ -69,7 +69,7 @@ The labs will be migrated in the following order to respect both pedagogical pro
 - **Agent Assignment:**
   - Generalist (Formatting, syntax)
   - Omics Specialist (Verification of RNA-Seq statistical pipeline)
-- **Success Criteria:** `quarto render` passes; SAM/BAM outputs verified; DGE objects initialized.
+- **Success Criteria:** `quarto render` passes; SAM/BAM outputs verified; DGE objects initialized; all chunk evaluations must be explicitly validated (no hidden failures allowed); output directories explicitly created and checked.
 
 ### Phase 5: Migration of Lab 5
 - **Objective:** Port metagenomics workflow.

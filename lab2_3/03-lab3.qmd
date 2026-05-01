@@ -32,6 +32,7 @@ Also, load the following packages in your R session:
 
 ```{r}
 #| label: packages
+#| eval: true
 library("IRanges")
 library("GenomicRanges")
 library("Rsamtools")
@@ -40,8 +41,6 @@ library("Gviz")
 ```
 
 Lastly, download the yeast reference genome, along with its GFF file (a file that contains the list of gene annotations) to be used for the assembly check, as well as the CDS containing FASTA file. This should be done in the terminal. 
-
-**Remember to use `gunzip` to unzip the files that end in `.gz`.**  
 
 ```{bash}
 #| label: refgen_dl
@@ -55,6 +54,43 @@ wget -nc -P data/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyce
 
 # Download the cds containing fasta file from refseq
 wget -nc -P data/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_cds_from_genomic.fna.gz
+```
+
+
+## **Reference download and preparation (programmatic renaming)**
+
+The NCBI `RefSeq` reference genome uses IDs like `NC_001133.9`, but genome browsers (and `Gviz`) prefer UCSC conventions like `chrI` or `chr1`. To ensure our entire workflow is reproducible and that our `Gviz` visualization plots perfectly, we must "fix" our reference headers before we proceed. 
+
+Here we will use an R chunk to programmatically rename the chromosomes to match UCSC standards. Notice that we use an `if-else` statement to verify the chromosome count before renaming!
+
+```{r}
+#| label: reference-prep
+#| eval: false
+
+# 1. Uncompress and Read the raw NCBI file as simple text
+con <- gzfile("data/GCF_000146045.2_R64_genomic.fna.gz", "rt")
+ygen <- readLines(con)
+close(con)  
+
+# 2. Define the new UCSC-style headers (chrI through chrXVI + chrM)
+new_headers <- c(paste0(">chr", as.roman(1:16)), ">chrM")
+
+# 3. Find and Replace
+header_lines <- grep(">", ygen)
+
+# Look at the header for chromosome 1 before replacing
+print(ygen[header_lines[1]])
+
+# Safety Check: Yeast has 16 nuclear chromosomes + 1 mitochondrial
+if(length(header_lines) == 17) {
+  ygen[header_lines] <- new_headers
+  print("After replacement:")
+  print(ygen[header_lines[1]])
+  writeLines(ygen, "data/S288C_UCSC.fna")
+  message("SUCCESS: Reference renamed to UCSC standards.")
+} else {
+  stop("Error: Chromosome count mismatch! Check your input file.")
+}
 ```
 
 ::: {.callout-note}
@@ -119,6 +155,9 @@ sequence entirely from scratch, based only on overlaps and patterns in the reads
 #| label: flye
 #| eval: false
 
+# Ensure the output directory exists
+mkdir -p outputs/flye_output
+
 # Run the Flye assembler, note the expected genome size
 flye --nano-raw data/ERR1539006.fastq.gz --out-dir outputs/flye_output --threads 8 --genome-size 12m
 ```
@@ -152,13 +191,21 @@ To take our assembly to the "Gold Standard," we will use Medaka. Medaka is a pol
 For your own course project, working with modern chemistry, you should expect to run **5 rounds of Flye internal polishing** followed by **2 rounds of Medaka**. Additionally, for your own project data, you must carefully consult the Medaka documentation to select the appropriate model flag (`-m`), as this depends heavily on the specific ONT chemistry used for sequencing.
 :::
 
+
 ## **Installing and running Medaka**
 
-Let's set up Medaka using conda. 
+Let's set up Medaka using conda. This creates an environment containing all the necessary dependencies.
+
+```{bash}
+#| label: medaka_install
+#| eval: false
+conda create -n medaka_final -c conda-forge -c bioconda -c nanoporetech medaka python=3.10 -y
+conda activate medaka_final
+```
 
 ::: {.callout-tip}
 **Troubleshooting (The "Mac Lab" Fix)**
-If you encounter errors creating the environment or running Medaka on our ARM64 lab computers, run the following to force osx-64 architecture for compatibility:
+If you encounter errors creating the environment or running Medaka on our ARM64 lab computers, run the following to force osx-64 architecture for compatibility instead:
 
 ```bash
 CONDA_SUBDIR=osx-64 conda create -n medaka_final -c conda-forge -c bioconda -c nanoporetech medaka python=3.10 -y
@@ -167,7 +214,7 @@ conda install -c conda-forge cffi -y
 ```
 :::
 
-Once installed, we will use it to polish our draft assembly. We will perform two rounds of polishing for this exercise.
+Once installed, we will use it to polish our draft assembly. We will perform two rounds of polishing for this exercise. Be sure to create your output directories!
 
 ```{bash}
 #| label: medaka
@@ -176,13 +223,15 @@ Once installed, we will use it to polish our draft assembly. We will perform two
 # Activate your environment
 conda activate medaka_final
 
+# Ensure directories exist
+mkdir -p outputs/medaka_round1 outputs/medaka_round2
+
 # Round 1
 medaka_consensus -i data/ERR1539006.fastq.gz -d outputs/flye_output/assembly.fasta -o outputs/medaka_round1 -t 8
 
 # Round 2
 medaka_consensus -i data/ERR1539006.fastq.gz -d outputs/medaka_round1/consensus.fasta -o outputs/medaka_round2 -t 8
 ```
-
 Your polished assembly will be located at `outputs/medaka_round2/consensus.fasta`. We will use this polished sequence going forward.
 
 ***
@@ -213,11 +262,15 @@ The score is made of several components:
 
 ## **Evaluating the assembly using `BUSCO`**
 
-Remember that `BUSCO` will be run using Docker, so make sure that Docker Desktop is active on your Mac.
+Remember that `BUSCO` will be run using Docker, so make sure that Docker Desktop is active on your Mac. First, make sure you create the directory where the output will go.
 
 ```{bash}
 #| label: busco
 #| eval: false
+
+mkdir -p outputs/busco_output
+
+mkdir -p outputs/busco_output
 
 docker run --rm \
   -v "$PWD":/data \
@@ -246,27 +299,30 @@ The `BUSCO` reports should be found under `outputs/busco_output`. Open the text 
 
 ## **Evaluating the assembly with `quast`**
 
-`quast` will also be run using Docker. Before running QUAST, make sure you have unzipped your reference genomes.
+`quast` will also be run using Docker. Before running QUAST, make sure you have unzipped your reference genomes and you supply the properly formatted UCSC standard `S288C_UCSC.fna` file!
 
 ```{bash}
 #| label: unzip_refs
 #| eval: false
-gunzip data/GCF_000146045.2_R64_genomic.fna.gz
-gunzip data/GCF_000146045.2_R64_genomic.gff.gz
+gunzip -k data/GCF_000146045.2_R64_genomic.gff.gz
 ```
 
 ```{bash}
 #| label: quast
 #| eval: false
 
+mkdir -p outputs/quast_output
+
+mkdir -p outputs/quast_output
+
 docker run --rm -v "$(pwd)":/data -w /data quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2 \
   quast.py outputs/medaka_round2/consensus.fasta \
-  -r data/GCF_000146045.2_R64_genomic.fna \
+  -r data/S288C_UCSC.fna \
   -g data/GCF_000146045.2_R64_genomic.gff \
   -o outputs/quast_output
 ```
 
-* The `-r` argument specifies the reference genome to which the assembly is compared. In this case, you will use the RefSeq reference genome for _S. cerevisiae_. A RefSeq genome is a curated, non-redundant, and annotated reference genome sequence maintained by NCBI.
+* The `-r` argument specifies the reference genome to which the assembly is compared. In this case, you will use the properly-formatted RefSeq reference genome for _S. cerevisiae_. A RefSeq genome is a curated, non-redundant, and annotated reference genome sequence maintained by NCBI.
 * The `-g` argument specifies gene annotations by providing the GFF file for the reference genome. GFF stands for General Feature Format. It is a tab-delimited text file that describes genomic features.
 * The `-o` argument specifies the output directory where `quast` will write its reports.
 
@@ -299,9 +355,9 @@ Aligning the coding DNA sequences (CDSs) from a trusted reference genome to your
 
 For the next part you will work only with the sequence of chromosome 1, to reduce CPU time.
 
-* Write a code chunk that extract the sequence of chromosome 1 from `data/GCF_000146045.2_R64_genomic.fna` and saves it as `outputs/R64_chr1.fna` (2 marks). 
+* Write a code chunk that extracts the sequence of chromosome 1 (which we renamed to `chrI`) from your `data/S288C_UCSC.fna` file and saves it as `outputs/R64_chr1.fna` (2 marks). 
 * Make sure the chunk is on your Quarto file, and that you run it (1 mark). 
-* Make sure the `R64_chr1.fna` is in your `.gitignore` as well (1 mark). 
+* Make sure the `R64_chr1.fna` is in your `.gitignore` as well (1 mark).
 
 ## **Aligning your assembly to chromosome 1**
 
@@ -353,11 +409,14 @@ samtools index outputs/alignment.sorted.bam
 * Creates an index file (`.bai`) for the sorted BAM.
 * Indexing allows fast access to specific regions, which is essential for genome browsers and R packages like `Gviz`.
 
+
 ### **Visualizing the alignment to chromosome 1 with GRanges**
 
-Next you will visualize the aligned contigs against the chromosome using GRanges.
+Next you will visualize the aligned contigs against the chromosome using GRanges. But before we just plot things blindly, we need to actively discover where our data is mapped to.
 
-1. Import the `bam` file and convert it into a GRanges object.
+To build our browser, we need to know exactly where our data is located. We use **Rsamtools** to look at the BAM file's "table of contents" and **GenomicAlignments** to find the specific range of coordinates where our reads actually map.
+
+1. Import the `bam` file and convert it into a GRanges object. A genome browser requires a window (a `from` and a `to` coordinate). To find where our data lives, we read the alignments into a `GRanges` object and calculate the overall range.
 
 ```{r}
 #| label: bamimport
@@ -374,15 +433,23 @@ alns <- readGAlignments(bam)
 
 # Convert to GRanges object
 gr_alns <- granges(alns)
+
+# Find the start and end boundaries of all mapped contigs combined
+range(gr_alns)
+
+# Peek at the individual contig boundaries
+ranges(gr_alns)
 ```
 
-2. Create "tracks" showing the alignment.
+Now that we have audited the boundaries of our alignments, we can construct the browser tracks! We can simply pass the minimum and maximum boundaries we discovered above dynamically. 
+
+2. Create "tracks" showing the alignment. Notice we specify `chrI` as the chromosome, consistent with our UCSC renaming step.
 
 ```{r}
 #| label: tracks
 #| eval: true
 
-aln_track <- AnnotationTrack(gr_alns, name = "Contigs", genome = "sacCer3", chromosome = "chr1")
+aln_track <- AnnotationTrack(gr_alns, name = "Contigs", genome = "sacCer3", chromosome = "chrI")
 
 # Add genome axis for scale
 axis_track <- GenomeAxisTrack()
@@ -400,7 +467,6 @@ plotTracks(list(axis_track, aln_track),
            to = max(end(gr_alns)),
            main = "Contig Alignments to Chromosome 1")
 ```
-
 ***
 
 > Congrats — you just built your own genome browser! While not as fancy or interactive as the UCSC genome browser, this R-based version is still incredibly powerful. It allows for customization, automation, and seamless integration with your analysis pipeline — all within a reproducible script.
@@ -430,7 +496,7 @@ Working with just the longest contig reduces computational load and simplifies t
 ```{bash}
 #| label: unzip_cds
 #| eval: false
-gunzip data/GCF_000146045.2_R64_cds_from_genomic.fna.gz
+gunzip -k data/GCF_000146045.2_R64_cds_from_genomic.fna.gz
 ```
 
 ```{bash}
