@@ -12,6 +12,7 @@ book:
     - lab2_3/02-lab2.qmd
     - lab2_3/03-lab3.qmd
     - lab4/04-lab4.qmd
+    - lab5/05-lab5.qmd
 
 format:
   html:
