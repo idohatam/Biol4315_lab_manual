@@ -1,15 +1,5 @@
 ---
-title: "Biol 4315 Lab 5 Amplicon metagenomics"
-subtitle: "Using DADA2 to analyze microbiome data"
-author: "Dr. Ido Hatam"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: 
-  html_document:
-    code_folding: hide
-    toc: true
-    toc_float: true
-    number_sections: true
-    collapsed: false
+title: "Lab 5: Amplicon Metagenomics"
 ---
 
 ```{=html}
@@ -146,7 +136,7 @@ The complete dataset (approximately 1.5GB uncompressed) is available [here](http
 #download the file
 download.file(
   url = "https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip",
-  destfile = "data/miseqsopdata.zip")
+  destfile = here::here("data/miseqsopdata.zip"))
 
 #unzip the to get individual fastq files
 
@@ -154,7 +144,7 @@ unzip("miseqsopdata.zip")
 
 #record path to data
 
-data_dir <-"data/MiSeq_SOP"
+data_dir <- here::here("data/MiSeq_SOP")
 
 ```
 
@@ -169,21 +159,21 @@ data_dir <-"data/MiSeq_SOP"
 
 if(length(which(grepl("MiSeq_SOP", list.dirs(getwd(), recursive = F)))) > 0){
     #If the dir is present record it
-    data_dir <-"data/MiSeq_SOP"
+    data_dir <- here::here("data/MiSeq_SOP")
   
     } else{
       #If the zip file is there but no dir unzip and record
     if("miseqsopdata.zip" %in% list.files(getwd())){
       unzip("miseqsopdata.zip")
-      data_dir <-"data/MiSeq_SOP"
+      data_dir <- here::here("data/MiSeq_SOP")
       } else{
         #If nothing download, unzip record
         download.file(
           url = "https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip", 
-          destfile = "data/miseqsopdata.zip")
+          destfile = here::here("data/miseqsopdata.zip"))
         
         unzip("miseqsopdata.zip")
-        data_dir <-"data/MiSeq_SOP"}}
+        data_dir <- here::here("data/MiSeq_SOP")}}
 
 ```
 
@@ -208,7 +198,9 @@ The folder contains multiple FASTQ files along with FASTA files and other files 
 
 * The R1 and R2 files starting with "Mock" represent a mock community—a synthetic community with known species composition.
 
->If possible, including such as controls is good practice in sequencing studies because they allow you to evaluate sequencing accuracy against expected results. This particular mock community was constructed from 21 known bacterial strains by the [Human Microbiome Project](https://www.hmpdacc.org/HMMC/). The corresponding HMP FASTA file contains the expected results for comparison.
+::: {.callout-note}
+If possible, including such as controls is good practice in sequencing studies because they allow you to evaluate sequencing accuracy against expected results. This particular mock community was constructed from 21 known bacterial strains by the [Human Microbiome Project](https://www.hmpdacc.org/HMMC/). The corresponding HMP FASTA file contains the expected results for comparison.
+:::
 
 Now let's examine the metadata file, which contains information about the samples you'll analyze.
 
@@ -230,7 +222,7 @@ You'll also need to download the taxonomic reference dataset for sequence annota
 #Taxonomy file
 download.file(
   url = "https://zenodo.org/record/4587955/files/silva_nr99_v138.1_wSpecies_train_set.fa.gz?download=1",
-  destfile = "data/silva_nr99_v138.1_wSpecies_train_set.fa.gz")
+  destfile = here::here(here::here("data/silva_nr99_v138.1_wSpecies_train_set.fa.gz")))
 
 ```
 
@@ -356,8 +348,10 @@ plotQualityProfile(fnFs[1:2])
 This complex figure contains multiple information layers: The grayscale heatmap shows the frequency of each quality score at each base position. The green line indicates mean quality scores per position. Orange lines represent quality score distribution quartiles. The red line shows the proportion of reads extending to each position (cycle 250bp). The function also reports read counts per sample.
 
 ***
-> Remember: During Illumina sequencing, nucleotides are added in cycles, with all sequences growing by one base per cycle. The flat red line is expected since all reads should have the same length. In other platforms without synchronized nucleotide addition and PCR amplification (e.g., Oxford Nanopore), reads can vary in length.
+::: {.callout-note}
+Remember: During Illumina sequencing, nucleotides are added in cycles, with all sequences growing by one base per cycle. The flat red line is expected since all reads should have the same length. In other platforms without synchronized nucleotide addition and PCR amplification (e.g., Oxford Nanopore), reads can vary in length.
 ***
+:::
 
 Forward reads look good, but it's common practice to trim the final nucleotides in Illumina sequences to avoid poorly-controlled errors that can occur there. Although quality profiles don't suggest additional trimming is needed, let's truncate forward reads at position 240 (removing the last 10 nucleotides) when you get to the triming step.
 
@@ -390,16 +384,18 @@ In real-world analysis, you would inspect all files, not just the first two. Mak
 Now that we understand read quality patterns, we can trim low quality bases, and filter low-quality reads. Since the filtering 
 function requires an output destination, let's create a folder for filtered reads.
 
-> **Note: Remember to add the trimmed files (or the filtered folder) to your `.gitignore` file.**
+::: {.callout-note}
+**Note: Remember to add the trimmed files (or the filtered folder) to your `.gitignore` file.**
+:::
 
 ```{r}
 #| label: assigning files
 #| echo: true
 #R1
-filtFs <- file.path("outputs/filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+filtFs <- here::here("outputs/filtered", paste0(sample.names, "_F_filt.fastq.gz"))
 names(filtFs) <- sample.names
 #R2
-filtRs <- file.path("outputs/filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+filtRs <- here::here("outputs/filtered", paste0(sample.names, "_R_filt.fastq.gz"))
 names(filtRs) <- sample.names
 ```
 
@@ -419,7 +415,9 @@ The rm.phix=TRUE removes sequences belonging to Illumina's internal standards. T
 
 ***
 
->**Note: If using UNIX-based OS (e.g., macOS), set multithread=TRUE whenever it appears to parallelize processing. Unfortunately, Windows doesn't support R's parallelized apply functions called internally here.**
+::: {.callout-note}
+**Note: If using UNIX-based OS (e.g., macOS), set multithread=TRUE whenever it appears to parallelize processing. Unfortunately, Windows doesn't support R's parallelized apply functions called internally here.**
+:::
 
 ***
 
@@ -439,20 +437,32 @@ out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
 ```{r}
 #| label: how much was lost 1
 #| echo: true
-#Some reshuffling of the data, get percent of reads left per sample as well as absolute numbers
 out2 <- as.data.frame(out) %>% mutate(prop = (100*(reads.out/reads.in)))
-
-# So far looks good
 head(out2)
+```
 
-#Mean percent of seqs left
+Now let's check the mean percent of sequences left:
+
+```{r}
+#| label: how much was lost mean
+#| echo: true
 mean(out2$prop)
-#Min percent of seqs left
+```
+
+And let's check the minimum percent of sequences left:
+
+```{r}
+#| label: how much was lost min
+#| echo: true
 min(out2$prop)
+```
 
-#But what's the sample with the lowest number of reads?
+But what's the sample with the lowest number of reads? Let's check:
+
+```{r}
+#| label: how much was lost min reads
+#| echo: true
 min(out2$reads.out)
-
 ```
 The first 6 files look good—the minimum proportion of retained sequences is almost 90%, and the sample with the fewest reads has close to 3k sequences. Everything looks solid. Congratulations, you passed the first sanity check!
 
@@ -470,7 +480,7 @@ ASVs also have limitations. Most bacteria have multiple copies of the 16S rRNA g
 
 <br>
 
-#### **Denoising process****
+#### **Denoising process**
 
 To determine ASV numbers in samples, DADA2 must first identify and correct error patterns in the data—essential to prevent inflated richness and diversity estimates. DADA2 uses a parametric error model to study data error rates. The `learnErrors` method learns error models from data by alternating between error rate estimation and sample composition inference until converging on a jointly consistent solution. Like many machine learning problems, the algorithm requires an initial guess, it uses the maximum possible error rates (assuming only the most abundant sequence is correct and all others are errors).
 
@@ -507,7 +517,9 @@ Error rates for each possible substitution (A→C, A→G, etc.) are shown. Point
 
 Now that `DADA2` understands and has corrected error rates, we can assess ASV numbers in samples.
 
->Note that we are assesing the ASVs for the forwared and revers prior to marging because we don't want to marge sequences that don't end up geing biologically relevant (i.e. first we correct and understand the true sequence diversity in the data and only after that marge reads).
+::: {.callout-note}
+Note that we are assesing the ASVs for the forwared and revers prior to marging because we don't want to marge sequences that don't end up geing biologically relevant (i.e. first we correct and understand the true sequence diversity in the data and only after that marge reads).
+:::
 
 
 ```{r}
@@ -619,31 +631,35 @@ Chimeras represent about 21% of merged sequence variants (~300 ASVs reduced to 2
 
 Throughout the workflow, we've removed sequences due to poor quality at multiple steps. What if we removed too many? A general rule of thumb is maintaining a minimum of 1000 reads per sample for reasonable diversity and richness estimates. As a final sanity check, let's examine reads per sample and retention through each step. Outside of trimming, no step should result in massive read loss, not even chimera removal. If such a step exists, this would be a good time to reflect on chosen quality control settings.
 
+First, let's create a function that sums the number of unique occurrences (sequences):
+
 ```{r}
-#| label: track reads
+#| label: track reads func
 #| echo: true
-
-# Function that sums the number of unique occurrences in this case seqs
 getN <- function(x){ 
-  
   sum(getUniques(x))
-  
 }
+```
 
-#Using apply to run the function on all list elements.
+Next, we'll use `apply` to run the function on all list elements to gather our tracking data:
+
+```{r}
+#| label: track reads apply
+#| echo: true
 track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
 
-#adding colnames
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
-
-#Adding row names
 rownames(track) <- sample.names
+```
 
+Finally, let's calculate the proportion kept and display it:
+
+```{r}
+#| label: track reads display
+#| echo: true
 track <- as.data.frame(track) %>% mutate(prop_kept = round(nonchim/input*100,2))
 
 DT::datatable(track)
-
-
 ```
 
 We've averted an existential crisis—the majority of reads per sample were retained (minimum was over 70%) and all samples have above 1000 reads.
@@ -703,7 +719,7 @@ DADA2 authors maintain formatted training FASTA files from multiple datasets. We
 #| label: taxonomy
 #| echo: true
 #| eval: false
-taxa <- assignTaxonomy(seqtab.nochim, "data/silva_nr99_v138.1_wSpecies_train_set.fa.gz", multithread=TRUE)
+taxa <- assignTaxonomy(seqtab.nochim, here::here("data/silva_nr99_v138.1_wSpecies_train_set.fa.gz"), multithread=TRUE)
 
 ```
 
@@ -726,40 +742,45 @@ DT::datatable(taxa2,options = list(scrollX = TRUE, autoWidth = TRUE))
 
 Now let's inspect taxonomic assignments. All ASVs were successfully classified at least to the domain level—all classified as Bacteria, none as unknowns or Eukarya. However, some were classified as cyanobacteria/chloroplast (unexpected in mouse gut) or mitochondria. Let's remove these and merge the workable ASV table with the taxonomy table, filtering out non-prokaryotic sequences.
 
+Let's start by removing non-prokaryotic ASVs and preparing the tables for joining:
+
 ```{r}
-#| label: polish2b
-#Remove non_prokaryotic ASVs
-taxa2 <- taxa2 %>% filter(Family != "Mitochondria") %>% 
-  filter(Order != "Chloroplast")
+#| label: polish2b filter
+taxa2 <- taxa2 %>% filter(Family != "Mitochondria") %>% filter(Order != "Chloroplast")
 
-#Prepare for joining
-taxa3 <- taxa2 %>% mutate(ASVs = row.names(taxa2)) %>% 
-  dplyr::select(ASVs, everything())
+taxa3 <- taxa2 %>% mutate(ASVs = row.names(taxa2)) %>% dplyr::select(ASVs, everything())
+ASV_tbl2 <- ASV_tbl %>% mutate(ASVs=row.names(ASV_tbl)) %>% dplyr::select(ASVs, everything())
+```
 
-ASV_tbl2 <- ASV_tbl %>% mutate(ASVs=row.names(ASV_tbl)) %>%
-  dplyr::select(ASVs, everything())
-  
+Now we join the taxa table. This will be used for analysis outside of phyloseq:
 
-#Join taxa table this will be used for analysis outside of phyloseq
+```{r}
+#| label: polish2b join
 taxa3 <- taxa3 %>% inner_join(ASV_tbl2, by = "ASVs")
+```
 
-#taxa2 will be used for Phyloseq
+`taxa2` will be used for Phyloseq. We also filter the original ASV table:
+
+```{r}
+#| label: polish2b phyloseq
 taxa2 <- taxa2 %>% filter(rownames(taxa2)%in%taxa3$ASVs)
-
-#Filter the original ASV table 
 ASV_tbl <- ASV_tbl %>% filter(row.names(ASV_tbl) %in% taxa3$ASVs)
+```
 
-# Get a table of relative abundance of taxa per sample
-#Since the samples are columns gotta use the sweep function rather than just divide
+Next, we generate a table of relative abundance of taxa per sample. Since the samples are columns, we use the `sweep` function rather than standard division:
 
+```{r}
+#| label: polish2b relative
 taxa3[,(ncol(taxa2)+2):ncol(taxa3)] <- sweep(
   taxa3[,(ncol(taxa2)+2):ncol(taxa3)],2,
   colSums(taxa3[,(ncol(taxa2)+2):ncol(taxa3)]),'/')*100
+```
 
-#Sanity check, do they sum to 100%
+Finally, as a sanity check, do they sum to 100%?
+
+```{r}
+#| label: polish2b sanity
 colSums(taxa3[,(ncol(taxa2)+2):ncol(taxa3)])
-
-
 ```
 
 Now that we've cleaned the ASV table by removing the mock community and non-prokaryotic ASVs, we can clean up the StringSet and export the FASTA file:
@@ -769,11 +790,11 @@ Now that we've cleaned the ASV table by removing the mock community and non-prok
 #| echo: true
 ASV_seqs[names(ASV_seqs)%in%ASV_tbl2$ASVs]
 
-writeXStringSet(ASV_seqs[names(ASV_seqs)%in%ASV_tbl2$ASVs], "outputs/mouse_ASVs.fa")
+writeXStringSet(ASV_seqs[names(ASV_seqs)%in%ASV_tbl2$ASVs], here::here("outputs/mouse_ASVs.fa"))
 
 #lets check that the file is ok
 
-readLines("outputs/mouse_ASVs.fa")[1:10]
+readLines(here::here("outputs/mouse_ASVs.fa"))[1:10]
 
 ```
 
