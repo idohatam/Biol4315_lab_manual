@@ -4,4 +4,4 @@ This is the laboratory manual for **Biol 4315: Genomics and Transcriptomics** at
 
 **Author:** Instructor
 
-*(Placeholder for cover image)*
+![](assets/cover.png){width=100% fig-align="center"}
