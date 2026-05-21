@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Lab 3: Genome Assembly and Annotation Basics – Biol 4315: Genomics and Transcriptomics Lab Manual</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lab4/04-lab4.html" rel="next">
+<link href="../lab2_3/02-lab2.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-aa873432a3c62897e6c2091c0d30a948.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab2_3/03-lab3.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Biol 4315: Genomics and Transcriptomics Lab Manual</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/idohatam/Biol4315_lab_manual" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab1/01-lab1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/02-lab2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/03-lab3.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab4/04-lab4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab5/05-lab5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Lab 5: Amplicon Metagenomics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">4</span> <strong>Learning objectives</strong></a></li>
+  <li><a href="#the-setup" id="toc-the-setup" class="nav-link" data-scroll-target="#the-setup"><span class="header-section-number">5</span> <strong>The setup</strong></a>
+  <ul>
+  <li><a href="#reference-download-and-preparation-programmatic-renaming" id="toc-reference-download-and-preparation-programmatic-renaming" class="nav-link" data-scroll-target="#reference-download-and-preparation-programmatic-renaming"><span class="header-section-number">5.1</span> <strong>Reference download and preparation (programmatic renaming)</strong></a></li>
+  </ul></li>
+  <li><a href="#assembly-overview" id="toc-assembly-overview" class="nav-link" data-scroll-target="#assembly-overview"><span class="header-section-number">6</span> <strong>Assembly overview</strong></a></li>
+  <li><a href="#assemble-the-genome" id="toc-assemble-the-genome" class="nav-link" data-scroll-target="#assemble-the-genome"><span class="header-section-number">7</span> <strong>Assemble the genome</strong></a>
+  <ul>
+  <li><a href="#assignment-question-1" id="toc-assignment-question-1" class="nav-link" data-scroll-target="#assignment-question-1"><span class="header-section-number">7.1</span> <strong>Assignment question 1</strong></a></li>
+  </ul></li>
+  <li><a href="#cleaning-up-the-mess-the-concept-of-polishing" id="toc-cleaning-up-the-mess-the-concept-of-polishing" class="nav-link" data-scroll-target="#cleaning-up-the-mess-the-concept-of-polishing"><span class="header-section-number">8</span> <strong>Cleaning up the mess: the concept of polishing</strong></a>
+  <ul>
+  <li><a href="#installing-and-running-medaka" id="toc-installing-and-running-medaka" class="nav-link" data-scroll-target="#installing-and-running-medaka"><span class="header-section-number">8.1</span> <strong>Installing and running Medaka</strong></a></li>
+  </ul></li>
+  <li><a href="#the-final-structure-scaffolding" id="toc-the-final-structure-scaffolding" class="nav-link" data-scroll-target="#the-final-structure-scaffolding"><span class="header-section-number">9</span> <strong>The final structure: scaffolding</strong></a></li>
+  <li><a href="#evaluate-the-assembly" id="toc-evaluate-the-assembly" class="nav-link" data-scroll-target="#evaluate-the-assembly"><span class="header-section-number">10</span> <strong>Evaluate the assembly</strong></a>
+  <ul>
+  <li><a href="#evaluating-the-assembly-using-busco" id="toc-evaluating-the-assembly-using-busco" class="nav-link" data-scroll-target="#evaluating-the-assembly-using-busco"><span class="header-section-number">10.1</span> <strong>Evaluating the assembly using <code>BUSCO</code></strong></a>
+  <ul>
+  <li><a href="#assignment-question-2" id="toc-assignment-question-2" class="nav-link" data-scroll-target="#assignment-question-2"><span class="header-section-number">10.1.1</span> <strong>Assignment question 2</strong></a></li>
+  </ul></li>
+  <li><a href="#evaluating-the-assembly-with-quast" id="toc-evaluating-the-assembly-with-quast" class="nav-link" data-scroll-target="#evaluating-the-assembly-with-quast"><span class="header-section-number">10.2</span> <strong>Evaluating the assembly with <code>quast</code></strong></a>
+  <ul>
+  <li><a href="#assignment-question-3" id="toc-assignment-question-3" class="nav-link" data-scroll-target="#assignment-question-3"><span class="header-section-number">10.2.1</span> <strong>Assignment question 3</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#annotating-assemblies-using-alignment-and-visualization-tools" id="toc-annotating-assemblies-using-alignment-and-visualization-tools" class="nav-link" data-scroll-target="#annotating-assemblies-using-alignment-and-visualization-tools"><span class="header-section-number">11</span> <strong>Annotating assemblies using alignment and visualization tools</strong></a>
+  <ul>
+  <li><a href="#why-align-the-cdss-to-the-contig" id="toc-why-align-the-cdss-to-the-contig" class="nav-link" data-scroll-target="#why-align-the-cdss-to-the-contig"><span class="header-section-number">11.1</span> <strong>Why align the CDSs to the contig?</strong></a></li>
+  <li><a href="#assignment-question-4-data-prep" id="toc-assignment-question-4-data-prep" class="nav-link" data-scroll-target="#assignment-question-4-data-prep"><span class="header-section-number">11.2</span> <strong>Assignment question 4: data prep</strong></a></li>
+  <li><a href="#aligning-your-assembly-to-chromosome-1" id="toc-aligning-your-assembly-to-chromosome-1" class="nav-link" data-scroll-target="#aligning-your-assembly-to-chromosome-1"><span class="header-section-number">11.3</span> <strong>Aligning your assembly to chromosome 1</strong></a>
+  <ul>
+  <li><a href="#using-samtools-to-sort-the-alignment-by-region-and-converting-it-to-a-bam-file" id="toc-using-samtools-to-sort-the-alignment-by-region-and-converting-it-to-a-bam-file" class="nav-link" data-scroll-target="#using-samtools-to-sort-the-alignment-by-region-and-converting-it-to-a-bam-file"><span class="header-section-number">11.3.1</span> <strong>Using <code>samtools</code> to sort the alignment by region and converting it to a bam file</strong></a></li>
+  <li><a href="#visualizing-the-alignment-to-chromosome-1-with-granges" id="toc-visualizing-the-alignment-to-chromosome-1-with-granges" class="nav-link" data-scroll-target="#visualizing-the-alignment-to-chromosome-1-with-granges"><span class="header-section-number">11.3.2</span> <strong>Visualizing the alignment to chromosome 1 with GRanges</strong></a>
+  <ul>
+  <li><a href="#assignment-question-5" id="toc-assignment-question-5" class="nav-link" data-scroll-target="#assignment-question-5"><span class="header-section-number">11.3.2.1</span> <strong>Assignment question 5</strong></a></li>
+  </ul></li>
+  <li><a href="#assignment-question-6-garbing-the-longest-contig" id="toc-assignment-question-6-garbing-the-longest-contig" class="nav-link" data-scroll-target="#assignment-question-6-garbing-the-longest-contig"><span class="header-section-number">11.3.3</span> <strong>Assignment question 6: garbing the longest contig</strong></a></li>
+  <li><a href="#aligning-cdss-to-the-longest-contig" id="toc-aligning-cdss-to-the-longest-contig" class="nav-link" data-scroll-target="#aligning-cdss-to-the-longest-contig"><span class="header-section-number">11.3.4</span> <strong>Aligning CDSs to the longest contig</strong></a></li>
+  <li><a href="#assignment-question-7-getting-bam-and-bai-files-for-visualization" id="toc-assignment-question-7-getting-bam-and-bai-files-for-visualization" class="nav-link" data-scroll-target="#assignment-question-7-getting-bam-and-bai-files-for-visualization"><span class="header-section-number">11.3.5</span> <strong>Assignment question 7: getting bam and bai files for visualization</strong></a></li>
+  <li><a href="#assignment-question-8-visualize-cds" id="toc-assignment-question-8-visualize-cds" class="nav-link" data-scroll-target="#assignment-question-8-visualize-cds"><span class="header-section-number">11.3.6</span> <strong>Assignment question 8: visualize CDS</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#youre-all-done" id="toc-youre-all-done" class="nav-link" data-scroll-target="#youre-all-done"><span class="header-section-number">12</span> <strong>You’re all done</strong></a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab2_3/03-lab3.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><br></p>
+<section id="learning-objectives" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> <strong>Learning objectives</strong></h1>
+<details>
+<summary>
+Click to expand
+</summary>
+<p><strong>By the end of this lab you will be able to:</strong></p>
+<ul>
+<li>Understand the basic process and challenges of genome assembly.</li>
+<li>Understand the importance of polishing and scaffolding.</li>
+<li>Use Flye to perform long-read de novo genome assembly and Medaka to polish it.</li>
+<li>Evaluate assemblies using QUAST and BUSCO.</li>
+<li>Interpret common assembly quality metrics.</li>
+<li>Use GRanges for basic annotation-like tasks by mapping known genes to assembled contigs.</li>
+</ul>
+</details>
+<hr>
+</section>
+<section id="the-setup" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>The setup</strong></h1>
+<p>Create a new <code>GitHub</code> repo for this lab.</p>
+<p>In RStudio:</p>
+<ul>
+<li>Create a new R Project with version control and connect it to your <code>GitHub</code> repo.</li>
+<li>Ensure your project contains a <code>data/</code> directory for raw inputs and an <code>outputs/</code> directory for generated results.</li>
+<li>Start a new Quarto document named <code>03-lab3.qmd</code>.</li>
+<li>Make sure to add the <code>data/</code> and <code>outputs/</code> folders to your <code>.gitignore</code> file.</li>
+</ul>
+<p>Commit these files immediately with a message like <code>Initial commit</code>.</p>
+<p>On your terminal, pull the Docker image for <code>quast</code>, which along with <code>BUSCO</code> will be used to evaluate the quality of the genome assembly you will do today.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, use <code>conda</code> to install the sequence aligner <code>minimap2</code> if not installed on your computer. You can check if it is installed by running <code>minimap2 -h</code> in your bash terminal. <code>minimap2</code> does not require a virtual environment.</p>
+<p>Also, load the following packages in your R session:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"IRanges"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"GenomicRanges"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"Rsamtools"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"GenomicAlignments"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"Gviz"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Lastly, download the yeast reference genome, along with its GFF file (a file that contains the list of gene annotations) to be used for the assembly check, as well as the CDS containing FASTA file. This should be done in the terminal.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the reference genome from refseq</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna.gz</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the genome annotation file from refseq</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.gff.gz</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the cds containing fasta file from refseq</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ https://ftp.ncbi.nlm.nih.gov/genomes/refseq/fungi/Saccharomyces_cerevisiae/latest_assembly_versions/GCF_000146045.2_R64/GCF_000146045.2_R64_cds_from_genomic.fna.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="reference-download-and-preparation-programmatic-renaming" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="reference-download-and-preparation-programmatic-renaming"><span class="header-section-number">5.1</span> <strong>Reference download and preparation (programmatic renaming)</strong></h2>
+<p>The NCBI <code>RefSeq</code> reference genome uses IDs like <code>NC_001133.9</code>, but genome browsers (and <code>Gviz</code>) prefer UCSC conventions like <code>chrI</code> or <code>chr1</code>. To ensure our entire workflow is reproducible and that our <code>Gviz</code> visualization plots perfectly, we must “fix” our reference headers before we proceed.</p>
+<p>Here we will use an R chunk to programmatically rename the chromosomes to match UCSC standards. Notice that we use an <code>if-else</code> statement to verify the chromosome count before renaming!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Uncompress and Read the raw NCBI file as simple text</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">gzfile</span>(<span class="st">"data/GCF_000146045.2_R64_genomic.fna.gz"</span>, <span class="st">"rt"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ygen <span class="ot">&lt;-</span> <span class="fu">readLines</span>(con)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">close</span>(con)  </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Define the new UCSC-style headers (chrI through chrXVI + chrM)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>new_headers <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">"&gt;chr"</span>, <span class="fu">as.roman</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>)), <span class="st">"&gt;chrM"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Find and Replace</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>header_lines <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"&gt;"</span>, ygen)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at the header for chromosome 1 before replacing</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ygen[header_lines[<span class="dv">1</span>]])</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Safety Check: Yeast has 16 nuclear chromosomes + 1 mitochondrial</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(header_lines) <span class="sc">==</span> <span class="dv">17</span>) {</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  ygen[header_lines] <span class="ot">&lt;-</span> new_headers</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"After replacement:"</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(ygen[header_lines[<span class="dv">1</span>]])</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">writeLines</span>(ygen, <span class="st">"data/S288C_UCSC.fna"</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">"SUCCESS: Reference renamed to UCSC standards."</span>)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"Error: Chromosome count mismatch! Check your input file."</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>One final note before you begin:</strong> the assignment questions for this lab are interspersed throughout the lab. There are 8 questions, make sure to answer all of them.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="assembly-overview" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> <strong>Assembly overview</strong></h1>
+<p>A genome assembly is the process of piecing together the full DNA sequence from sequencing reads. Long reads (like those from Oxford Nanopore) simplify this task because they provide more contiguous information. However, they also tend to have higher error rates compared to short reads.</p>
+<p>In this lab, you’ll assemble a small dataset of Oxford Nanopore reads from a <em>Saccharomyces cerevisiae</em> isolate — the same strain you worked with in the previous lab. The dataset has low coverage, which will affect the quality of your assembly.</p>
+<p>Important concepts:</p>
+<ul>
+<li><p><strong>Coverage</strong> - How many times, on average, each position in the genome is represented by a read. For example, 30× coverage means each base is represented, on average, by 30 different reads. High coverage improves the ability to generate a consensus sequence that corrects for sequencing or PCR errors.</p></li>
+<li><p><strong>Contiguity (e.g., number of contigs, N50)</strong> - A measure of how fragmented the assembly is. One common metric is N50, which indicates that 50% of the assembled genome is contained in contigs that are at least that length. As a rule of thumb, a high N50 and a small number of contigs indicate a more contiguous (i.e., less fragmented) assembly.</p></li>
+<li><p><strong>Completeness</strong> - A measure of how much of the expected genome content is present in the assembly. This is often assessed both by comparing the assembly size to expected size based on a reference genome, and whether key conserved genes (e.g., using <code>BUSCO</code>) are detected. For example, a complete assembly of <em>S. cerevisiae</em> should contain nearly all expected genes for that species and be roughly 12Mb long.</p></li>
+</ul>
+<hr>
+</section>
+<section id="assemble-the-genome" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> <strong>Assemble the genome</strong></h1>
+<p>You will assemble the genome using <code>Flye</code>, a <em>de novo</em> assembler designed specifically for long noisy reads, such as those generated by Oxford Nanopore or PacBio sequencing platforms. It uses a repeat graph approach to assemble genomes, which allows it to handle complex repeat structures more effectively than traditional assemblers. <code>Flye</code> performs well on both low- and high-coverage datasets and is widely used in microbial, eukaryotic, and metagenomic projects.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A <em>de novo</em> assembler is a tool that assembles sequencing reads into a genome without using a reference genome. It builds the sequence entirely from scratch, based only on overlaps and patterns in the reads themselves.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure the output directory exists</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/flye_output</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Flye assembler, note the expected genome size</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">flye</span> <span class="at">--nano-raw</span> data/ERR1539006.fastq.gz <span class="at">--out-dir</span> outputs/flye_output <span class="at">--threads</span> 8 <span class="at">--genome-size</span> 12m</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>The <code>--nano-raw</code> flag denotes we are using raw nanopore reads with old sequencing chemistry.</li>
+<li>The <code>--threads</code> flag denotes number of CPU cores to use, here 8.</li>
+<li>The <code>--genome-size</code> flag is where the expected genome size is specified. Here 12Mb which is the expected size of the <em>S. cerevisiae</em> genome.</li>
+</ul>
+<p>Once done, your assembled genome will be in <code>outputs/flye_output/assembly.fasta</code>, and a summary of the assembly process and stats will be in <code>outputs/flye_output/flye.log</code> but also outputted to terminal.</p>
+<section id="assignment-question-1" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="assignment-question-1"><span class="header-section-number">7.1</span> <strong>Assignment question 1</strong></h2>
+<p>In your document, have an R code chunk that tabulates the alignment statistics, make sure that the table shows the total length of the assembly, the N50, the number of contigs, largest contig and coverage. Based on that, would you expect to have a complete genome? Would you say that the coverage is adequate (3 marks)?</p>
+<hr>
+</section>
+</section>
+<section id="cleaning-up-the-mess-the-concept-of-polishing" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> <strong>Cleaning up the mess: the concept of polishing</strong></h1>
+<p><em>De novo</em> assembly, especially with noisy long reads, is a messy business. Even if the assembler successfully finds the correct <em>order</em> of the reads to build a contig, the individual letters (A, C, T, G) within that sequence might still be wrong due to sequencing errors. To fix this, we use polishing.</p>
+<p>Think of polishing like running a spell-checker over a manuscript you just finished writing. The paragraphs are in the correct order, but there are typos everywhere. Polishing algorithms take the original reads, map them back to your newly built “draft” assembly, and look at the vertical stack of bases at every single position. If the majority of your reads disagree with the draft assembly at a certain spot, the polisher “outvotes” the draft and corrects the sequence.</p>
+<p>Flye has its own built-in polishing algorithm that runs by default at the end of the assembly process. For expediency in this lab, we’ll use just the default single round of Flye polishing. However, to truly get a high-quality consensus sequence, we need to bring in specialized tools.</p>
+<p>To take our assembly to the “Gold Standard,” we will use Medaka. Medaka is a polisher developed directly by Oxford Nanopore. Unlike simple majority-voting algorithms, Medaka utilizes a Neural Network (AI) trained heavily on the physical properties of the nanopore itself. It recognizes and fixes the systematic error patterns inherent to the technology.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>A note on our dataset:</strong> Because we are working with a very old and noisy ONT dataset for this exercise, you will likely observe massive error rates reported during the Flye polishing round. I want to be entirely transparent with you: this is expected and is a direct consequence of the dataset’s quality and age, not a flaw in your workflow.</p>
+<p>For your own course project, working with modern chemistry, you should expect to run <strong>5 rounds of Flye internal polishing</strong> followed by <strong>2 rounds of Medaka</strong>. Additionally, for your own project data, you must carefully consult the Medaka documentation to select the appropriate model flag (<code>-m</code>), as this depends heavily on the specific ONT chemistry used for sequencing.</p>
+</div>
+</div>
+<section id="installing-and-running-medaka" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="installing-and-running-medaka"><span class="header-section-number">8.1</span> <strong>Installing and running Medaka</strong></h2>
+<p>Let’s set up Medaka using conda. This creates an environment containing all the necessary dependencies.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> medaka_final <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="at">-c</span> nanoporetech medaka python=3.10 <span class="at">-y</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate medaka_final</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Troubleshooting (The “Mac Lab” Fix)</strong> If you encounter errors creating the environment or running Medaka on our ARM64 lab computers, run the following to force osx-64 architecture for compatibility instead:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">CONDA_SUBDIR</span><span class="op">=</span>osx-64 <span class="ex">conda</span> create <span class="at">-n</span> medaka_final <span class="at">-c</span> conda-forge <span class="at">-c</span> bioconda <span class="at">-c</span> nanoporetech medaka python=3.10 <span class="at">-y</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate medaka_final</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge cffi <span class="at">-y</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<p>Once installed, we will use it to polish our draft assembly. We will perform two rounds of polishing for this exercise. Be sure to create your output directories!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Activate your environment</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate medaka_final</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure directories exist</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/medaka_round1 outputs/medaka_round2</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Round 1</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">medaka_consensus</span> <span class="at">-i</span> data/ERR1539006.fastq.gz <span class="at">-d</span> outputs/flye_output/assembly.fasta <span class="at">-o</span> outputs/medaka_round1 <span class="at">-t</span> 8</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Round 2</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="ex">medaka_consensus</span> <span class="at">-i</span> data/ERR1539006.fastq.gz <span class="at">-d</span> outputs/medaka_round1/consensus.fasta <span class="at">-o</span> outputs/medaka_round2 <span class="at">-t</span> 8</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Your polished assembly will be located at <code>outputs/medaka_round2/consensus.fasta</code>. We will use this polished sequence going forward.</p>
+<hr>
+</section>
+</section>
+<section id="the-final-structure-scaffolding" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> <strong>The final structure: scaffolding</strong></h1>
+<p>You’ve likely noticed that our assembly isn’t just one continuous piece of DNA per chromosome. It’s broken into multiple fragments called <strong>contigs</strong>. To turn these isolated islands of sequence into a finished, chromosome-level genome, we need a process called <strong>scaffolding</strong>.</p>
+<p>Scaffolding is the process of figuring out the relative orientation and order of these contigs and connecting them together. Because we don’t know the exact sequence of the DNA bridging the contigs, the assembler fills these gaps with strings of the letter <strong>N</strong>.</p>
+<p>Due to the quality, age, and coverage of our example dataset, we will not be performing scaffolding in this lab exercise. The fragmentation is simply too high for it to be pedagogically useful here.</p>
+<p>However, do not ignore scaffolding! For your own course project, pending the quality and coverage of your initial assembly, I strongly redirect you to consider scaffolding tools (like RagTag) to elevate your assembly from a collection of contigs to a cohesive genome.</p>
+<hr>
+</section>
+<section id="evaluate-the-assembly" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> <strong>Evaluate the assembly</strong></h1>
+<p>You will evaluate the polished assembly using two tools: <code>quast</code> and <code>BUSCO</code>. <code>quast</code> is used to check and compare genome assemblies. It provides rudimentary metrics for contiguity such as N50 and the number of contigs, along with metrics that evaluate the accuracy of the assembly such as misassemblies.</p>
+<p><code>BUSCO</code> is used to evaluate the completeness of an assembly. It identifies the presence or absence of highly conserved, single-copy genes (orthologs) in the assembly, compared to a reference set for a specific lineage (in your case saccharomycetaceae). A high <code>BUSCO</code> score indicates a more complete representation of the expected gene content for a given organism.</p>
+<p>The score is made of several components: - <strong>C</strong> - Level of completeness made up of: <strong>S</strong> (found in single copy as expected) and <strong>D</strong> (duplicated - appeared more than once. Could indicate assembly redundancy or real duplication.) - <strong>F</strong> - Fragmented. Partial matches. May reflect incomplete assembly or gene breakage/partial deletions. - <strong>M</strong> - Missing. Not found. Could be due to deletion, divergence, or poor assembly.</p>
+<section id="evaluating-the-assembly-using-busco" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="evaluating-the-assembly-using-busco"><span class="header-section-number">10.1</span> <strong>Evaluating the assembly using <code>BUSCO</code></strong></h2>
+<p>Remember that <code>BUSCO</code> will be run using Docker, so make sure that Docker Desktop is active on your Mac. First, make sure you create the directory where the output will go.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/busco_output</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/busco_output</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="dt">\</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> <span class="st">"</span><span class="va">$PWD</span><span class="st">"</span>:/data <span class="dt">\</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-w</span> /data <span class="dt">\</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  ezlabgva/busco:v6.0.0_cv1 <span class="dt">\</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  busco <span class="at">-i</span> outputs/medaka_round2/consensus.fasta <span class="at">-o</span> outputs/busco_output <span class="at">-l</span> saccharomycetaceae_odb12 <span class="at">-m</span> genome <span class="at">-c</span> 8</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><code>-v "$PWD":/data</code> mounts the current working directory into the container as <code>/data</code>.</li>
+<li><code>-w /data</code> ensures the container operates inside the mounted folder.</li>
+<li><code>-c</code> represents the number of cores, in this case you will use 8.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>-l</code> is for lineage. Since we know the sample is a yeast (Saccharomyces), you will use the saccharomycetaceae_odb12 as reference. <code>BUSCO</code> also has the ability to try and identify the lineage of the submitted assembly using the <code>--auto-lineage-euk</code> flag. While useful, specifying the lineage is more reliable and saves runtime.</p>
+</div>
+</div>
+<section id="assignment-question-2" class="level3" data-number="10.1.1">
+<h3 data-number="10.1.1" class="anchored" data-anchor-id="assignment-question-2"><span class="header-section-number">10.1.1</span> <strong>Assignment question 2</strong></h3>
+<p>The <code>BUSCO</code> reports should be found under <code>outputs/busco_output</code>. Open the text file with lineage specific results, and answer the following:</p>
+<ul>
+<li>What were the <code>BUSCO</code> scores? Given the coverage do you think they are good (2 marks)?</li>
+<li>What was the N50 compared to the <code>flye</code> calculated one (1 mark)?</li>
+<li>What was the total assembly length (1 mark)?</li>
+</ul>
+</section>
+</section>
+<section id="evaluating-the-assembly-with-quast" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="evaluating-the-assembly-with-quast"><span class="header-section-number">10.2</span> <strong>Evaluating the assembly with <code>quast</code></strong></h2>
+<p><code>quast</code> will also be run using Docker. Before running QUAST, make sure you have unzipped your reference genomes and you supply the properly formatted UCSC standard <code>S288C_UCSC.fna</code> file!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="at">-k</span> data/GCF_000146045.2_R64_genomic.gff.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/quast_output</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> outputs/quast_output</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">-v</span> <span class="st">"</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">"</span>:/data <span class="at">-w</span> /data quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2 <span class="dt">\</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  quast.py outputs/medaka_round2/consensus.fasta <span class="dt">\</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-r</span> data/S288C_UCSC.fna <span class="dt">\</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-g</span> data/GCF_000146045.2_R64_genomic.gff <span class="dt">\</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> outputs/quast_output</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>The <code>-r</code> argument specifies the reference genome to which the assembly is compared. In this case, you will use the properly-formatted RefSeq reference genome for <em>S. cerevisiae</em>. A RefSeq genome is a curated, non-redundant, and annotated reference genome sequence maintained by NCBI.</li>
+<li>The <code>-g</code> argument specifies gene annotations by providing the GFF file for the reference genome. GFF stands for General Feature Format. It is a tab-delimited text file that describes genomic features.</li>
+<li>The <code>-o</code> argument specifies the output directory where <code>quast</code> will write its reports.</li>
+</ul>
+<section id="assignment-question-3" class="level3" data-number="10.2.1">
+<h3 data-number="10.2.1" class="anchored" data-anchor-id="assignment-question-3"><span class="header-section-number">10.2.1</span> <strong>Assignment question 3</strong></h3>
+<p>Open the <code>quast</code> report:</p>
+<ul>
+<li>What was the genome fraction how does it compare to <code>BUSCO</code> (2 marks)?</li>
+<li>What was the duplication ratio (1 mark)?</li>
+<li>What was the level of misassemblies and what is the length of the misassembled contigs? What does it tell you about how well the reference genome represents the genomic diversity of the species <em>S. cerevisiae</em> (3 marks)?</li>
+</ul>
+<hr>
+</section>
+</section>
+</section>
+<section id="annotating-assemblies-using-alignment-and-visualization-tools" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> <strong>Annotating assemblies using alignment and visualization tools</strong></h1>
+<p>Next, you will align the contigs resulting from the genome assembly to the reference genome, and then align CDSs from the reference genome back to the contigs.</p>
+<p>Aligning assembled contigs to a reference genome allows us to evaluate the structure and quality of the assembly. This step helps answer key questions like: * Which parts of the genome were recovered? * Are the contigs in the correct order and orientation? * Do the contigs cover important genomic features, like genes or regulatory regions?</p>
+<p>By mapping contigs to a known reference, we can also detect structural differences, identify potential misassemblies, and gain biological insights.</p>
+<section id="why-align-the-cdss-to-the-contig" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="why-align-the-cdss-to-the-contig"><span class="header-section-number">11.1</span> <strong>Why align the CDSs to the contig?</strong></h2>
+<p>Aligning the coding DNA sequences (CDSs) from a trusted reference genome to your assembled contigs allows you to annotate potential genes in your assembly. This helps identify what functional elements are present and where they are located. Even if your assembly is incomplete or fragmented, mapping known CDSs can reveal which parts of the genome were successfully recovered.</p>
+</section>
+<section id="assignment-question-4-data-prep" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="assignment-question-4-data-prep"><span class="header-section-number">11.2</span> <strong>Assignment question 4: data prep</strong></h2>
+<p>For the next part you will work only with the sequence of chromosome 1, to reduce CPU time.</p>
+<ul>
+<li>Write a code chunk that extracts the sequence of chromosome 1 (which we renamed to <code>chrI</code>) from your <code>data/S288C_UCSC.fna</code> file and saves it as <code>outputs/R64_chr1.fna</code> (2 marks).</li>
+<li>Make sure the chunk is on your Quarto file, and that you run it (1 mark).</li>
+<li>Make sure the <code>R64_chr1.fna</code> is in your <code>.gitignore</code> as well (1 mark).</li>
+</ul>
+</section>
+<section id="aligning-your-assembly-to-chromosome-1" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="aligning-your-assembly-to-chromosome-1"><span class="header-section-number">11.3</span> <strong>Aligning your assembly to chromosome 1</strong></h2>
+<p>Next you will use <code>minimap2</code> to align the contigs to chromosome 1 extracted from the reference genome. The <code>-ax asm5</code> argument is used when aligning closely related sequences, such as contigs to a reference genome, and requires a minimum of 95% sequence identity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">minimap2</span> <span class="at">-t</span> 8 <span class="at">-ax</span> asm5 outputs/R64_chr1.fna outputs/medaka_round2/consensus.fasta <span class="op">&gt;</span> outputs/contig_vs_chr1.sam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The output here is a <code>sam</code> (sequence alignment map) file, which is a tab delimited text file that specifies the coordinates of each aligned sequence relative to the reference.</p>
+</div>
+</div>
+<section id="using-samtools-to-sort-the-alignment-by-region-and-converting-it-to-a-bam-file" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="using-samtools-to-sort-the-alignment-by-region-and-converting-it-to-a-bam-file"><span class="header-section-number">11.3.1</span> <strong>Using <code>samtools</code> to sort the alignment by region and converting it to a bam file</strong></h3>
+<p>In order to visualize the alignment, it needs to be sorted by coordinates so that fragments that are close to each other will indeed appear like that in the plot. The human-readable <code>sam</code> file will also be converted to a binary alignment map (<code>bam</code>) file.</p>
+<ol type="1">
+<li>Convert the <code>sam</code> file to a <code>bam</code> file.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> view <span class="at">-bS</span> outputs/contig_vs_chr1.sam <span class="op">&gt;</span> outputs/alignment.bam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li>Sort the aligned contigs based on their coordinates along chromosome 1.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> sort outputs/alignment.bam <span class="at">-o</span> outputs/alignment.sorted.bam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Index the sorted bam file.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">samtools</span> index outputs/alignment.sorted.bam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>Creates an index file (<code>.bai</code>) for the sorted BAM.</li>
+<li>Indexing allows fast access to specific regions, which is essential for genome browsers and R packages like <code>Gviz</code>.</li>
+</ul>
+</section>
+<section id="visualizing-the-alignment-to-chromosome-1-with-granges" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="visualizing-the-alignment-to-chromosome-1-with-granges"><span class="header-section-number">11.3.2</span> <strong>Visualizing the alignment to chromosome 1 with GRanges</strong></h3>
+<p>Next you will visualize the aligned contigs against the chromosome using GRanges. But before we just plot things blindly, we need to actively discover where our data is mapped to.</p>
+<p>To build our browser, we need to know exactly where our data is located. We use <strong>Rsamtools</strong> to look at the BAM file’s “table of contents” and <strong>GenomicAlignments</strong> to find the specific range of coordinates where our reads actually map.</p>
+<ol type="1">
+<li>Import the <code>bam</code> file and convert it into a GRanges object. A genome browser requires a window (a <code>from</code> and a <code>to</code> coordinate). To find where our data lives, we read the alignments into a <code>GRanges</code> object and calculate the overall range.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BAM file path</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>bam_file <span class="ot">&lt;-</span> <span class="st">"outputs/alignment.sorted.bam"</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Open connection to BAM file</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>bam <span class="ot">&lt;-</span> <span class="fu">BamFile</span>(bam_file)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Read all alignments</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>alns <span class="ot">&lt;-</span> <span class="fu">readGAlignments</span>(bam)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to GRanges object</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>gr_alns <span class="ot">&lt;-</span> <span class="fu">granges</span>(alns)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the start and end boundaries of all mapped contigs combined</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(gr_alns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>GRanges object with 2 ranges and 0 metadata columns:
+      seqnames      ranges strand
+         &lt;Rle&gt;   &lt;IRanges&gt;  &lt;Rle&gt;
+  [1]     chrI    1-230218      +
+  [2]     chrI 1566-182959      -
+  -------
+  seqinfo: 1 sequence from an unspecified genome</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Peek at the individual contig boundaries</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ranges</span>(gr_alns)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>IRanges object with 112 ranges and 0 metadata columns:
+            start       end     width
+        &lt;integer&gt; &lt;integer&gt; &lt;integer&gt;
+    [1]         1    230218    230218
+    [2]      1534      2252       719
+    [3]      1534      2252       719
+    [4]      1566      2185       620
+    [5]      1807      2197       391
+    ...       ...       ...       ...
+  [108]    187377    187763       387
+  [109]    188064    189566      1503
+  [110]    207001    226868     19868
+  [111]    227524    228577      1054
+  [112]    228674    229142       469</code></pre>
+</div>
+</div>
+<p>Now that we have audited the boundaries of our alignments, we can construct the browser tracks! We can simply pass the minimum and maximum boundaries we discovered above dynamically.</p>
+<ol start="2" type="1">
+<li>Create “tracks” showing the alignment. Notice we specify <code>chrI</code> as the chromosome, consistent with our UCSC renaming step.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>aln_track <span class="ot">&lt;-</span> <span class="fu">AnnotationTrack</span>(gr_alns, <span class="at">name =</span> <span class="st">"Contigs"</span>, <span class="at">genome =</span> <span class="st">"sacCer3"</span>, <span class="at">chromosome =</span> <span class="st">"chrI"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add genome axis for scale</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>axis_track <span class="ot">&lt;-</span> <span class="fu">GenomeAxisTrack</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Visualize the alignment.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTracks</span>(<span class="fu">list</span>(axis_track, aln_track),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">from =</span> <span class="fu">min</span>(<span class="fu">start</span>(gr_alns)),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">to =</span> <span class="fu">max</span>(<span class="fu">end</span>(gr_alns)),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">main =</span> <span class="st">"Contig Alignments to Chromosome 1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="03-lab3_files/figure-html/viz1-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Alignemtn of synthetic data derived from Chr 1 against chr 1, the largest “contig” is actually chr 1 itself. The top ruller is the genomic range of chr1, blue arrows are the contigs. Note that your figure will look different as it will not use synthetic data</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Congrats!
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You just built your own genome browser! While not as fancy or interactive as the UCSC genome browser or <code>IVG</code>, this R-based version is still incredibly powerful. It allows for customization, automation, and seamless integration with your analysis pipeline — all within a reproducible script.</p>
+</div>
+</div>
+<section id="assignment-question-5" class="level4" data-number="11.3.2.1">
+<h4 data-number="11.3.2.1" class="anchored" data-anchor-id="assignment-question-5"><span class="header-section-number">11.3.2.1</span> <strong>Assignment question 5</strong></h4>
+<ul>
+<li>How many contigs did you have aligning to chromosome 1 (1 mark)?</li>
+<li>Using the functions <code>range()</code> and <code>ranges()</code> try and estimate how much of chromosome 1 does your contigs cover, is it in line with the alignment results reported by <code>QUAST</code> (2 marks)?</li>
+<li>Make sure to have the plot in your document (1 mark).</li>
+</ul>
+</section>
+</section>
+<section id="assignment-question-6-garbing-the-longest-contig" class="level3" data-number="11.3.3">
+<h3 data-number="11.3.3" class="anchored" data-anchor-id="assignment-question-6-garbing-the-longest-contig"><span class="header-section-number">11.3.3</span> <strong>Assignment question 6: garbing the longest contig</strong></h3>
+<p>Before proceeding with annotation:</p>
+<ul>
+<li>Write a code chunk that extracts the longest contig from your polished <code>consensus.fasta</code> file and saves it as <code>outputs/longest_contig.fasta</code>.</li>
+<li>The code is included in your assignment file.</li>
+<li>The resulting FASTA file is committed and pushed to your GitHub repository.</li>
+</ul>
+<p>Why are we doing this? Working with just the longest contig reduces computational load and simplifies the next steps, where you’ll align known coding sequences (CDSs) to your assembly as a first pass at annotation.</p>
+</section>
+<section id="aligning-cdss-to-the-longest-contig" class="level3" data-number="11.3.4">
+<h3 data-number="11.3.4" class="anchored" data-anchor-id="aligning-cdss-to-the-longest-contig"><span class="header-section-number">11.3.4</span> <strong>Aligning CDSs to the longest contig</strong></h3>
+<ol type="1">
+<li>Use <code>minimap2</code> to align the CDS containing fasta file to the longest contig. Remember to unzip it first.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="at">-k</span> data/GCF_000146045.2_R64_cds_from_genomic.fna.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">minimap2</span> <span class="at">-ax</span> splice <span class="at">-uf</span> <span class="at">--secondary</span><span class="op">=</span>no outputs/longest_contig.fasta data/GCF_000146045.2_R64_cds_from_genomic.fna <span class="op">&gt;</span> outputs/cds_aln.sam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>The <code>-ax splice</code> argument uses the splice-aware preset, which is designed for aligning spliced transcripts (like mRNAs or CDSs) to a genome.</li>
+<li>The <code>-uf</code> flag indicates that the query sequences are full-length cDNA (or CDSs), which helps minimap2 model splicing more accurately.</li>
+<li>The <code>--secondary=no</code> argument suppresses secondary alignments.</li>
+</ul>
+</section>
+<section id="assignment-question-7-getting-bam-and-bai-files-for-visualization" class="level3" data-number="11.3.5">
+<h3 data-number="11.3.5" class="anchored" data-anchor-id="assignment-question-7-getting-bam-and-bai-files-for-visualization"><span class="header-section-number">11.3.5</span> <strong>Assignment question 7: getting bam and bai files for visualization</strong></h3>
+<ul>
+<li>Write a code chunk that converts your <code>cds_aln.sam</code> file to a sorted and indexed <code>BAM</code> file for visualization (2 marks).</li>
+<li>Include the code in your document (1 mark).</li>
+<li>Ensure the final <code>BAM</code> is named <code>cds_aln.sorted.bam</code> (1 mark).</li>
+<li>Ensure that the Bam and Bai files are in the <code>.gitignore</code> file (1 mark).</li>
+<li>Commit and push your changes to your GitHub repository (1 mark).</li>
+</ul>
+</section>
+<section id="assignment-question-8-visualize-cds" class="level3" data-number="11.3.6">
+<h3 data-number="11.3.6" class="anchored" data-anchor-id="assignment-question-8-visualize-cds"><span class="header-section-number">11.3.6</span> <strong>Assignment question 8: visualize CDS</strong></h3>
+<p>Using your sorted <code>BAM</code> file, create <code>Gviz</code> tracks that represent the aligned CDSs.</p>
+<ul>
+<li>Remember to read the alignment and convert it into GRanges.</li>
+<li>Remember working with annotation tracks.</li>
+<li>Remember to plot the alignment track.</li>
+<li>Remember to include your code and the plot in the document.</li>
+<li>Commit and push changes to <code>GitHub</code>.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Contig naming scheme
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that <code>Gviz</code> expect the naming scheme of your reference data, i.e.&nbsp;whatever you align against, to be named according to the UCSC genome browser convention. Since your contigs will not be, make sure to set <code>options(ucscChromosomeNames=FALSE)</code> before you use the function <code>AlignmentTrack()</code> with the bam file you created for this part. Note as well that this is a global setting so it is worth while to make sure that you set it back to <code>TRUE</code> if you wish to re-plot the alignment against chromosome 1.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="youre-all-done" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> <strong>You’re all done</strong></h1>
+<p>Hope you had fun assembling and annotating genomes. This lab will become very useful once you start working on your project. Next lab will deal with transcriptomics data.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lab2_3/02-lab2.html" class="pagination-link" aria-label="Lab 2: Quality Check, Processing &amp; Alignment">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lab4/04-lab4.html" class="pagination-link" aria-label="Lab 4: Transcriptomics">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab2_3/03-lab3.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

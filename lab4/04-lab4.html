@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Lab 4: Transcriptomics – Biol 4315: Genomics and Transcriptomics Lab Manual</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lab5/05-lab5.html" rel="next">
+<link href="../lab2_3/03-lab3.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-aa873432a3c62897e6c2091c0d30a948.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab4/04-lab4.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Biol 4315: Genomics and Transcriptomics Lab Manual</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/idohatam/Biol4315_lab_manual" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab1/01-lab1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/02-lab2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/03-lab3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab4/04-lab4.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab5/05-lab5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Lab 5: Amplicon Metagenomics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">5</span> <strong>Learning objectives</strong></a></li>
+  <li><a href="#the-set-up" id="toc-the-set-up" class="nav-link" data-scroll-target="#the-set-up"><span class="header-section-number">6</span> <strong>The set-up</strong></a></li>
+  <li><a href="#what-you-will-study-in-this-lab" id="toc-what-you-will-study-in-this-lab" class="nav-link" data-scroll-target="#what-you-will-study-in-this-lab"><span class="header-section-number">7</span> <strong>What you will study in this lab</strong></a></li>
+  <li><a href="#about-the-lab-and-assignment" id="toc-about-the-lab-and-assignment" class="nav-link" data-scroll-target="#about-the-lab-and-assignment"><span class="header-section-number">8</span> <strong>About the lab and assignment</strong></a></li>
+  <li><a href="#now-to-the-lab" id="toc-now-to-the-lab" class="nav-link" data-scroll-target="#now-to-the-lab"><span class="header-section-number">9</span> <strong>Now, to the lab</strong></a>
+  <ul>
+  <li><a href="#accessing-the-rnaseq-data-and-sample-data" id="toc-accessing-the-rnaseq-data-and-sample-data" class="nav-link" data-scroll-target="#accessing-the-rnaseq-data-and-sample-data"><span class="header-section-number">9.1</span> <strong>Accessing the RNAseq data and sample data</strong></a>
+  <ul>
+  <li><a href="#question-1" id="toc-question-1" class="nav-link" data-scroll-target="#question-1"><span class="header-section-number">9.1.1</span> <strong>Question 1</strong></a></li>
+  </ul></li>
+  <li><a href="#read-processing" id="toc-read-processing" class="nav-link" data-scroll-target="#read-processing"><span class="header-section-number">9.2</span> <strong>Read processing</strong></a>
+  <ul>
+  <li><a href="#question-2" id="toc-question-2" class="nav-link" data-scroll-target="#question-2"><span class="header-section-number">9.2.1</span> <strong>Question 2</strong></a></li>
+  <li><a href="#question-3" id="toc-question-3" class="nav-link" data-scroll-target="#question-3"><span class="header-section-number">9.2.2</span> <strong>Question 3</strong></a></li>
+  </ul></li>
+  <li><a href="#alignments" id="toc-alignments" class="nav-link" data-scroll-target="#alignments"><span class="header-section-number">9.3</span> <strong>Alignments</strong></a>
+  <ul>
+  <li><a href="#indexing-the-reference-genome" id="toc-indexing-the-reference-genome" class="nav-link" data-scroll-target="#indexing-the-reference-genome"><span class="header-section-number">9.3.1</span> <strong>Indexing the reference genome</strong></a></li>
+  <li><a href="#mapping-the-reads-to-the-indexed-genome" id="toc-mapping-the-reads-to-the-indexed-genome" class="nav-link" data-scroll-target="#mapping-the-reads-to-the-indexed-genome"><span class="header-section-number">9.3.2</span> <strong>Mapping the reads to the indexed genome</strong></a></li>
+  <li><a href="#question-4-aligning-the-reads" id="toc-question-4-aligning-the-reads" class="nav-link" data-scroll-target="#question-4-aligning-the-reads"><span class="header-section-number">9.3.3</span> <strong>Question 4: aligning the reads</strong></a></li>
+  <li><a href="#reading-alignment-stats" id="toc-reading-alignment-stats" class="nav-link" data-scroll-target="#reading-alignment-stats"><span class="header-section-number">9.3.4</span> <strong>Reading alignment stats</strong></a>
+  <ul>
+  <li><a href="#assignment-question-5-alignment-stats" id="toc-assignment-question-5-alignment-stats" class="nav-link" data-scroll-target="#assignment-question-5-alignment-stats"><span class="header-section-number">9.3.4.1</span> <strong>Assignment question 5: alignment stats</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#counting-how-many-reads-mapped-for-each-gene" id="toc-counting-how-many-reads-mapped-for-each-gene" class="nav-link" data-scroll-target="#counting-how-many-reads-mapped-for-each-gene"><span class="header-section-number">9.4</span> <strong>Counting how many reads mapped for each gene</strong></a>
+  <ul>
+  <li><a href="#question-6-the-count-table" id="toc-question-6-the-count-table" class="nav-link" data-scroll-target="#question-6-the-count-table"><span class="header-section-number">9.4.1</span> <strong>Question 6: the count table</strong></a></li>
+  </ul></li>
+  <li><a href="#sample-wise-correlation-analysis-and-clustering" id="toc-sample-wise-correlation-analysis-and-clustering" class="nav-link" data-scroll-target="#sample-wise-correlation-analysis-and-clustering"><span class="header-section-number">9.5</span> <strong>Sample-wise correlation analysis and clustering</strong></a>
+  <ul>
+  <li><a href="#data-prep-for-deseq2" id="toc-data-prep-for-deseq2" class="nav-link" data-scroll-target="#data-prep-for-deseq2"><span class="header-section-number">9.5.1</span> <strong>Data prep for DESeq2</strong></a></li>
+  <li><a href="#sample-correlation-based-on-transcript-abundance-table" id="toc-sample-correlation-based-on-transcript-abundance-table" class="nav-link" data-scroll-target="#sample-correlation-based-on-transcript-abundance-table"><span class="header-section-number">9.5.2</span> <strong>Sample correlation based on transcript abundance table</strong></a></li>
+  <li><a href="#analyzing-differential-gene-expression-dge-with-deseq2" id="toc-analyzing-differential-gene-expression-dge-with-deseq2" class="nav-link" data-scroll-target="#analyzing-differential-gene-expression-dge-with-deseq2"><span class="header-section-number">9.5.3</span> <strong>Analyzing differential gene expression (DGE) with DESeq2</strong></a>
+  <ul>
+  <li><a href="#comparing-vir-mock-and-avr-broad-overview" id="toc-comparing-vir-mock-and-avr-broad-overview" class="nav-link" data-scroll-target="#comparing-vir-mock-and-avr-broad-overview"><span class="header-section-number">9.5.3.1</span> <strong>Comparing Vir, Mock, and Avr broad overview</strong></a></li>
+  <li><a href="#question-7" id="toc-question-7" class="nav-link" data-scroll-target="#question-7"><span class="header-section-number">9.5.3.2</span> <strong>Question 7</strong></a></li>
+  <li><a href="#adding-gene-descriptions-and-getting-specific-with-volcano-plots" id="toc-adding-gene-descriptions-and-getting-specific-with-volcano-plots" class="nav-link" data-scroll-target="#adding-gene-descriptions-and-getting-specific-with-volcano-plots"><span class="header-section-number">9.5.3.3</span> <strong>Adding gene descriptions and getting specific with volcano plots</strong></a></li>
+  </ul></li>
+  <li><a href="#clustered-heatmap-based-on-significant-degs" id="toc-clustered-heatmap-based-on-significant-degs" class="nav-link" data-scroll-target="#clustered-heatmap-based-on-significant-degs"><span class="header-section-number">9.5.4</span> <strong>Clustered heatmap based on significant DEGs</strong></a>
+  <ul>
+  <li><a href="#question-8" id="toc-question-8" class="nav-link" data-scroll-target="#question-8"><span class="header-section-number">9.5.4.1</span> <strong>Question 8</strong></a></li>
+  </ul></li>
+  <li><a href="#gene-ontology-go-enrichment" id="toc-gene-ontology-go-enrichment" class="nav-link" data-scroll-target="#gene-ontology-go-enrichment"><span class="header-section-number">9.5.5</span> <strong>Gene Ontology (GO) Enrichment</strong></a>
+  <ul>
+  <li><a href="#question-9-interpreting-enrichment" id="toc-question-9-interpreting-enrichment" class="nav-link" data-scroll-target="#question-9-interpreting-enrichment"><span class="header-section-number">9.5.5.1</span> <strong>Question 9: Interpreting Enrichment</strong></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab4/04-lab4.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><br></p>
+<section id="learning-objectives" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>Learning objectives</strong></h1>
+<details>
+<summary>
+Click to expand
+</summary>
+<p><strong>By the end of this lab you will be able to:</strong></p>
+<ul>
+<li>Process fastq files in batch</li>
+<li>Analyze RNA-Seq data and produce high quality insights</li>
+<li>Write an analysis pipeline using a common workflow language</li>
+<li>Automate analysis and report writing</li>
+</ul>
+</details>
+</section>
+<section id="the-set-up" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> <strong>The set-up</strong></h1>
+<p>Create a new <code>GitHub</code> repo for this lab.</p>
+<p>In RStudio:</p>
+<ul>
+<li>Create a new R Project with version control and connect it to your <code>GitHub</code> repo.</li>
+<li>Ensure your project contains a <code>data/</code> directory for raw inputs and an <code>outputs/</code> directory for generated results.</li>
+<li>Start a new Quarto file named <code>04-lab4.qmd</code>.</li>
+<li>Make sure to add <code>data/</code> and <code>outputs/</code> folders to the <code>.gitignore</code> files.</li>
+</ul>
+<p>Commit these two files immediately with a message like <code>Initial commit</code>.</p>
+<p>On the terminal make sure that <code>HISAT2</code> is properly installed by using <code>hisat2 -h</code>, if the set-up package didn’t install <code>hisat2</code> on your lab computer you can do it manually using <code>conda</code>. No need to create a <code>conda</code> env for <code>hisat2</code>.</p>
+<p>Download the <em>Arabidopsis thaliana</em> reference genome from refseq, and uncompress with <code>gunzip</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> data outputs</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="at">-k</span> data/GCF_000001735.4_TAIR10.1_genomic.fna.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>Remember to add the <code>.gz</code> and the <code>.fna</code> file to the <code>.gitignore</code> file</p>
+</blockquote>
+<p>Download the GFF file with the gene annotation and uncompress it with <code>gunzip</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.gtf.gz</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="at">-k</span> data/GCF_000001735.4_TAIR10.1_genomic.gtf.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Remember to add the <code>.gz</code> and the <code>GTF</code> file to the <code>.gitignore</code> file</strong></p>
+</blockquote>
+<p>Lastly load the required R packages for this lab:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure required packages are installed</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">"BiocManager"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># BiocManager::install(c("clusterProfiler", "EnhancedVolcano", "biomaRt"))</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(<span class="fu">c</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"docopt"</span>, <span class="st">"DT"</span>, <span class="st">"pheatmap"</span>, <span class="st">"GenomicFeatures"</span>, <span class="st">"DESeq2"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"edgeR"</span>, <span class="st">"systemPipeR"</span>, <span class="st">"systemPipeRdata"</span>, <span class="st">"BiocStyle"</span>, <span class="st">"GO.db"</span>, <span class="st">"dplyr"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyr"</span>, <span class="st">"stringr"</span>, <span class="st">"Rqc"</span>, <span class="st">"QuasR"</span>, <span class="st">"ape"</span>, <span class="st">"clusterProfiler"</span>, <span class="st">"biomaRt"</span>, <span class="st">"EnhancedVolcano"</span>, <span class="st">"org.At.tair.db"</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>), require, <span class="at">character.only =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] TRUE
+
+[[2]]
+[1] TRUE
+
+[[3]]
+[1] TRUE
+
+[[4]]
+[1] TRUE
+
+[[5]]
+[1] TRUE
+
+[[6]]
+[1] TRUE
+
+[[7]]
+[1] TRUE
+
+[[8]]
+[1] TRUE
+
+[[9]]
+[1] TRUE
+
+[[10]]
+[1] TRUE
+
+[[11]]
+[1] TRUE
+
+[[12]]
+[1] TRUE
+
+[[13]]
+[1] TRUE
+
+[[14]]
+[1] TRUE
+
+[[15]]
+[1] TRUE
+
+[[16]]
+[1] TRUE
+
+[[17]]
+[1] TRUE
+
+[[18]]
+[1] TRUE
+
+[[19]]
+[1] TRUE
+
+[[20]]
+[1] TRUE</code></pre>
+</div>
+</div>
+</section>
+<section id="what-you-will-study-in-this-lab" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> <strong>What you will study in this lab</strong></h1>
+<p>In this lab you will analyze RNA-seq data from <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0074183">Howard <em>et al.</em> 2013</a>. This dataset contains 18 samples sequenced using PE illumina sequencing. The actual dataset is quite large <a href="https://www.ncbi.nlm.nih.gov/sra/?term=SRP010938">Accession: SRP010938</a>. You will work with a subset of the dataset where each FASTQ file has been subsetted to 90,000-100,000 randomly sampled PE reads that map to the first 100,000 nucleotides of each chromosome of the A. <em>thalina</em> genome.</p>
+<p>The RNA-seq data came from A. <em>thaliana</em> plants infected with <em>Pseudomonas syringae</em>, a well-studied plant-pathogen system. This experimental design allows us to understand how plants respond to different types of bacterial challenges.</p>
+<p>The dataset contains three treatment groups:</p>
+<ul>
+<li>Mock (Buffer control): Plants treated with buffer only - represents baseline gene expression but accounting to the physical stress of injection</li>
+<li>Avirulent bacteria (AVR): Bacteria carrying avirulence genes that trigger strong plant defenses</li>
+<li>Virulent bacteria (V): Wild-type pathogenic bacteria that can overcome some plant defenses</li>
+</ul>
+<p>The experimental design uses a time-course strategy with biological duplicates for every condition:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 9%">
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 31%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Treatment Group</th>
+<th>Type</th>
+<th>Time Points (h)</th>
+<th>Replicates per Time</th>
+<th>Total Samples</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mock</td>
+<td>Control</td>
+<td>1, 6, 12</td>
+<td>2</td>
+<td>6</td>
+<td>Baseline stress response.</td>
+</tr>
+<tr class="even">
+<td>Virulent (Pst)</td>
+<td>Susceptible</td>
+<td>1, 6, 12</td>
+<td>2</td>
+<td>6</td>
+<td>Successful infection/Immune suppression.</td>
+</tr>
+<tr class="odd">
+<td>Avirulent (avrRps4)</td>
+<td>Resistant</td>
+<td>1, 6, 12</td>
+<td>2</td>
+<td>6</td>
+<td>Effector-Triggered Immunity (ETI).</td>
+</tr>
+</tbody>
+</table>
+<p>Transcription is a dynamic wave, not a single event. Some defense genes turn on in minutes (1h), while the “Hypersensitive Response” (cell death) peaks much later (12h). A single timepoint would miss half the story. Having duplicates for every timepoint allows us to calculate statistical variance; without it, we cannot tell if a change is due to the bacteria or just biological noise. By comparing Avirulent vs.&nbsp;Virulent across time, we expect to pinpoint exactly when the plant recognizes the intruder and switches from general defense to specific resistance.</p>
+<p>RNAseq helps researchers understand how gene expression patterns differ under different condition. Here, we assume that the infection with the virulent and avirulent strains will result in different patterns of gene expression and that samples from similar treatment will show similar pattern of gene expression.</p>
+<p>During the lab you will run through all steps of the analysis from QA/QC to analysis. Steps will include:</p>
+<ol type="1">
+<li>Read processing:
+<ul>
+<li>Adapter trimming and quality filtering</li>
+<li>FASTQ quality report</li>
+</ul></li>
+<li>Alignments against a reference genome
+<ul>
+<li>Map reads to the A. <em>thaliana</em> reference genome</li>
+<li>Alignment stats - proportion of reads that map to genome</li>
+</ul></li>
+<li>Read count and annotation
+<ul>
+<li>Count the number of reads per sample that map to each gene</li>
+<li>Assign functional annotation to the genes</li>
+</ul></li>
+<li>Sample-wise correlation analysis and clustering</li>
+</ol>
+<ul>
+<li>Are samples of the same type similar to each other in genes expressed</li>
+</ul>
+<ol start="5" type="1">
+<li>Analysis of differential expressed genes (DEGs)
+<ul>
+<li>Are samples of the same type exhibit similar gene expression patterns</li>
+</ul></li>
+<li>GO term enrichment analysis
+<ul>
+<li>What gene ontologies are found in each sample type</li>
+</ul></li>
+<li>Gene-wise clustering
+<ul>
+<li>Do samples from the same type show expression of genes of similar ontology (e.g.&nbsp;more infection resistance genes)</li>
+</ul></li>
+</ol>
+<p><br></p>
+</section>
+<section id="about-the-lab-and-assignment" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> <strong>About the lab and assignment</strong></h1>
+<p><strong>Please read this part well</strong></p>
+<ul>
+<li>Lab assignment questions are interspersed throughout the manual</li>
+<li>Unlike other labs, <em>your answers to some of the question is key to completing the lab</em></li>
+<li>Make sure to pay attention to that, and answer these questions appropriately</li>
+</ul>
+</section>
+<section id="now-to-the-lab" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> <strong>Now, to the lab</strong></h1>
+<section id="accessing-the-rnaseq-data-and-sample-data" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="accessing-the-rnaseq-data-and-sample-data"><span class="header-section-number">9.1</span> <strong>Accessing the RNAseq data and sample data</strong></h2>
+<p>36 sub sampled fastq files can be found in the external data folder of the <code>systemPipeRdata</code> package, representing 18 samples. The path to it can be found using the <code>pathList()</code> function looking for <code>$fastqdir</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#e.g.1 get the path </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fq_path <span class="ot">&lt;-</span> systemPipeRdata<span class="sc">::</span><span class="fu">pathList</span>()<span class="sc">$</span>fastqdir</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#e.g.2 list the files </span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fq_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(fq_path)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fq_files)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "SRR446027_1.fastq.gz" "SRR446027_2.fastq.gz" "SRR446028_1.fastq.gz"
+[4] "SRR446028_2.fastq.gz" "SRR446029_1.fastq.gz" "SRR446029_2.fastq.gz"</code></pre>
+</div>
+</div>
+<p>As you can see the file names are not very descriptive, therefore we will also import the sample data (or meta data) table that will tell us which sample does each fastq file represent.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>meta_data <span class="ot">&lt;-</span> <span class="fu">read.table</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system.file</span>(<span class="st">"extdata/param/targetsPE.txt"</span>, <span class="at">package=</span><span class="st">"systemPipeRdata"</span>), </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>You can use <code>head()</code> to visualize the metadata table. Note that these fastq files represent paired end sequencing meaning that each sequenced fragment was sequenced both from the forward and the the reverse direction therefore every fragment is represented as a read in the fielname_1.fastq file which represents the forward reads and in the filename_2.fastq file which represents the corresponding reverse reads. PE sequencing offers a more robust way to obtain data and account for sequencing errors. That’s the reason for having 36 files for 18 samples, each sample is represented by a forward and a reverse file.</p>
+<section id="question-1" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="question-1"><span class="header-section-number">9.1.1</span> <strong>Question 1</strong></h3>
+<p>Note that the path to the fastq files are <code>./data/file.fastq</code>.</p>
+<ul>
+<li>In your Quarto file, include a code chunk that reads the metadata table.</li>
+<li>Include a code chunk that replaces the <code>./data/</code> in columns FileName1 and FileName2 with the actual path to the fastq files obtained earlier (this will be useful for your next question)</li>
+<li>Use the DT package to output the metadata table onto your Quarto file.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="read-processing" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="read-processing"><span class="header-section-number">9.2</span> <strong>Read processing</strong></h2>
+<p>Garbage in garbage out, our next steps involve QC of the fastq.gz files making sure that for downstream analysis you will use good quality data.</p>
+<section id="question-2" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="question-2"><span class="header-section-number">9.2.1</span> <strong>Question 2</strong></h3>
+<ul>
+<li>Use the <code>Rqc</code> package to generate a QC report for the reads include it as a code chunk in your Quarto file.</li>
+</ul>
+<p>From your <code>Rqc</code> report:</p>
+<ul>
+<li><p>Generate 3 per-cycle Q-score box plots for files 1-12, 13-24, 25-36. Make sure the facets use a black and white theme. Are there any samples with much longer reads than others? What’s the shortest number of cycles? Include the plots and the code chunk in your Quarto file.</p></li>
+<li><p>Generate 3 base call frequency plots for files 1-12, 13-24, 25-36, does any sample have significant N calls? Include the plots and the code chunk in your Quarto file.</p></li>
+</ul>
+</section>
+<section id="question-3" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="question-3"><span class="header-section-number">9.2.2</span> <strong>Question 3</strong></h3>
+<p>Write a code chunk that iterates over your PE files and uses the <code>QuasR</code> package to trim and filter the reads (hint this is where your metadata file be very useful).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note: <code>QuasR</code>, and <code>ShortRead</code> for that matter, aren’t optimized for matching filtered reads between PE reads especially if that includes adapter trimming. Therefore your code should only focus on file 1 from every PE files</strong></p>
+</div>
+</div>
+<ul>
+<li>Make sure it removes the following adapter sequence “GCCCGGGTAA”</li>
+<li>Make sure it trims the final 3 bases</li>
+<li>Make sure that it removes reads with more than 1 N</li>
+<li>Make sure that the output name now includes processed in it</li>
+<li>Make sure that the files are outputted to a <code>outputs/processed_fastq</code> folder in your project directory</li>
+<li>Don’t forget to add this folder to the <code>.gitignore</code> file</li>
+<li>Make sure that the file names and path in the metadata table are also updated</li>
+<li>Include the code chunk in your Quarto file</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"outputs/processed_fastq"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(meta_data<span class="sc">$</span>FileName1)) {</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  fastqfiles <span class="ot">&lt;-</span> <span class="fu">c</span>(meta_data<span class="sc">$</span>FileName1[i], meta_data<span class="sc">$</span>FileName2[i])</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  l <span class="ot">&lt;-</span> <span class="fu">length</span>(stringr<span class="sc">::</span><span class="fu">str_split_1</span>(meta_data<span class="sc">$</span>FileName1[i], <span class="st">"</span><span class="sc">\\</span><span class="st">/"</span>))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  outfiles <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">"outputs/processed_fastq/"</span>, stringr<span class="sc">::</span><span class="fu">str_split_1</span>(meta_data<span class="sc">$</span>FileName1[i], <span class="st">"</span><span class="sc">\\</span><span class="st">/"</span>)[l], <span class="st">"_processed.fastq.gz"</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                <span class="fu">paste0</span>(<span class="st">"outputs/processed_fastq/"</span>, stringr<span class="sc">::</span><span class="fu">str_split_1</span>(meta_data<span class="sc">$</span>FileName2[i], <span class="st">"</span><span class="sc">\\</span><span class="st">/"</span>)[l], <span class="st">"_processed.fastq.gz"</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  QuasR<span class="sc">::</span><span class="fu">preprocessReads</span>(fastqfiles, outfiles,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nBases=</span><span class="dv">1</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">truncateEndBases=</span><span class="dv">3</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Lpattern=</span><span class="st">"GCCCGGGTAA"</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">minLength=</span><span class="dv">40</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  meta_data<span class="sc">$</span>FileName1[i] <span class="ot">&lt;-</span> outfiles[<span class="dv">1</span>]</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  meta_data<span class="sc">$</span>FileName2[i] <span class="ot">&lt;-</span> outfiles[<span class="dv">2</span>]</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+</section>
+<section id="alignments" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="alignments"><span class="header-section-number">9.3</span> <strong>Alignments</strong></h2>
+<p>Why aren’t we using a popular short-read aligner like Bowtie2, or the long-read aligner Minimap2 from the previous lab?</p>
+<p><em>Arabidopsis</em> genes contain introns, and our mature mRNA has these introns spliced out. If a 100bp short read spans across an exon-exon junction, a standard DNA-centric aligner will treat the thousand-base genomic gap as a massive indel and often fail to map the read entirely. We use HISAT2 because it is a splice-aware aligner designed specifically to recognize these junctions in short-read RNA-seq data.</p>
+<p>Next on the workflow is mapping the processed reads to the reference A <em>thaliana</em> genome (TAIR10.1) which you have downloaded. We will go over graph aligners.</p>
+<section id="indexing-the-reference-genome" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="indexing-the-reference-genome"><span class="header-section-number">9.3.1</span> <strong>Indexing the reference genome</strong></h3>
+<p>The first step in aligning the reads to the genome is to create an index list for the reference. The reads would be aligned against the index list, which makes the alignment process more computationally efficient.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The indexing function does not accept compressed files, if you haven’t yet, make sure to uncompress the TAIR10.1 genome assembly you have downloaded.</p>
+</div>
+</div>
+<p>Previously you called external tools directly from the terminal, now you will call system functions directly from R. The code chunk below uses the R function <code>system2()</code>, which allows R to to invoke system commands, to run the command <code>hisat2-build</code> which builds the index list. <code>system2()</code> accepts a few variables. <code>command</code> is the command being passed to the system, <code>args</code> is where the list of arguments the the command accepts are specified. In this case:</p>
+<ul>
+<li><code>-p 8</code> the number of CPU cores to be used, in this case 8</li>
+<li>the <code>.fna</code> file is the reference genome</li>
+<li>the <code>outputs/hisat2_index/tair10_1_index</code> is the output directory to which the index files (<code>.ht2</code> files) will be written and the base name for said index files (<code>tair10_index</code>). Note that before that you will need to create the output directory.</li>
+<li><code>stdout = TRUE</code> and <code>stderr = TRUE</code> capture the output of the command either standard (<code>stdout</code>) and error (<code>stderr</code>)</li>
+</ul>
+<p>The function runs within the <code>tryCatch</code> function that provides basic error handling.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create the output directory</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">"outputs/hisat2_index"</span>, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>at_genome <span class="ot">&lt;-</span> <span class="st">"data/GCF_000001735.4_TAIR10.1_genomic.fna"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Use system2 to run hisat2 from within R</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tryCatch</span>({</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system2</span>(<span class="at">command =</span> <span class="st">"hisat2-build"</span>, </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>          <span class="at">args =</span> <span class="fu">c</span>(<span class="st">"-p"</span>,<span class="st">"8"</span>, at_genome, <span class="st">"outputs/hisat2_index/tair10_1_index"</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>          <span class="at">stdout =</span> <span class="cn">TRUE</span>, <span class="at">stderr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>}, <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="st">"hisat2-build"</span>, <span class="st">"indexing failed with error:"</span>, e<span class="sc">$</span>message)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="mapping-the-reads-to-the-indexed-genome" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="mapping-the-reads-to-the-indexed-genome"><span class="header-section-number">9.3.2</span> <strong>Mapping the reads to the indexed genome</strong></h3>
+<p>Now that the reference genome has been indexed the processed reads can be mapped to it using the <code>hisat2</code> command. The <code>hisat2</code> command will map every set of PE files to the genome and output a <code>sam</code> file for each. Those <code>sam</code> files would then need to be converted to sorted <code>bam</code> files using <code>samtools</code>.</p>
+<p>Here’s a basic structure for running a fastq files using <code>hisat2</code>:</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note: you should replace the path to the hisat2_index and the processed fastq to match the correct path for your files</strong></p>
+<p><strong>Note2: hisat2 does not accept .gz file so make sure to gunzip your processed fastq files if you haven’t yet</strong></p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">hisat2</span> <span class="at">-x</span> outputs/hisat2_index/tair10_1_index outputs/processed_fastq/SRR446027_1.fastq.gz_processed.fastq <span class="at">-p</span> 8 <span class="at">-S</span> outputs/sam_files/file1.sam</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>-x</code> denotes the reference base name <code>-U</code> denotes the first file of the PE files (if treating as single end) <code>-p</code> denotes number of CPU processors <code>-S</code> denotes the <code>sam</code> file output</p>
+</section>
+<section id="question-4-aligning-the-reads" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="question-4-aligning-the-reads"><span class="header-section-number">9.3.3</span> <strong>Question 4: aligning the reads</strong></h3>
+<p>Add a code chunk to your Quarto file that:</p>
+<ul>
+<li>Creates output directories for the sam and bam files name them <code>outputs/sam_files</code> and <code>outputs/bam_files</code> respectively, make sure to add them to your <code>.gitignore</code> file</li>
+<li>Use the <code>system2</code> function to loops through the paired fastq files and feeds them to <code>hisat2</code> to get the sam files (hint, this is where your metadata table will become very useful)
+<ul>
+<li>Remember that you’re only using the file 1 files</li>
+<li>Use the <code>SampleName</code> column from the <code>meta_data</code> dataframe to make sure that the resulting <code>sam</code> files each are named after the sample they represent (e.g.&nbsp;<code>V1A.sam</code>)</li>
+</ul></li>
+<li>Within the loop feed the required arguments to the <code>samtools</code> commands to subsequent <code>system2</code> calls so that the sam files would be converted to bam files and that the bam files would be sorted and indexed.
+<ul>
+<li>Remember to add <code>_sorted</code> to the sorted <code>bam</code> files (e.g.&nbsp;<code>V1A_sorted.bam</code>)</li>
+</ul></li>
+<li>Make sure to place the system2 calls within <code>tryCatch</code>.</li>
+<li>Make sure that the <code>tryCatch</code> for all system calls is assigned to a variable to capture the output log from those calls
+<ul>
+<li>Write that variable from the <code>hisat2</code> as <code>samplename_hisat2.log</code> in the bam_files folder using the <code>writeLines</code> function.</li>
+</ul></li>
+</ul>
+</section>
+<section id="reading-alignment-stats" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="reading-alignment-stats"><span class="header-section-number">9.3.4</span> <strong>Reading alignment stats</strong></h3>
+<p><code>hisat2</code> outputs log files with some alignment stats per <code>sam</code> file. The following code chunk iterates over each of the logs that will be outputted by your answer to question 4, grabs the last line which specifies the total percent of reads aligned and extracts the numeric value.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get the folder</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hisat2_logs_dir <span class="ot">&lt;-</span> <span class="st">"outputs/bam_files"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Get a list of all HISAT2 log files</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>log_files <span class="ot">&lt;-</span> <span class="fu">list.files</span>(hisat2_logs_dir, <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.hisat2</span><span class="sc">\\</span><span class="st">.log$"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">length</span>(log_files) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  percent_aligned <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(log_files)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(percent_aligned)) {</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    percent_aligned[i] <span class="ot">&lt;-</span> <span class="fu">readLines</span>(log_files[i])[<span class="fu">length</span>(<span class="fu">readLines</span>(log_files[i]))]</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  align_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">samplename =</span> <span class="fu">sort</span>(meta_data<span class="sc">$</span>SampleName), percent_aligned)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  align_df <span class="ot">&lt;-</span> align_df <span class="sc">%&gt;%</span> </span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percent_aligned =</span> <span class="fu">as.numeric</span>(stringr<span class="sc">::</span><span class="fu">str_split_i</span>(align_df<span class="sc">$</span>percent_aligned, <span class="st">"%"</span>, <span class="dv">1</span>))) </span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(align_df)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"No HISAT2 log files found yet. Run the alignment step first."</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  samplename percent_aligned
+1       A12A           95.85
+2       A12B           95.03
+3        A1A           96.64
+4        A1B           93.12
+5        A6A           95.34
+6        A6B           95.80</code></pre>
+</div>
+</div>
+<p>Judging by the output, the first 6 samples each had around 95% of the reads aligned to the reference. This allows us to proceed being confident in our analysis.</p>
+<section id="assignment-question-5-alignment-stats" class="level4" data-number="9.3.4.1">
+<h4 data-number="9.3.4.1" class="anchored" data-anchor-id="assignment-question-5-alignment-stats"><span class="header-section-number">9.3.4.1</span> <strong>Assignment question 5: alignment stats</strong></h4>
+<ul>
+<li>Write a code chunk that uses the <code>DT</code> package to output the <code>align_df</code> dataframe as an interactive table on your Quarto file.</li>
+<li>Write a code chunk that use <code>ggplot2</code> to plot a box plot of alignment percent, make sure it is part of your Quarto file.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="counting-how-many-reads-mapped-for-each-gene" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="counting-how-many-reads-mapped-for-each-gene"><span class="header-section-number">9.4</span> <strong>Counting how many reads mapped for each gene</strong></h2>
+<p>This lab handles transcriptomics data, one of the questions that can be answered by transcriptomics data is how do samples differ with respect to gene expression. The first step to answering this question is by counting how many reads mapped to each gene in the genome. the general concept is that the larger the count of reads that map to a gene the higher it’s expression. Of course this is just a general concept and some normalization will need to be applied, we will discuss this in depth during lecture. To generate the count table we will use the <code>featureCounts</code> function from the <code>Rsubread</code> package. <code>Subread</code> is another aligner that is optimize to align short reads, and it can work with genomic intervals to map reads to annotation tables. <code>featureCounts</code> require a <code>GTF</code> file as it’s input for annotation table, <code>GTF</code> is a form of <code>GFF</code> file with a more strict structure compared to the general <code>GFF</code> format. You will use the <code>GTF</code> file you downloaded at the beginning of the lab.</p>
+<p><code>featureCounts</code> can receive a list of bam files as input. Note that the use of the <code>$</code> regular expression when listing the <code>bam</code> file. This denotes that the string has to end with bam. This is because you also have <code>_sorted.bam.bai</code> files in your folder since you indexed the sorted <code>bam</code> files.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#list bam files</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>bfiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="st">"outputs/bam_files"</span>, <span class="at">pattern =</span> <span class="st">"_sorted.bam$"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Counting how many reads correspond to each gene</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>gene_count_list <span class="ot">&lt;-</span> Rsubread<span class="sc">::</span><span class="fu">featureCounts</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">files =</span> bfiles, </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">annot.ext =</span> <span class="st">"data/GCF_000001735.4_TAIR10.1_genomic.gtf"</span>, </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">isGTFAnnotationFile =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">allowMultiOverlap =</span> <span class="cn">FALSE</span>,  </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">isPairedEnd =</span> <span class="cn">FALSE</span>, <span class="at">nthreads =</span> <span class="dv">8</span>,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                        <span class="at">minMQS =</span> <span class="dv">10</span>, </span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">GTF.featureType =</span> <span class="st">"exon"</span>,  </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                        <span class="at">GTF.attrType =</span> <span class="st">"gene_id"</span> </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s examine the structure of the elements of the resulting list from <code>featureCounts</code>. First is the count table, this is going to be the input used in downstream analysis steps like differential gene expression.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"gene_count_list"</span>)) {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>(gene_count_list<span class="sc">$</span>counts)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:38295, 1:18] 532 107 0 35 1224 0 18 733 0 520 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:38295] "AT1G01010" "AT1G01020" "AT1G03987" "AT1G01030" ...
+  ..$ : chr [1:18] "A12A_sorted.bam" "A12B_sorted.bam" "A1A_sorted.bam" "A1B_sorted.bam" ...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          A12A_sorted.bam A12B_sorted.bam A1A_sorted.bam A1B_sorted.bam
+AT1G01010             532             441            371            209
+AT1G01020             107              93            126            137
+AT1G03987               0               0              3              0
+AT1G01030              35              53            170             81
+AT1G01040            1224             637            949            723
+          A6A_sorted.bam
+AT1G01010            537
+AT1G01020            109
+AT1G03987              0
+AT1G01030             26
+AT1G01040            821</code></pre>
+</div>
+</div>
+<p>The row names show the accession number for each gene annotated in the TAIR database e.g.&nbsp;<a href="https://www.arabidopsis.org/results?mainType=general&amp;searchText=AT1G01010&amp;category=genes">AT1G01010</a>. The column names are your samples, values are read counts per gene per sample.</p>
+<p>Next lets look at the annotation table, this table shows you the <code>Refseq</code> accession numbers for each exon that mapped to each gene, along with it’s length, orientation and coordinates.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"gene_count_list"</span>)) {</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>(gene_count_list<span class="sc">$</span>annotation)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 38,295
+Columns: 6
+$ GeneID &lt;chr&gt; "AT1G01010", "AT1G01020", "AT1G03987", "AT1G01030", "AT1G01040"…
+$ Chr    &lt;chr&gt; "NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC…
+$ Start  &lt;chr&gt; "3631;3996;4486;4706;5174;5439", "6788;6788;6788;6788;6788;6788…
+$ End    &lt;chr&gt; "3913;4276;4605;5095;5326;5899", "7069;7069;7069;7069;7069;7069…
+$ Strand &lt;chr&gt; "+;+;+;+;+;+", "-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-…
+$ Length &lt;int&gt; 1688, 1571, 272, 1905, 6279, 788, 207, 1165, 283, 3421, 1831, 2…</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     GeneID
+1 AT1G01010
+2 AT1G01020
+3 AT1G03987
+4 AT1G01030
+5 AT1G01040
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Chr
+1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9
+2 NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9
+3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     NC_003070.9
+4                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9
+5                                                                                                 NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9;NC_003070.9
+                                                                                                                                                                                                                                            Start
+1                                                                                                                                                                                                                   3631;3996;4486;4706;5174;5439
+2 6788;6788;6788;6788;6788;6788;7157;7157;7157;7157;7157;7157;7384;7384;7384;7384;7564;7564;7564;7564;7564;7564;7762;7762;7762;7762;7762;7942;7942;7942;7942;7942;8236;8236;8236;8236;8236;8236;8417;8417;8417;8417;8571;8571;8571;8594;8594;8594
+3                                                                                                                                                                                                                                           11101
+4                                                                                                                                                                                                                   11649;11649;12424;13335;13335
+5 23121;23416;24542;24542;24752;24752;25041;25041;25524;25524;25825;25825;26081;26081;26292;26292;26543;26543;26862;26862;27099;27099;27372;27372;27618;27618;27803;27803;28708;28708;28890;28890;29160;29160;30147;30147;30410;30410;30902;30902
+                                                                                                                                                                                                                                              End
+1                                                                                                                                                                                                                   3913;4276;4605;5095;5326;5899
+2 7069;7069;7069;7069;7069;7069;7450;7450;7232;7232;7232;7232;7450;7450;7450;7450;7649;7649;7649;7649;7649;7649;7835;7835;7835;7835;7835;7987;7987;7987;7987;7987;8325;8325;8464;8325;8464;8325;8464;8464;8464;8464;8737;9130;9130;8737;9130;9130
+3                                                                                                                                                                                                                                           11372
+4                                                                                                                                                                                                                   12354;13173;13173;13714;13714
+5 24451;24451;24655;24655;24962;24962;25435;25435;25743;25743;25997;25997;26203;26203;26452;26452;26776;26776;27012;27012;27281;27281;27536;27533;27713;27713;28431;28431;28805;28805;29080;29080;30065;30065;30311;30311;30816;30816;31120;31227
+                                                                                           Strand
+1                                                                                     +;+;+;+;+;+
+2 -;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-
+3                                                                                               +
+4                                                                                       -;-;-;-;-
+5                 +;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+;+
+  Length
+1   1688
+2   1571
+3    272
+4   1905
+5   6279</code></pre>
+</div>
+</div>
+<p>There’s also a stats table that tells you how many reads per sample were mapped vs how many did not due to various reasons.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"gene_count_list"</span>)) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glimpse</span>(gene_count_list<span class="sc">$</span>stat)[,<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 14
+Columns: 19
+$ Status          &lt;chr&gt; "Assigned", "Unassigned_Unmapped", "Unassigned_Read_Ty…
+$ A12A_sorted.bam &lt;int&gt; 63480, 3035, 0, 0, 2438, 0, 0, 0, 0, 0, 0, 2019, 0, 34…
+$ A12B_sorted.bam &lt;int&gt; 66286, 3927, 0, 0, 3949, 0, 0, 0, 0, 0, 0, 2710, 0, 42…
+$ A1A_sorted.bam  &lt;int&gt; 55397, 2134, 0, 0, 2348, 0, 0, 0, 0, 0, 0, 1754, 0, 31…
+$ A1B_sorted.bam  &lt;int&gt; 49211, 4186, 0, 0, 3231, 0, 0, 0, 0, 0, 0, 3268, 0, 25…
+$ A6A_sorted.bam  &lt;int&gt; 59039, 3187, 0, 0, 1858, 0, 0, 0, 0, 0, 0, 1641, 0, 37…
+$ A6B_sorted.bam  &lt;int&gt; 67038, 3274, 0, 0, 4289, 0, 0, 0, 0, 0, 0, 2028, 0, 38…
+$ M12A_sorted.bam &lt;int&gt; 45530, 1724, 0, 0, 1651, 0, 0, 0, 0, 0, 0, 1390, 0, 22…
+$ M12B_sorted.bam &lt;int&gt; 59581, 4044, 0, 0, 2146, 0, 0, 0, 0, 0, 0, 2104, 0, 39…
+$ M1A_sorted.bam  &lt;int&gt; 48900, 2281, 0, 0, 3002, 0, 0, 0, 0, 0, 0, 2283, 0, 25…
+$ M1B_sorted.bam  &lt;int&gt; 54644, 4791, 0, 0, 3052, 0, 0, 0, 0, 0, 0, 3208, 0, 25…
+$ M6A_sorted.bam  &lt;int&gt; 60842, 3826, 0, 0, 2722, 0, 0, 0, 0, 0, 0, 1930, 0, 36…
+$ M6B_sorted.bam  &lt;int&gt; 56439, 3993, 0, 0, 2429, 0, 0, 0, 0, 0, 0, 1887, 0, 43…
+$ V12A_sorted.bam &lt;int&gt; 47430, 1758, 0, 0, 2244, 0, 0, 0, 0, 0, 0, 1481, 0, 47…
+$ V12B_sorted.bam &lt;int&gt; 60460, 3794, 0, 0, 2883, 0, 0, 0, 0, 0, 0, 2301, 0, 58…
+$ V1A_sorted.bam  &lt;int&gt; 50181, 4183, 0, 0, 2477, 0, 0, 0, 0, 0, 0, 2366, 0, 32…
+$ V1B_sorted.bam  &lt;int&gt; 57309, 1049, 0, 0, 2614, 0, 0, 0, 0, 0, 0, 2240, 0, 34…
+$ V6A_sorted.bam  &lt;int&gt; 63079, 2860, 0, 0, 1958, 0, 0, 0, 0, 0, 0, 1713, 0, 41…
+$ V6B_sorted.bam  &lt;int&gt; 59069, 3672, 0, 0, 1625, 0, 0, 0, 0, 0, 0, 1780, 0, 54…</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          Status A12A_sorted.bam A12B_sorted.bam A1A_sorted.bam
+1                       Assigned           63480           66286          55397
+2            Unassigned_Unmapped            3035            3927           2134
+3           Unassigned_Read_Type               0               0              0
+4           Unassigned_Singleton               0               0              0
+5      Unassigned_MappingQuality            2438            3949           2348
+6             Unassigned_Chimera               0               0              0
+7      Unassigned_FragmentLength               0               0              0
+8           Unassigned_Duplicate               0               0              0
+9        Unassigned_MultiMapping               0               0              0
+10          Unassigned_Secondary               0               0              0
+11           Unassigned_NonSplit               0               0              0
+12         Unassigned_NoFeatures            2019            2710           1754
+13 Unassigned_Overlapping_Length               0               0              0
+14          Unassigned_Ambiguity            3415            4267           3193
+   A1B_sorted.bam
+1           49211
+2            4186
+3               0
+4               0
+5            3231
+6               0
+7               0
+8               0
+9               0
+10              0
+11              0
+12           3268
+13              0
+14           2571</code></pre>
+</div>
+</div>
+<section id="question-6-the-count-table" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="question-6-the-count-table"><span class="header-section-number">9.4.1</span> <strong>Question 6: the count table</strong></h3>
+<p>Add a code chunk to your Quarto file that:</p>
+<ul>
+<li>Assigns <code>$count</code> to a variable named <code>count_table</code>.</li>
+<li>Removes the <code>_sort.bam</code> from the column names.</li>
+<li>Filter out genes with no reads mapped to them across all samples.</li>
+<li>Uses DT to output the variable as an interactive table.</li>
+</ul>
+</section>
+</section>
+<section id="sample-wise-correlation-analysis-and-clustering" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="sample-wise-correlation-analysis-and-clustering"><span class="header-section-number">9.5</span> <strong>Sample-wise correlation analysis and clustering</strong></h2>
+<p>The previous step produced a raw count table that represents the number of transcripts per gene detected in each sample. This table will be subsequently used for differential gene expression (DGE) analysis and to cluster samples based on how similar their transcript compositions are. DGE will be done with the <code>DESeq2</code> package.</p>
+<section id="data-prep-for-deseq2" class="level3" data-number="9.5.1">
+<h3 data-number="9.5.1" class="anchored" data-anchor-id="data-prep-for-deseq2"><span class="header-section-number">9.5.1</span> <strong>Data prep for DESeq2</strong></h3>
+<p><code>DESeq2</code> works with <code>dds</code> objects, those are <code>S4</code> objects that hold information from your count table and a metadata table. The metadata table rows has to carry the names of the count table columns and it has to be in the exact order as well. Columns that will be used as grouping information for DEG comparison have to be <code>factors</code> and not regular character vectors. The code chunk below will guide you through this, you will create two dds objects, <code>dds1</code> with grouping based on Avirulent (Avr), Mock, and Virulent (Vir), and <code>dds2</code> which compares the sample types themselves (e.g.&nbsp;A6, M12, V0 etc).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"count_table"</span>)) {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  coldata <span class="ot">&lt;-</span> meta_data <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(SampleName,SampleLong,Factor) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">SampleLong=</span><span class="fu">str_split_i</span>(SampleLong, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>,<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">condition =</span> SampleLong) <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">factor</span>(condition)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Factor =</span> <span class="fu">factor</span>(Factor)) </span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  base<span class="sc">::</span><span class="fu">rownames</span>(coldata) <span class="ot">&lt;-</span> coldata<span class="sc">$</span>SampleName</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  coldata <span class="ot">&lt;-</span> coldata <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">SampleName =</span> <span class="fu">factor</span>(SampleName))</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  coldata<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="st">"single-read"</span>, <span class="fu">nrow</span>(coldata)))</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  coldata <span class="ot">&lt;-</span> coldata[base<span class="sc">::</span><span class="fu">match</span>(base<span class="sc">::</span><span class="fu">colnames</span>(count_table), <span class="fu">rownames</span>(coldata)),]</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  dds1 <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> count_table,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>                                <span class="at">colData =</span> coldata,</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>                                <span class="at">design =</span> <span class="sc">~</span> condition)</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  dds2 <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> count_table,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>                                <span class="at">colData =</span> coldata,</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>                                <span class="at">design =</span> <span class="sc">~</span> Factor)</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="sample-correlation-based-on-transcript-abundance-table" class="level3" data-number="9.5.2">
+<h3 data-number="9.5.2" class="anchored" data-anchor-id="sample-correlation-based-on-transcript-abundance-table"><span class="header-section-number">9.5.2</span> <strong>Sample correlation based on transcript abundance table</strong></h3>
+<p>Next lets cluster the samples based on how well their expression patterns correlate. The count table is log transformed to remove bias from highly abundant transcripts, and Spearman correlation is calculated.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"dds1"</span>)) {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">cor</span>(<span class="fu">assay</span>(<span class="fu">rlog</span>(dds1)), <span class="at">method =</span> <span class="st">"spearman"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  hc <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(<span class="dv">1</span> <span class="sc">-</span> d))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot.phylo</span>(<span class="fu">as.phylo</span>(hc), <span class="at">type =</span> <span class="st">"p"</span>, <span class="at">edge.col =</span> <span class="st">"blue"</span>, <span class="at">edge.width =</span> <span class="dv">2</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">show.node.label =</span> <span class="cn">TRUE</span>, <span class="at">no.margin =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04-lab4_files/figure-html/cluster-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When you generate this plot, you will see “trees” or lines connecting the samples, called dendrograms. Hierarchical clustering is the algorithm that builds these trees, grouping the most similar items together. In this case, we are clustering the columns (samples). This is a critical quality control step: your biological replicates must cluster together. If they do not, it suggests technical variation might be overpowering the biological signal.</p>
+<p><br></p>
+</section>
+<section id="analyzing-differential-gene-expression-dge-with-deseq2" class="level3" data-number="9.5.3">
+<h3 data-number="9.5.3" class="anchored" data-anchor-id="analyzing-differential-gene-expression-dge-with-deseq2"><span class="header-section-number">9.5.3</span> <strong>Analyzing differential gene expression (DGE) with DESeq2</strong></h3>
+<p>When looking at expression data we are looking at log2FoldChange. The log2FoldChange represents the magnitude of expression difference between conditions on a log scale. The p-value indicates the statistical significance, while the FDR (false discovery rate) corrects for multiple testing.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"dds1"</span>)) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dds1_results <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds1)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  dds2_results <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds2)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  res1 <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">results</span>(dds1_results)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  res2 <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">results</span>(dds2_results)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="comparing-vir-mock-and-avr-broad-overview" class="level4" data-number="9.5.3.1">
+<h4 data-number="9.5.3.1" class="anchored" data-anchor-id="comparing-vir-mock-and-avr-broad-overview"><span class="header-section-number">9.5.3.1</span> <strong>Comparing Vir, Mock, and Avr broad overview</strong></h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"dds1_results"</span>)) {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  res_vir_mock <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">results</span>(dds1_results, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"Vir"</span>, <span class="st">"Mock"</span>), <span class="at">alpha =</span> <span class="fl">0.2</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  res_avr_mock <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">results</span>(dds1_results, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"Avr"</span>, <span class="st">"Mock"</span>), <span class="at">alpha =</span> <span class="fl">0.2</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  res_vir_avr <span class="ot">&lt;-</span> DESeq2<span class="sc">::</span><span class="fu">results</span>(dds1_results, <span class="at">contrast =</span> <span class="fu">c</span>(<span class="st">"condition"</span>, <span class="st">"Vir"</span>, <span class="st">"Avr"</span>), <span class="at">alpha =</span> <span class="fl">0.2</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  filter_and_count <span class="ot">&lt;-</span> <span class="cf">function</span>(res_obj, comparison_name, <span class="at">fc_threshold =</span> <span class="dv">2</span>) {</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    res_filtered <span class="ot">&lt;-</span> res_obj[<span class="sc">!</span><span class="fu">is.na</span>(res_obj<span class="sc">$</span>padj) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res_obj<span class="sc">$</span>log2FoldChange), ]</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    sig_genes <span class="ot">&lt;-</span> res_filtered[<span class="fu">abs</span>(res_filtered<span class="sc">$</span>log2FoldChange) <span class="sc">&gt;=</span> <span class="fu">log2</span>(fc_threshold), ]</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    up_regulated <span class="ot">&lt;-</span> <span class="fu">sum</span>(sig_genes<span class="sc">$</span>log2FoldChange <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    down_regulated <span class="ot">&lt;-</span> <span class="fu">sum</span>(sig_genes<span class="sc">$</span>log2FoldChange <span class="sc">&lt;</span> <span class="dv">0</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">Comparison =</span> comparison_name,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">Up_regulated =</span> up_regulated,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">Down_regulated =</span> down_regulated</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  results_summary <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter_and_count</span>(res_vir_mock, <span class="st">"Vir vs Mock"</span>),</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter_and_count</span>(res_avr_mock, <span class="st">"Avr vs Mock"</span>),</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter_and_count</span>(res_vir_avr, <span class="st">"Vir vs Avr"</span>)</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(results_summary)</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  plot_data <span class="ot">&lt;-</span> results_summary <span class="sc">%&gt;%</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(Up_regulated, Down_regulated), </span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>                 <span class="at">names_to =</span> <span class="st">"Regulation"</span>, </span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>                 <span class="at">values_to =</span> <span class="st">"Count"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Regulation =</span> <span class="fu">factor</span>(Regulation, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Up_regulated"</span>, <span class="st">"Down_regulated"</span>)))</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(plot_data, <span class="fu">aes</span>(<span class="at">x =</span> Comparison, <span class="at">y =</span> Count, <span class="at">fill =</span> Regulation)) <span class="sc">+</span></span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coord_flip</span>() <span class="sc">+</span>  </span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="st">"Differentially Expressed Genes by Comparison"</span>,</span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">subtitle =</span> <span class="st">"Fold Change &gt;= 2, alpha = 0.2"</span>,</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"Comparison"</span>,</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="st">"Number of Genes"</span>,</span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">fill =</span> <span class="st">"Regulation"</span></span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() </span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(p)</span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Comparison Up_regulated Down_regulated
+1 Vir vs Mock           72            514
+2 Avr vs Mock          467            386
+3  Vir vs Avr           85            668</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04-lab4_files/figure-html/comparing-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="question-7" class="level4" data-number="9.5.3.2">
+<h4 data-number="9.5.3.2" class="anchored" data-anchor-id="question-7"><span class="header-section-number">9.5.3.2</span> <strong>Question 7</strong></h4>
+<p>Run the following code:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>comp <span class="ot">&lt;-</span> systemPipeR<span class="sc">::</span><span class="fu">readComp</span>(<span class="fu">system.file</span>(<span class="st">"extdata/param/targetsPE.txt"</span>, <span class="at">package=</span><span class="st">"systemPipeRdata"</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>comp[[<span class="dv">1</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li>Run the same analysis on the comp pairs produced by this code, remember to use the <code>dds2</code> variable.</li>
+<li>Make sure that the code and figure are part of your Quarto file.</li>
+<li>Make sure to push to <code>GitHub</code>.</li>
+</ul>
+</section>
+<section id="adding-gene-descriptions-and-getting-specific-with-volcano-plots" class="level4" data-number="9.5.3.3">
+<h4 data-number="9.5.3.3" class="anchored" data-anchor-id="adding-gene-descriptions-and-getting-specific-with-volcano-plots"><span class="header-section-number">9.5.3.3</span> <strong>Adding gene descriptions and getting specific with volcano plots</strong></h4>
+<p>A volcano plot is a fantastic way to visualize differential gene expression data. It allows us to see the entire transcriptome in a single image, highlighting the most extreme biological responders.</p>
+<p>The plot maps two variables: - <strong>X-axis (<span class="math inline">\(log_2\)</span> Fold Change):</strong> This represents the magnitude of change. - <strong>Y-axis (<span class="math inline">\(-log_{10}\)</span> p-value):</strong> This represents the statistical significance.</p>
+<p>Why use the negative log10 for the p-value? A tiny p-value (e.g., 0.00001) is highly significant, but on a standard linear scale, all these tiny, significant numbers would clump together near zero. By taking the negative log10, we turn <span class="math inline">\(10^{-5}\)</span> into 5. Therefore, the higher a point sits on the Y-axis, the more confident we are that the change is real.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"res_vir_mock"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">exists</span>(<span class="st">"desc"</span>)) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  annotate_results <span class="ot">&lt;-</span> <span class="cf">function</span>(res_obj, desc_df) {</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    res_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(res_obj)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    res_df<span class="sc">$</span>gene_id <span class="ot">&lt;-</span> <span class="fu">rownames</span>(res_df)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    res_df <span class="ot">&lt;-</span> <span class="fu">left_join</span>(res_df, desc_df, <span class="at">by =</span> <span class="st">"gene_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">description =</span> <span class="fu">str_split_i</span>(description,<span class="st">"</span><span class="sc">\\</span><span class="st">["</span>,<span class="dv">1</span>)) </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(res_df)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  res_vir_mock_annot <span class="ot">&lt;-</span> <span class="fu">annotate_results</span>(res_vir_mock, desc)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  res_avr_mock_annot <span class="ot">&lt;-</span> <span class="fu">annotate_results</span>(res_avr_mock, desc)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  res_vir_avr_annot <span class="ot">&lt;-</span> <span class="fu">annotate_results</span>(res_vir_avr, desc)</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  volcano1 <span class="ot">&lt;-</span> <span class="fu">EnhancedVolcano</span>(res_vir_mock_annot,</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lab =</span> res_vir_mock_annot<span class="sc">$</span>description,</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>                             <span class="at">x =</span> <span class="st">'log2FoldChange'</span>,</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="st">'pvalue'</span>,</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>                             <span class="at">title =</span> <span class="st">'Vir vs Mock'</span>,</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>                             <span class="at">pCutoff =</span> <span class="fl">0.05</span>,           </span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>                             <span class="at">FCcutoff =</span> <span class="fl">1.0</span>,</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>                             <span class="at">pointSize =</span> <span class="fl">4.0</span>,</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>                             <span class="at">labSize =</span> <span class="fl">4.0</span>,</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>                             <span class="at">drawConnectors =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(volcano1)</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04-lab4_files/figure-html/getgd-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><br></p>
+</section>
+</section>
+<section id="clustered-heatmap-based-on-significant-degs" class="level3" data-number="9.5.4">
+<h3 data-number="9.5.4" class="anchored" data-anchor-id="clustered-heatmap-based-on-significant-degs"><span class="header-section-number">9.5.4</span> <strong>Clustered heatmap based on significant DEGs</strong></h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04-lab4_files/figure-html/hm-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When reading this heatmap, it is crucial to understand Z-score normalization (row scaling). If we plotted raw counts, a gene with 10,000 counts would visually overpower a gene with 10 counts, making the latter look empty. By scaling rows to Z-scores, a score of 0 means the sample is exactly average for that specific gene, while a score of +2 means the expression is much higher than its own average. This allows us to see patterns of change rather than raw magnitudes.</p>
+<p>The color scale (typically ranging from blue/cool for downregulation to red/warm for upregulation) maps these Z-scores. The dendrograms on the left group genes that share similar expression behaviors across treatments, while the top dendrograms group the samples based on overall similarity.</p>
+<section id="question-8" class="level4" data-number="9.5.4.1">
+<h4 data-number="9.5.4.1" class="anchored" data-anchor-id="question-8"><span class="header-section-number">9.5.4.1</span> <strong>Question 8</strong></h4>
+<p>Pay attention to how the samples group together and compare this clustering pattern to what you observed in your earlier Spearman correlation analysis that used all genes.</p>
+</section>
+</section>
+<section id="gene-ontology-go-enrichment" class="level3" data-number="9.5.5">
+<h3 data-number="9.5.5" class="anchored" data-anchor-id="gene-ontology-go-enrichment"><span class="header-section-number">9.5.5</span> <strong>Gene Ontology (GO) Enrichment</strong></h3>
+<p>You have successfully moved from raw sequencing reads to a statistically rigorous list of significantly differentially expressed genes. However, a list of Gene IDs like <code>AT3G12340</code> is not a biological discovery—it is a puzzle. To understand what is actually happening inside the plant, we translate Gene IDs into biological pathways using Gene Ontology (GO) Enrichment.</p>
+<p>What is enrichment? Imagine a bag of 30,000 marbles (representing the entire genome), where 10% are blue (defense genes). If you blindly pull out 100 marbles (your significant genes) and find that 80% of them are blue, that category is heavily enriched beyond random chance.</p>
+<p>We will use <code>clusterProfiler</code> to perform this analysis and visualize the enriched biological processes using <code>enrichplot::dotplot()</code>.</p>
+<p>When we run the <code>enrichGO()</code> function, we have to provide a few key pieces of information:</p>
+<ul>
+<li><code>gene</code>: Our list of significant genes.</li>
+<li><code>OrgDb</code> and <code>keyType</code>: The annotation database we are using (<code>org.At.tair.db</code>) and the format of our gene names (<code>TAIR</code>).</li>
+<li><code>ont</code>: Which branch of the Gene Ontology we want to look at. Here we use <code>"BP"</code> for Biological Process, as we are interested in what the plant is doing (e.g., defense responses).</li>
+<li><code>pvalueCutoff</code> and <code>qvalueCutoff</code>: The statistical thresholds for determining if a category is significantly enriched.</li>
+</ul>
+<p>You will also notice we set <code>pAdjustMethod = "none"</code>. In a real-world RNA-seq analysis, you would almost always use a multiple testing correction method like <code>"BH"</code> (Benjamini-Hochberg) to control your false discovery rate when running thousands of statistical tests simultaneously. However, because we are working with a heavily down-sampled toy dataset in this lab to save time, applying strict corrections leaves us with zero significant genes! To ensure we have results to explore and learn from, we are intentionally relaxing our statistical stringency by turning off the p-value adjustment for this pedagogical exercise.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select significant UP-regulated genes from Avirulent vs Mock</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Because we are working with a downsampled toy dataset, we use a relaxed pvalue cutoff</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>sig_avr_up <span class="ot">&lt;-</span> res_avr_mock <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(pvalue <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">&amp;</span> log2FoldChange <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames</span>()</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the enrichment using TAIR IDs</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>ego_avr <span class="ot">&lt;-</span> <span class="fu">enrichGO</span>(<span class="at">gene          =</span> sig_avr_up,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">OrgDb         =</span> org.At.tair.db,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">keyType       =</span> <span class="st">"TAIR"</span>,</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ont           =</span> <span class="st">"BP"</span>, <span class="co"># Biological Process</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">pAdjustMethod =</span> <span class="st">"none"</span>,</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>                    <span class="at">pvalueCutoff  =</span> <span class="fl">0.05</span>,</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>                    <span class="at">qvalueCutoff  =</span> <span class="fl">0.2</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize with a dotplot</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>enrichplot<span class="sc">::</span><span class="fu">dotplot</span>(ego_avr, <span class="at">showCategory=</span><span class="dv">20</span>) <span class="sc">+</span> </span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggtitle</span>(<span class="st">"GO Enrichment: Avirulent Response (Up-regulated)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04-lab4_files/figure-html/enrich-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="question-9-interpreting-enrichment" class="level4" data-number="9.5.5.1">
+<h4 data-number="9.5.5.1" class="anchored" data-anchor-id="question-9-interpreting-enrichment"><span class="header-section-number">9.5.5.1</span> <strong>Question 9: Interpreting Enrichment</strong></h4>
+<p>Examine the biological processes enriched in your avirulent response plot. * Can you identify terms related to defense and stress mechanisms in plants? * Discuss what these specific GO terms tell you about the plant’s physiological state when facing an avirulent pathogen.</p>
+
+
+</section>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lab2_3/03-lab3.html" class="pagination-link" aria-label="Lab 3: Genome Assembly and Annotation Basics">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lab5/05-lab5.html" class="pagination-link" aria-label="Lab 5: Amplicon Metagenomics">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Lab 5: Amplicon Metagenomics</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab4/04-lab4.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

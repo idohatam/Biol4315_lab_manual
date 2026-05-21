@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup – Biol 4315: Genomics and Transcriptomics Lab Manual</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lab2_3/02-lab2.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-aa873432a3c62897e6c2091c0d30a948.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab1/01-lab1.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Biol 4315: Genomics and Transcriptomics Lab Manual</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/idohatam/Biol4315_lab_manual" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab1/01-lab1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/02-lab2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/03-lab3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab4/04-lab4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab5/05-lab5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Lab 5: Amplicon Metagenomics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">2</span> <strong>Introduction</strong></a></li>
+  <li><a href="#computational-environment-setup" id="toc-computational-environment-setup" class="nav-link" data-scroll-target="#computational-environment-setup"><span class="header-section-number">3</span> <strong>Computational environment setup</strong></a>
+  <ul>
+  <li><a href="#setting-up-conda-virtual-environments" id="toc-setting-up-conda-virtual-environments" class="nav-link" data-scroll-target="#setting-up-conda-virtual-environments"><span class="header-section-number">3.1</span> <strong>Setting up conda virtual environments</strong></a></li>
+  </ul></li>
+  <li><a href="#git-github-setup" id="toc-git-github-setup" class="nav-link" data-scroll-target="#git-github-setup"><span class="header-section-number">4</span> <strong>Git &amp; GitHub setup</strong></a>
+  <ul>
+  <li><a href="#setting-up-a-github-account-and-connecting-it-to-your-computer-git-cliante" id="toc-setting-up-a-github-account-and-connecting-it-to-your-computer-git-cliante" class="nav-link" data-scroll-target="#setting-up-a-github-account-and-connecting-it-to-your-computer-git-cliante"><span class="header-section-number">4.1</span> <strong>Setting up a github account and connecting it to your computer git cliante</strong></a></li>
+  <li><a href="#connecting-git-and-github-to-rstudio-using-a-github-first-approach" id="toc-connecting-git-and-github-to-rstudio-using-a-github-first-approach" class="nav-link" data-scroll-target="#connecting-git-and-github-to-rstudio-using-a-github-first-approach"><span class="header-section-number">4.2</span> <strong>Connecting git and GitHub to RStudio using a GitHub first approach</strong></a></li>
+  <li><a href="#first-commits" id="toc-first-commits" class="nav-link" data-scroll-target="#first-commits"><span class="header-section-number">4.3</span> <strong>First commits</strong></a></li>
+  <li><a href="#first-colab" id="toc-first-colab" class="nav-link" data-scroll-target="#first-colab"><span class="header-section-number">4.4</span> <strong>First colab</strong></a></li>
+  </ul></li>
+  <li><a href="#using-rmarkdown-for-documentation-reports-and-reproducible-workflows" id="toc-using-rmarkdown-for-documentation-reports-and-reproducible-workflows" class="nav-link" data-scroll-target="#using-rmarkdown-for-documentation-reports-and-reproducible-workflows"><span class="header-section-number">5</span> <strong>Using RMarkdown for documentation, reports, and reproducible workflows</strong></a>
+  <ul>
+  <li><a href="#why-rmarkdown" id="toc-why-rmarkdown" class="nav-link" data-scroll-target="#why-rmarkdown"><span class="header-section-number">5.1</span> <strong>Why RMarkdown</strong></a></li>
+  <li><a href="#starting-a-rmarkdown-document" id="toc-starting-a-rmarkdown-document" class="nav-link" data-scroll-target="#starting-a-rmarkdown-document"><span class="header-section-number">5.2</span> <strong>Starting a RMarkdown document</strong></a></li>
+  <li><a href="#modifying-your-document" id="toc-modifying-your-document" class="nav-link" data-scroll-target="#modifying-your-document"><span class="header-section-number">5.3</span> <strong>Modifying your document</strong></a></li>
+  </ul></li>
+  <li><a href="#using-containerized-environments-with-docker-desktop" id="toc-using-containerized-environments-with-docker-desktop" class="nav-link" data-scroll-target="#using-containerized-environments-with-docker-desktop"><span class="header-section-number">6</span> <strong>Using containerized environments with Docker desktop</strong></a>
+  <ul>
+  <li><a href="#what-are-docker-and-containerized-environments" id="toc-what-are-docker-and-containerized-environments" class="nav-link" data-scroll-target="#what-are-docker-and-containerized-environments"><span class="header-section-number">6.1</span> <strong>What are Docker and containerized environments?</strong></a></li>
+  <li><a href="#why-docker-in-this-course" id="toc-why-docker-in-this-course" class="nav-link" data-scroll-target="#why-docker-in-this-course"><span class="header-section-number">6.2</span> <strong>Why Docker in this course?</strong></a></li>
+  <li><a href="#basic-docker-commands" id="toc-basic-docker-commands" class="nav-link" data-scroll-target="#basic-docker-commands"><span class="header-section-number">6.3</span> <strong>Basic Docker commands</strong></a></li>
+  </ul></li>
+  <li><a href="#lab-1-assignment" id="toc-lab-1-assignment" class="nav-link" data-scroll-target="#lab-1-assignment"><span class="header-section-number">7</span> <strong>Lab 1 assignment</strong></a></li>
+  <li><a href="#coming-next-week" id="toc-coming-next-week" class="nav-link" data-scroll-target="#coming-next-week"><span class="header-section-number">8</span> <strong>Coming next week</strong></a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab1/01-lab1.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> <strong>Introduction</strong></h1>
+<p>Welcome to your first Biol4315 lab. In this lab, you will:</p>
+<ul>
+<li>Set up your computational environment for the rest of the semester.</li>
+<li>Learn how to use R Markdown to create reproducible reports.</li>
+<li>Set up version control for your project using Git and GitHub.</li>
+<li>Learn how to pull and use Docker containers for reproducible bioinformatics workflows.</li>
+<li>Begin building your own personal project repo that you’ll use throughout the term.</li>
+</ul>
+<p>This lab is foundational to the rest of this course, and while it is a bit technical, it will equip you with tools you’ll use <em>every single week</em>. Let’s get started.</p>
+<hr>
+</section>
+<section id="computational-environment-setup" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> <strong>Computational environment setup</strong></h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Goal:</strong> Configure your lab computer and install required tools using the course R package.</p>
+</div>
+</div>
+<ol type="1">
+<li><p>Select your lab computer and start RStudio — You will use this same machine throughout the course so make sure to note wher you sit.</p></li>
+<li><p>Visit the computational environment package <a href="https://github.com/idohatam/Biol4315setup">repository</a></p></li>
+<li><p>Follow the tutorial on the GitHub README page - This will:</p>
+<ul>
+<li>Install the computational environment R package</li>
+<li>Install <code>Miniconda</code> (if not already installed)</li>
+<li>Install essential third-party tools for upcoming labs</li>
+<li>Install required R packages</li>
+</ul></li>
+</ol>
+<p>Once the R package is installed set up your computational environment by running:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">conda_whats_installed</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This is the only function you need to run to complete the setup.</p>
+<section id="setting-up-conda-virtual-environments" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="setting-up-conda-virtual-environments"><span class="header-section-number">3.1</span> <strong>Setting up conda virtual environments</strong></h2>
+<p>Now that <code>conda</code> is installed, it can be used to install tools within virtual environments. Using a virtual environment provides a clean, isolated space to install and manage bioinformatics tools without interfering with your system-wide packages or other projects. This makes your workflow more reproducible and avoids potential conflicts between software dependencies. The repo includes instruction for the installation of the long read genome assembler <code>flye</code>, due to some conflicts in <code>python</code> versions for different dependencies we will install it in a <code>conda</code> virtual environment with a less recent <code>python</code> version. Follow the tutorial in the repo and install <code>flye</code> on your computer. Make sure that the installation is successful as you will use <code>flye</code> for your final course project.</p>
+<p>Next setup a <code>conda</code> environment called <code>sequali_env</code>, and install the QC tool <code>squali</code> in it. That’s a QC tool for output from sequencers and you will use it in your next lab.</p>
+<hr>
+</section>
+</section>
+<section id="git-github-setup" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> <strong>Git &amp; GitHub setup</strong></h1>
+<section id="setting-up-a-github-account-and-connecting-it-to-your-computer-git-cliante" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="setting-up-a-github-account-and-connecting-it-to-your-computer-git-cliante"><span class="header-section-number">4.1</span> <strong>Setting up a github account and connecting it to your computer git cliante</strong></h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Goal:</strong> Set up a GitHub account and connect it to your local git client.</p>
+</div>
+</div>
+<p>The <code>Git</code> and <code>GitHub</code> component will follow a few parts from the book <a href="https://happygitwithr.com/index.html">Happy Git and GitHub for the R user</a>. The book is a great resource and I suggest you follow it if you wish to gain a deeper understanding of version control.</p>
+<ol type="1">
+<li><p>If you haven’t already, create a <code>GitHub</code> account and sign-in to it. I suggest following the guidelines for user name proposed in <a href="https://happygitwithr.com/github-acct.html">chapter 4 of Happy Git</a></p></li>
+<li><p>Configure Git on your computer with your <code>GitHub</code> username and email: Your lab computer should have git installed, you can test that the installation works by running the following code in the terminal (or in RStudio’s terminal tab)</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Next lets configure <code>git</code> with your <code>GitHub</code> username and email.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note that it is important that you use the same email you used for your GitHub account</strong></p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">'GitHub username'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">'your_email@email.com'</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#this will check if your account has been set</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> <span class="at">--list</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="connecting-git-and-github-to-rstudio-using-a-github-first-approach" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="connecting-git-and-github-to-rstudio-using-a-github-first-approach"><span class="header-section-number">4.2</span> <strong>Connecting git and GitHub to RStudio using a GitHub first approach</strong></h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Goal:</strong> Connect RStudio to GitHub and practice collaborative version control.</p>
+</div>
+</div>
+<ol type="1">
+<li><p>On your <code>GitHub</code> page start a repo call it Biol4315_funzis_repo_your_initials.</p></li>
+<li><p>Set up an HTTPS authentication token by runnig the following code chunk which will open up the relevant page on github</p>
+<ul>
+<li>Make sure that “repo”, “user”, and “workflow” are selected (should be pre-selected when you run the code)</li>
+<li>Set the expiration time for this token to at least 90 days.</li>
+<li>Click submit and generate a token. Once the token is generated, copy it.</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_github_token</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li><p>Run the following code it will prompt you to supply a password or a token, paste your token when prompt.</p>
+<ul>
+<li>This will make sure that RStudio can access your <code>GitHub</code> repo</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gitcreds<span class="sc">::</span><span class="fu">gitcreds_set</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="4" type="1">
+<li><p>Clone your GitHub repo using RStudio, cloning is copying the repo to your computer so you can work on it locally.</p>
+<ul>
+<li><p>Copy your repo’s URL (see image)</p></li>
+<li><p>Follow the code chunk to connect <code>git</code> and <code>GitHub</code> to RStudio</p></li>
+</ul></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/Picture3.png" class="img-fluid figure-img" style="width:40.0%"></p>
+<figcaption>This is what the URL should look like</figcaption>
+</figure>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">create_from_github</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"https://github.com/YOU/YOUR_REPO.git"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">destdir =</span> <span class="st">"~/path/to/where/you/want/the/local/repo/"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="5" type="1">
+<li><p>Look at the file tab for a <code>readme.md</code> file, if present you’re done</p></li>
+<li><p>Note that you are now working on an RStudio project that has the same name as your <code>GitHub</code> repo.</p></li>
+</ol>
+</section>
+<section id="first-commits" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="first-commits"><span class="header-section-number">4.3</span> <strong>First commits</strong></h2>
+<p>Commits are changes to your project you are ready to be archived by <code>git</code> and pushed to <code>GitHub</code>, this is the core of version control. Commits allow you to track changes to your your project and code, and commit comments allow you to archive and track the reason for each change.</p>
+<ol type="1">
+<li><p>Open the <code>readme.md</code> file and add the line “This is a line I added via RStudio” to the readme file and save it.</p></li>
+<li><p>Open the git tab stage the change by checking the box next to the <code>readme.md</code> file and press commit. Make a descriptive comment.</p></li>
+<li><p>Start a new R script file, save it as <code>practice.R</code> stage and commit it.</p></li>
+<li><p>Push the commits to <code>GitHub</code> by pressing the push buttun on the git tab.</p></li>
+<li><p>Refresh your <code>GitHub</code> page to make sure it is up to date.</p></li>
+</ol>
+</section>
+<section id="first-colab" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="first-colab"><span class="header-section-number">4.4</span> <strong>First colab</strong></h2>
+<p><code>GitHub</code> allows you to collaborate on different projects while making sure changes are traked and reversible. One way to collaborate on a project you’re interested in, is to fork it over to your <code>GitHub</code> page, make changes and suggest them to the owner of the repo you forked. Those are called pull requests. Here’s how to do it:</p>
+<ol type="1">
+<li><p>Swap GitHub usernames with a partner.</p></li>
+<li><p>From their <code>GitHub</code> page Fork your partner’s funzis_repo to yours.</p></li>
+<li><p>Clone the forked repo so you can work on it locally (now that you know how to)</p></li>
+<li><p>Add a small markdown file (<code>hello.md</code>) to their repo.</p></li>
+<li><p>Get chatGPT to write a haiku and paste it to <code>hello.md</code>.</p></li>
+<li><p>Stage, commit and push your changes to your repo.</p></li>
+<li><p>From your <code>GitHub</code> page submit a pull request back to them.</p></li>
+<li><p>Review and accept your partner’s pull request.</p></li>
+</ol>
+<p>That’s it, you’ve just successfully collaborated on a project.</p>
+<hr>
+</section>
+</section>
+<section id="using-rmarkdown-for-documentation-reports-and-reproducible-workflows" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>Using RMarkdown for documentation, reports, and reproducible workflows</strong></h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Goal:</strong> Create your first <code>.Rmd</code> document, understand the structure, render it, and begin using it as your scientific notebook for this course.</p>
+</div>
+</div>
+<section id="why-rmarkdown" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="why-rmarkdown"><span class="header-section-number">5.1</span> <strong>Why RMarkdown</strong></h2>
+<p>R Markdown allows you to combine code, output, and narrative in a single, shareable file. This format is the foundation of reproducible data science and will serve as your primary platform for documenting your lab work, results, and reflections throughout the course. You’ll use it to generate reports, keep your notes organized, and track the evolution of your genome project.</p>
+</section>
+<section id="starting-a-rmarkdown-document" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="starting-a-rmarkdown-document"><span class="header-section-number">5.2</span> <strong>Starting a RMarkdown document</strong></h2>
+<ol type="1">
+<li><p>Get back to your own lab RStudio project</p></li>
+<li><p>Load the <code>rmarkdown</code> and <code>knitr</code> packages</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmarkdown)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li><p>Go to <code>File -&gt; New File -&gt; R Markdown...</code> name the title <code>Biol4315 Lab-1 Report</code>, and keep the format as html</p></li>
+<li><p>Inspect the document, at the top you will find a <code>YAML</code> header which holds the document meta-data such as title, author, and output format.</p></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/Picture1.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<figcaption>The <code>YAML</code> header</figcaption>
+</figure>
+</div>
+<ol start="5" type="1">
+<li>Inspect the rest of the document note the code chunks and text chunks note the <code>##</code> which indicates a secondary title.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/Picture2.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<figcaption>default code chunk settings</figcaption>
+</figure>
+</div>
+<ol start="6" type="1">
+<li><p>Save the file, name it <code>Biol4315_lab1_report_your_initials.RMD</code>, stage and commit the new file.</p></li>
+<li><p>Render the <code>.Rmd</code> file by pressing Knit. Rendering runs all evaluated code chunks, since your code is documented in chunks the self contained document makes the output reproducible.</p></li>
+<li><p>Inspect the html output.</p></li>
+</ol>
+</section>
+<section id="modifying-your-document" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="modifying-your-document"><span class="header-section-number">5.3</span> <strong>Modifying your document</strong></h2>
+<ol type="1">
+<li><p>Add a primary title above the first secondary title with the name of the partner who’s <code>GitHub</code> repo you forked.</p></li>
+<li><p>Below the last line of template add the following:</p>
+<ul>
+<li><p>A code chunk that isn’t evaluated or ran when the document is rendered that installs the <code>vegan</code> package</p></li>
+<li><p>A Text chunk that explain that your going to load the <code>ggplot2</code> package and plot a scatter plot of speed vs dist from the cars dataset</p></li>
+<li><p>A code chunk that loads the <code>ggplot2</code> package and plots the scatter plot</p></li>
+</ul></li>
+<li><p>Save, stage, commit, and push changes.</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="using-containerized-environments-with-docker-desktop" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> <strong>Using containerized environments with Docker desktop</strong></h1>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Goal:</strong> Understand what Docker is and how to run bioinformatics tools in isolated, reproducible environments.</p>
+</div>
+</div>
+<section id="what-are-docker-and-containerized-environments" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="what-are-docker-and-containerized-environments"><span class="header-section-number">6.1</span> <strong>What are Docker and containerized environments?</strong></h2>
+<p>Docker is a tool that allows us to package software — including all of its dependencies — into containers that can run reliably on any system. In bioinformatics, this is particularly useful because many tools have complex installation requirements or conflict with one another. By using Docker containers, we avoid those issues and ensure both that usability, since there is no need to install anything, and reproducibility.</p>
+</section>
+<section id="why-docker-in-this-course" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="why-docker-in-this-course"><span class="header-section-number">6.2</span> <strong>Why Docker in this course?</strong></h2>
+<p>In your genome assembly project, you’ll be using tools that are often deployed as containers to avoid conflicts. Furthermore, when using systems were you don’t have admin privileges such as the computer clusters of the Digital Research Alliance of Canada, Docker containers circumvent the need to install software allowing you to conduct your work safely. Learning Docker now means you’ll be ready to run genomics tools like <code>BUSCO</code>, <code>Funannotate</code>, and more later in the semester.</p>
+</section>
+<section id="basic-docker-commands" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="basic-docker-commands"><span class="header-section-number">6.3</span> <strong>Basic Docker commands</strong></h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note: For this part, make sure that docker desktop is running. If not, select it from the application launcher.</strong> <strong>If the application is running yet the terminal doesn’t recognize docker as a command, you will need to set the path to docker manually using the following code</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export PATH="$HOME/.docker/bin:$PATH"'</span> <span class="op">&gt;&gt;</span> ~/.zshenv</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.zshenv</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>After running this code make sure to restart the terminal window.</strong></p>
+</div>
+</div>
+<ol type="1">
+<li><p>Open a terminal or shell in RStudio or your system</p></li>
+<li><p>Pull the BUSCO image:</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull ezlabgva/busco</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Check that it works by running:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">--rm</span> <span class="at">--platform</span> linux/amd64 ezlabgva/busco busco <span class="at">-h</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <code>run</code> command is intended for a non-interactive run where the order of operation is supplied in advance.</p>
+<p>The <code>--rm</code> flag tells docker to remove the container upon exit so it doesn’t stay in the background.</p>
+<p>The <code>busco</code> argument tells the <code>run</code> function to run a containerized image of <code>busco</code>.</p>
+<p>The <code>-h</code> flag tells <code>busco</code> to display the help menu.</p>
+<p>The <code>--platform linux/amd64</code> makes sure that the linux version is compatible with apple silicon.</p>
+<p>You should see the help menu, which confirms it installed correctly.</p>
+<ol start="4" type="1">
+<li><p>In your <code>.Rmd</code> file, include an un-evaluated code chunk that shows that pulls the funannotate image from docker hub, you might need to search funannotate to find the proper link.</p></li>
+<li><p>Going back to the conda environments, include an un-evaluated code chunk for the installation of <code>squali</code> with conda you did earlier</p></li>
+<li><p>Make sure to save, stage, commit, and push your changes to the <code>.Rmd</code> file.</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="lab-1-assignment" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> <strong>Lab 1 assignment</strong></h1>
+<ol type="1">
+<li><p>Make sure your <code>GitHub</code> repo is set.</p></li>
+<li><p>Make sure all modification to your <code>.Rmd</code> are pushed to <code>GitHub</code>.</p></li>
+<li><p>Email a link to your repo to your Lab instructor.</p></li>
+</ol>
+<hr>
+</section>
+<section id="coming-next-week" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> <strong>Coming next week</strong></h1>
+<p>Next week, we’ll begin learning about sequencing data and how to assess the quality of both short- and long-read files. Be sure your <code>GitHub</code> repo is clean and working—you’ll be adding to it regularly!</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="Welcome">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lab2_3/02-lab2.html" class="pagination-link" aria-label="Lab 2: Quality Check, Processing &amp; Alignment">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab1/01-lab1.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>

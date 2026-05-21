@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Lab 2: Quality Check, Processing &amp; Alignment – Biol 4315: Genomics and Transcriptomics Lab Manual</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lab2_3/03-lab3.html" rel="next">
+<link href="../lab1/01-lab1.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-aa873432a3c62897e6c2091c0d30a948.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-b9eaee60a963b5d74e9d33cc267de6a6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lab2_3/02-lab2.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Biol 4315: Genomics and Transcriptomics Lab Manual</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/idohatam/Biol4315_lab_manual" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab1/01-lab1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/02-lab2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab2_3/03-lab3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab4/04-lab4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Lab 4: Transcriptomics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lab5/05-lab5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Lab 5: Amplicon Metagenomics</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#quality-control-and-processing-of-high-throughput-sequencing-reads" id="toc-quality-control-and-processing-of-high-throughput-sequencing-reads" class="nav-link active" data-scroll-target="#quality-control-and-processing-of-high-throughput-sequencing-reads"><span class="header-section-number">3</span> <strong>Quality control and processing of high-throughput sequencing reads</strong></a>
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives"><span class="header-section-number">3.1</span> <strong>Learning objectives</strong></a></li>
+  </ul></li>
+  <li><a href="#lab-2-qc-for-high-throughput-sequencing-data" id="toc-lab-2-qc-for-high-throughput-sequencing-data" class="nav-link" data-scroll-target="#lab-2-qc-for-high-throughput-sequencing-data"><span class="header-section-number">4</span> <strong>Lab 2 QC for high-throughput sequencing data</strong></a>
+  <ul>
+  <li><a href="#introduction-to-quality-check-and-processing-of-high-throughput-sequencing-reads" id="toc-introduction-to-quality-check-and-processing-of-high-throughput-sequencing-reads" class="nav-link" data-scroll-target="#introduction-to-quality-check-and-processing-of-high-throughput-sequencing-reads"><span class="header-section-number">4.1</span> <strong>Introduction to quality check and processing of high-throughput sequencing reads</strong></a></li>
+  <li><a href="#fasta-and-fastq-formats" id="toc-fasta-and-fastq-formats" class="nav-link" data-scroll-target="#fasta-and-fastq-formats"><span class="header-section-number">4.2</span> <strong>FASTA and FASTQ formats</strong></a></li>
+  <li><a href="#before-we-begin---rstudio-project-and-github-integration" id="toc-before-we-begin---rstudio-project-and-github-integration" class="nav-link" data-scroll-target="#before-we-begin---rstudio-project-and-github-integration"><span class="header-section-number">4.3</span> <strong>Before we begin - rstudio project and <code>GitHub</code> integration</strong>**</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">4.4</span> <strong>Background</strong></a></li>
+  <li><a href="#quality-check-illumina-reads" id="toc-quality-check-illumina-reads" class="nav-link" data-scroll-target="#quality-check-illumina-reads"><span class="header-section-number">4.5</span> <strong>Quality check illumina reads</strong></a>
+  <ul>
+  <li><a href="#sequencing-quality-per-basecycle" id="toc-sequencing-quality-per-basecycle" class="nav-link" data-scroll-target="#sequencing-quality-per-basecycle"><span class="header-section-number">4.5.1</span> <strong>Sequencing quality per base/cycle</strong></a></li>
+  <li><a href="#sequence-content-per-basecycle" id="toc-sequence-content-per-basecycle" class="nav-link" data-scroll-target="#sequence-content-per-basecycle"><span class="header-section-number">4.5.2</span> <strong>Sequence content per base/cycle</strong></a></li>
+  <li><a href="#read-frequency-plot" id="toc-read-frequency-plot" class="nav-link" data-scroll-target="#read-frequency-plot"><span class="header-section-number">4.5.3</span> <strong>Read frequency plot</strong></a></li>
+  <li><a href="#over-represented-k-mers-adapter-overrepresentation-plots" id="toc-over-represented-k-mers-adapter-overrepresentation-plots" class="nav-link" data-scroll-target="#over-represented-k-mers-adapter-overrepresentation-plots"><span class="header-section-number">4.5.4</span> <strong>Over-represented k-mers &amp; adapter overrepresentation plots</strong></a></li>
+  <li><a href="#qc-for-long-reads" id="toc-qc-for-long-reads" class="nav-link" data-scroll-target="#qc-for-long-reads"><span class="header-section-number">4.5.5</span> <strong>QC for long reads</strong></a>
+  <ul>
+  <li><a href="#what-should-i-look-for-in-sequali-output" id="toc-what-should-i-look-for-in-sequali-output" class="nav-link" data-scroll-target="#what-should-i-look-for-in-sequali-output"><span class="header-section-number">4.5.5.1</span> <strong>What should I look for in sequali output?</strong></a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#filtering-and-trimming-short-reads-reads" id="toc-filtering-and-trimming-short-reads-reads" class="nav-link" data-scroll-target="#filtering-and-trimming-short-reads-reads"><span class="header-section-number">4.6</span> <strong>Filtering and trimming short reads reads</strong></a></li>
+  </ul></li>
+  <li><a href="#summary-exercise-lab-2" id="toc-summary-exercise-lab-2" class="nav-link" data-scroll-target="#summary-exercise-lab-2"><span class="header-section-number">5</span> <strong>Summary exercise lab 2</strong></a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab2_3/02-lab2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Lab 2: Quality Check, Processing &amp; Alignment</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><br></p>
+<section id="quality-control-and-processing-of-high-throughput-sequencing-reads" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> <strong>Quality control and processing of high-throughput sequencing reads</strong></h1>
+<p><br></p>
+<section id="learning-objectives" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="learning-objectives"><span class="header-section-number">3.1</span> <strong>Learning objectives</strong></h2>
+<details>
+<summary>
+Click to expand
+</summary>
+<p><strong>By the end of this lab you will be able to:</strong></p>
+<ul>
+<li>Understand FASTA and FASTQ file formats</li>
+<li>Understand key concepts in sequencing quality control (QC)</li>
+<li>Perform basic QC/QA on HTS sequences using various tools</li>
+<li>Understand common QC metrics (e.g., N50, mean read length, read length distribution)</li>
+<li>Understand the different QC/QA strategies between short and long reads</li>
+<li>Interpret visual summaries of read quality</li>
+</ul>
+</details>
+<hr>
+</section>
+</section>
+<section id="lab-2-qc-for-high-throughput-sequencing-data" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> <strong>Lab 2 QC for high-throughput sequencing data</strong></h1>
+<section id="introduction-to-quality-check-and-processing-of-high-throughput-sequencing-reads" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="introduction-to-quality-check-and-processing-of-high-throughput-sequencing-reads"><span class="header-section-number">4.1</span> <strong>Introduction to quality check and processing of high-throughput sequencing reads</strong></h2>
+<p><br></p>
+<p>Advances in sequencing technology are helping researchers sequence the genome deeper than ever. These sequencing experiments typically yield millions of reads (or billions of base pairs) and these reads have to be further processed, quality checked and aligned before we can quantify the genomic signal of interest and apply statistics and/or machine learning methods. For example, you may want to count how many reads overlap with your promoter set of interest or you may want to quantify RNA-seq reads that overlap with exons. Post-alignment operations are usually, but not always, similar to operations on genomic intervals. In this lab we will introduce the fundamentals of read processing and quality check, and we will show how to do those tasks in R. The read quality check and processing is a fundamental step in all high-throughput sequencing analyses.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note:</strong> every sequence resulting from a high-throughput sequencing run is referred to as a read.</p>
+</div>
+</div>
+</section>
+<section id="fasta-and-fastq-formats" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="fasta-and-fastq-formats"><span class="header-section-number">4.2</span> <strong>FASTA and FASTQ formats</strong></h2>
+<p>High-throughput sequencing reads are usually output from sequencing facilities as text files in a format called “FASTQ” or “fastq”. This format is designed to handle base quality metrics output from sequencing machines. In this format, both the sequence and quality scores are represented as single ASCII characters. The format uses four lines for each sequence, and these four lines are stacked on top of each other in text files output by sequencing workflows. Each of the 4 lines will represent a read.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/fastqPic.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>FIGURE 1: An example fastq file showing the first part of the PAX6 gene</figcaption>
+</figure>
+</div>
+<p>Line 1 begins with the ‘@’ character and is followed by a sequence identifier and an optional description. This line is utilized by the sequencing technology, and usually contains specific information for the technology. It can contain flow cell IDs, lane numbers, and information on read pairs. Line 2 is the sequence letters. Line 3 begins with a ‘+’ character; it marks the end of the sequence and is optionally followed by the same sequence identifier again in line 1. Line 4 encodes the quality values for the sequence in Line 2, and must contain the same number of symbols as letters in the sequence. Each letter corresponds to a quality score. Although there might be different definitions of the quality scores, a de facto standard in the field is to use “Phred quality scores”. These scores represent the likelihood of the base being called wrong.</p>
+</section>
+<section id="before-we-begin---rstudio-project-and-github-integration" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="before-we-begin---rstudio-project-and-github-integration"><span class="header-section-number">4.3</span> <strong>Before we begin - rstudio project and <code>GitHub</code> integration</strong>**</h2>
+<ol type="1">
+<li><p>Start a <code>GitHub</code> repo for this lab.</p></li>
+<li><p>Start a version control Rstudio for this project and connect your <code>GitHub</code> repo to it - this is a good working practice, new project = new Rstudio project.</p></li>
+<li><p>Make a <code>data/</code> and <code>outputs/</code> folder in your project directory. Downloaded files should go to <code>data/</code>, and all generated output files should be directed to <code>outputs/</code>. Make sure to add both of these folders to your <code>.gitignore</code>.</p></li>
+<li><p>Start a Quarto or Rmarkdown file for the report for this lab.</p></li>
+</ol>
+</section>
+<section id="background" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="background"><span class="header-section-number">4.4</span> <strong>Background</strong></h2>
+<p>Before starting genome assembly or other downstream analyses, it’s essential to assess the quality of sequencing reads. This ensures the data are suitable for your goals and helps detect issues like low-quality bases, adapter contamination, or overly short reads.</p>
+<p>This lab focuses on both short-read (Illumina) and long-read (Oxford Nanopore) QC. You’ll use command-line and R-based tools to visualize quality and interpret results. We will cover those platforms in depth during lecture, but Illumina produces reads that are a few hundred bases long (usually up to 500bp), whereas Oxford Nanopore sequencers can produce reads that are hundreds of thousands of nucleotides in length. However it is considered more error prone.</p>
+</section>
+<section id="quality-check-illumina-reads" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="quality-check-illumina-reads"><span class="header-section-number">4.5</span> <strong>Quality check illumina reads</strong></h2>
+<ol type="1">
+<li><p>Load the <code>Rqc</code> package and get the path to the compressed <code>fastq.gz</code> files that come with it.</p></li>
+<li><p>Run the <code>rqc()</code> function which performs a comprehensive quality check on short read files and obtains an object with sequence quality-related results. We are using example fastq files from the ShortRead package.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Load the package</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rqc)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Get the path to the file</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>folder <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package=</span><span class="st">"ShortRead"</span>, <span class="st">"extdata/E-MTAB-1147"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Feeds fastq.qz files in "folder" to quality check function</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>qcRes <span class="ot">&lt;-</span> <span class="fu">rqc</span>(<span class="at">path =</span> folder, <span class="at">pattern =</span> <span class="st">".fastq.gz"</span>, <span class="at">openBrowser=</span><span class="cn">FALSE</span>, <span class="at">outdir=</span><span class="st">"outputs"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="sequencing-quality-per-basecycle" class="level3" data-number="4.5.1">
+<h3 data-number="4.5.1" class="anchored" data-anchor-id="sequencing-quality-per-basecycle"><span class="header-section-number">4.5.1</span> <strong>Sequencing quality per base/cycle</strong></h3>
+<p>Now that we have the qcRes object, we can plot various sequence quality metrics for our fastq files. We will first plot “sequence quality per base/cycle”.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rqcCycleQualityBoxPlot</span>(qcRes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This plot, shown below, depicts the quality scores across all bases at each position in the reads.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/CycleQualityBoxPlot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>FIGURE 2: Per base sequence quality boxplot</figcaption>
+</figure>
+</div>
+<p>In our case, the x-axis in the plot is labeled as “cycle”. This is because in each sequencing “cycle” a fluorescently labeled nucleotide is added to complement the template sequence, and the sequencing machine identifies which nucleotide is added. Therefore, cycles correspond to bases/nucleotides along the read, and the number of cycles is equivalent to the read length.</p>
+<p>Long sequences can have degraded quality towards the ends of the reads. Looking at quality distribution over base positions can help us decide to do trimming towards the end of the reads or not. A good sample will have median quality scores per base above 28. If scores are below 20 towards the ends, you can think about trimming the reads.</p>
+</section>
+<section id="sequence-content-per-basecycle" class="level3" data-number="4.5.2">
+<h3 data-number="4.5.2" class="anchored" data-anchor-id="sequence-content-per-basecycle"><span class="header-section-number">4.5.2</span> <strong>Sequence content per base/cycle</strong></h3>
+<p>Per-base sequence content shows nucleotide proportions for each position. In a random sequencing library there should be no nucleotide bias and the lines should be almost parallel with each other. The code below shows how to get this plot. The resulting plot is shown in the figure below.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rqcCycleBaseCallsLinePlot</span>(qcRes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/baseCallFreq-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>FIGURE 3: Percentage of nucleotide bases per position across different FASTQ files</figcaption>
+</figure>
+</div>
+<p>However, some types of sequencing libraries can produce a biased sequence composition. For example, in RNA-Seq, it is common to have bias at the beginning of the reads. This happens because of random primers annealing to the start of reads during RNA-Seq library preparation. These primers are not truly random, which leads to a variation at the beginning of the reads. Although RNA-seq experiments will usually have these biases, this will not affect the ability of measuring gene expression.</p>
+<p><br></p>
+<p>In addition, some libraries are inherently biased in their sequence composition. For example, in bisulfite sequencing experiments, most of the cytosines will be converted to thymines. This will create a difference in C and T base compositions over the read, however this type of difference is normal for bisulfite sequencing experiments.</p>
+</section>
+<section id="read-frequency-plot" class="level3" data-number="4.5.3">
+<h3 data-number="4.5.3" class="anchored" data-anchor-id="read-frequency-plot"><span class="header-section-number">4.5.3</span> <strong>Read frequency plot</strong></h3>
+<p>This plot shows the degree of duplication for every read in the library. A high level of duplication, non-unique reads, is likely to indicate an enrichment bias. e.g.&nbsp;some regions of the genomes are over represented compared to others. A potential cause for these could be issues with PCR artifacts. PCR is a common step in some sequencing library preparation protocols, which creates many copies of the sequence fragment.</p>
+<p>In some cases we will expect high degree of duplication, for example in RNA sequencing data the non-unique read proportion can reach more than 20%. However, the degree of duplication generally stems from genes simply being expressed at high levels. This means that there will be many copies of transcripts and many copies of the same fragment. Since we cannot be sure these duplicated reads are due to PCR bias or an effect of high transcription, we should not remove duplicated reads in RNA-seq analysis. However, in some other cases duplicated reads are more likely to be due to PCR bias and one might consider removing them.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rqcReadFrequencyPlot</span>(qcRes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="assets/ReadFrequencyPlot-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>FIGURE 4: The percent of different duplication levels in FASTQ files. Most of the reads in all libraries have only one copy in this case</figcaption>
+</figure>
+</div>
+</section>
+<section id="over-represented-k-mers-adapter-overrepresentation-plots" class="level3" data-number="4.5.4">
+<h3 data-number="4.5.4" class="anchored" data-anchor-id="over-represented-k-mers-adapter-overrepresentation-plots"><span class="header-section-number">4.5.4</span> <strong>Over-represented k-mers &amp; adapter overrepresentation plots</strong></h3>
+<p>Over-represented k-mers along the reads can be an additional check. If there are such sequences it may point to adapter contamination and should be trimmed. Adapters are known sequences that are added to the ends of the reads and play a role in the sequencing reaction. This kind of contamination could also be visible at “sequence content per base” plots. In addition, if you know the adapter sequences, you can match it to the end of the reads and trim them. The most popular tool for sequencing quality control is the <code>fastQC</code> tool, which is written in Java. It produces the plots that we described above in addition to k-mer overrepresentation and adapter overrepresentation plots. The R package fastqcr can run this Java tool and produce R-based plots and reports. This package simply calls the Java tool and parses its results. Below, we show how to do that.</p>
+<p>One of the great things about <code>fastQC</code> (and <code>sequali</code> as well which you will use later on) is that it produces reports compatible with the <a href="https://seqera.io/multiqc/">multiQC platform</a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregating multiple fastqc reports into a data frame</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fastqcr)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Demo QC directory containing zipped FASTQC reports</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>qc.dir <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"fastqc_results"</span>, <span class="at">package =</span> <span class="st">"fastqcr"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>qc <span class="ot">&lt;-</span> <span class="fu">qc_aggregate</span>(qc.dir)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>qc</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspecting QC problems</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># See which modules failed in the most samples</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_fails</span>(qc, <span class="st">"module"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Or, see which samples failed the most</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_fails</span>(qc, <span class="st">"sample"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Building multi QC reports</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_report</span>(qc.dir, <span class="at">result.file =</span> <span class="st">"outputs/multi-qc-report"</span> )</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Building one-sample QC reports (+ interpretation)</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>qc.file <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"fastqc_results"</span>, <span class="st">"S1_fastqc.zip"</span>, <span class="at">package =</span> <span class="st">"fastqcr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now that we have run <code>FastQC</code> on our fastq files, we can read the results to R and construct plots or reports. The <code>qc_report()</code> function can create an Rmarkdown-based report from <code>FastQC</code> output.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the report rendered by R functions</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qc_report</span>(qc.file, <span class="at">result.file =</span> <span class="st">"outputs/one-sample-report"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">interpret =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="qc-for-long-reads" class="level3" data-number="4.5.5">
+<h3 data-number="4.5.5" class="anchored" data-anchor-id="qc-for-long-reads"><span class="header-section-number">4.5.5</span> <strong>QC for long reads</strong></h3>
+<p>You installed <code>sequali</code> using <code>conda</code> in your previous lab. <code>sequali</code> is a one function one stop shop for comprehensive quality control of long and short reads. Here we will use it inspect a sequencing run of a yeast genome done using Oxford Nanopore long read sequencer. The sequencing was done using one of the earliest commercially available sequencing chemistry.</p>
+<ol type="1">
+<li><p>Make sure <code>conda</code> is active</p></li>
+<li><p>Download a small sequencing run of a yeast genome from the European Nucleotide Archive using the following code</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR153/006/ERR1539006/ERR1539006.fastq.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File ‘data/ERR1539006.fastq.gz’ already there; not retrieving.</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Note:</strong> It is important to do this before activating the <code>sequali</code> environment since it does not have wget installed.</p>
+</div>
+</div>
+<ol start="3" type="1">
+<li><p>Activate the <code>sequali</code> environment</p></li>
+<li><p>Run <code>sequali</code> on the file you downloaded - need just one command.</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sequali</span> <span class="at">--outdir</span> outputs/sequali_reports data/ERR1539006.fastq.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="5" type="1">
+<li>Inspect the report, do you notice any trends? Note that unlike the short reads there is no drop in base quality towards the end of the sequence. In lecture we will learn why that is.</li>
+</ol>
+<section id="what-should-i-look-for-in-sequali-output" class="level4" data-number="4.5.5.1">
+<h4 data-number="4.5.5.1" class="anchored" data-anchor-id="what-should-i-look-for-in-sequali-output"><span class="header-section-number">4.5.5.1</span> <strong>What should I look for in sequali output?</strong></h4>
+<p><code>sequali</code> summarizes multiple important metrics for long-read quality, including:</p>
+<ul>
+<li><p><strong>N50</strong>: A measure of read length distribution. N50 is the length at which half the total bases are in reads of that length or longer. Higher N50 indicates longer, more contiguous reads — a desirable feature for genome assembly. For Oxford Nanopore, a good N50 is typically over <strong>5,000 bp</strong>.</p></li>
+<li><p><strong>Mean and median read length</strong>: Help assess if the majority of reads are short or if the dataset includes long, high-value reads. An average read length below 2,000 bp may indicate problems during library prep or sequencing.</p></li>
+<li><p><strong>Read length histogram</strong>: A visualization showing how read lengths are distributed. Ideally, this should show a broad distribution with a peak reflecting the expected fragment size.</p></li>
+<li><p><strong>Per-read quality score distribution</strong>: Shows the distribution of <strong>average Q scores per read</strong>. Most reads should have an average Q score <strong>above 10</strong>, though values around 12–14 are ideal for downstream analysis.</p></li>
+<li><p><strong>Per-base and per-position quality score distributions</strong>: These plots show how quality varies <strong>within reads</strong>. Decreasing quality toward the ends of reads is common. However, a steep drop-off or very low scores (&lt; Q7) across the read suggest problems.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Quick sanity check</strong>:<br>
+- Is the N50 above 5,000 bp?<br>
+- Are most reads longer than 2,000 bp?<br>
+- Is the read length histogram unimodal and broad?<br>
+- Are average Q scores mostly above 7?<br>
+- Is base-level quality relatively flat, or does it drop sharply?</p>
+</div>
+</div>
+<p>Use these visual summaries to judge whether the dataset is of sufficient quality for genome assembly or other analyses. You can open the HTML report generated by <code>sequali</code> in your browser to explore the interactive plots.</p>
+<p><a href="https://sequali.readthedocs.io/en/latest/GM24385_1.fastq.gz.html">Example sequali output</a></p>
+</section>
+</section>
+</section>
+<section id="filtering-and-trimming-short-reads-reads" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="filtering-and-trimming-short-reads-reads"><span class="header-section-number">4.6</span> <strong>Filtering and trimming short reads reads</strong></h2>
+<p>As you will learn in lecture the strategies for dealing with problematic short and long reads are different. Due to differences in the technology that produces the sequences the treatment of short reads is much more straight forward so we will focus on it.</p>
+<p>Based on the results of the quality check, you may want to trim or filter the reads. The quality check might have shown the number of reads that have low quality scores. These reads will probably not align very well because of the potential mistakes in base calling, or they may align to wrong places in the genome. Therefore, you may want to remove these reads from your fastq file. Another potential scenario is that parts of your reads need to be trimmed in order to align the reads. In some cases, adapters will be present in either side of the read; in other cases technical errors will lead to decreasing base quality towards the ends of the reads. Both in these cases, the portion of the read should be trimmed so the read can align or better align the genome.</p>
+<p><br></p>
+<p>Using the <code>QuasR::preprocessReads()</code> function, we will have the ability to perform multiple pre-processing possibilities using a single interface. With this function, we match adapter sequences and remove them. We can remove low-complexity reads (reads containing repetitive sequences). We can trim the start or ends of the reads by a pre-defined length.</p>
+<p><br></p>
+<p>We will first set up the file paths to fastq files and filter them based on their length and whether or not they contain the “N” character, which stands for unidentified base. With the same function we will also trim 3 bases from the end of the reads and also trim segments from the start of the reads if they match the “ACCCGGGA” sequence.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"BiocManager"</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">"BiocManager"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Biocmanager::install("quasr")</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(QuasR)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain a list of fastq file paths</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>fastqFiles <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package=</span><span class="st">"ShortRead"</span>,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                          <span class="st">"extdata/E-MTAB-1147"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">c</span>(<span class="st">"ERR127302_1_subset.fastq.gz"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"ERR127302_2_subset.fastq.gz"</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Defined processed fastq file names in the outputs folder</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>outfiles <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"outputs/"</span>, <span class="fu">c</span>(<span class="st">"processed_1_"</span>, <span class="st">"processed_2_"</span>), <span class="fu">basename</span>(fastqFiles))</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Process fastq files</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove reads that have more than 1 N, (nbases)</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Trim 3 bases from the end of the reads (truncateendbases)</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove ACCCGGGA patern if it occurs at the start (lpattern)</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove reads shorter than 40 base-pairs (minlength)</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="fu">preprocessReads</span>(fastqFiles, outfiles, </span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">nBases=</span><span class="dv">1</span>,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                <span class="at">truncateEndBases=</span><span class="dv">3</span>,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>                <span class="at">Lpattern=</span><span class="st">"ACCCGGGA"</span>,</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>                <span class="at">minLength=</span><span class="dv">40</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `preprocessReads()`:
+! existing output file(s): outputs/processed_1_ERR127302_1_subset.fastq.gz, outputs/processed_2_ERR127302_2_subset.fastq.gz</code></pre>
+</div>
+</div>
+<p>The <code>ShortRead</code> package also has low-level functions, which <code>QuasR::preprocessReads()</code> also depends on. We can use these low-level functions to filter reads in ways that are not possible using the <code>QuasR::preprocessReads()</code> function. Below we are going to read in a fastq file and filter the reads where every quality score is below 20.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ShortRead)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain a list of fastq file paths</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>fastqFile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="at">package=</span><span class="st">"ShortRead"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                          <span class="st">"extdata/E-MTAB-1147"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                          <span class="st">"ERR127302_1_subset.fastq.gz"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Read fastq file</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>fq <span class="ot">=</span> <span class="fu">readFastq</span>(fastqFile)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Get quality scores per base as a matrix</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>qPerBase <span class="ot">=</span> <span class="fu">as</span>(<span class="fu">quality</span>(fq), <span class="st">"matrix"</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Get number of bases per read that have quality score below 20</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># We use this</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>qcount <span class="ot">=</span> <span class="fu">rowSums</span>( qPerBase <span class="sc">&lt;=</span> <span class="dv">20</span>) </span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of reads where all phred scores &gt;= 20</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>fq[<span class="fu">which</span>(qcount <span class="sc">==</span> <span class="dv">0</span>)]</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#We can finally write out the filtered fastq file with the ShortRead::writeFastq() function</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#mode = 'a' allows you to rewrite files that are already written</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>ShortRead<span class="sc">::</span><span class="fu">writeFastq</span>( fq[<span class="fu">which</span>(qcount <span class="sc">==</span> <span class="dv">0</span>)], here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"lab2_3/outputs/Qfiltered3.fastq"</span>), <span class="at">mode =</span> <span class="st">'a'</span>) </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up streaming with block size 1000</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Every time we call the yield() function 1000 read portion</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Of the file will be read successively.</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">FastqStreamer</span>(fastqFile,<span class="at">readerBlockSize=</span><span class="dv">1000</span>) </span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co"># We set up a while loop to call yield() function to</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Go through the file</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span>(<span class="fu">length</span>(fq <span class="ot">&lt;-</span> <span class="fu">yield</span>(f))) {</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove reads where all quality scores are &lt; 20 </span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get quality scores per base as a matrix</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>    qPerBase <span class="ot">=</span> <span class="fu">as</span>(<span class="fu">quality</span>(fq), <span class="st">"matrix"</span>)</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get number of bases per read that have Q score &lt; 20</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    qcount <span class="ot">=</span> <span class="fu">rowSums</span>( qPerBase <span class="sc">&lt;=</span> <span class="dv">20</span>) </span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># write fastq file with mode="a", so every new block</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># is written out to the same file</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    <span class="fu">writeFastq</span>(fq[<span class="fu">which</span>(qcount <span class="sc">==</span> <span class="dv">0</span>)], </span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>               here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"lab2_3/outputs"</span>, <span class="fu">paste</span>(<span class="fu">basename</span>(fastqFile), <span class="st">"Qfiltered.fastq"</span>, <span class="at">sep=</span><span class="st">"_"</span>)), </span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>               <span class="at">mode=</span><span class="st">"a"</span>)</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="summary-exercise-lab-2" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> <strong>Summary exercise lab 2</strong></h1>
+<ol type="1">
+<li><p>Give your Rmarkdown document an appropriate title (1 mark)</p></li>
+<li><p>Add a secondary title for long read QC (1 mark)</p></li>
+<li><p>Use <code>conda</code> to install the <code>filtlong</code> package a package that allow to filter long reads based on certain criteria such as average Q score, or size. Make sure that the code for it is on your Rmarkdown (1 mark)</p></li>
+<li><p>This too is a bash tool, write a bash code that filters the long read fastq you used earlier with <code>sequali</code> to only keep the longest 75% of the sequences and save the file in the <code>outputs/</code> directory. Make sure that the code is in your Rmarkdown (2 Marks)</p></li>
+<li><p>Run <code>Sequali</code> on the filtered file, directing the report to the <code>outputs/</code> directory. Write the bash code in your rmarkdown file.</p></li>
+<li><p>Write a brief description of how your results changed post filtration. (3 Marks)</p>
+<ul>
+<li>Given the sanity check points and the reports from before and after flitlong, would you say that this sequencing run is of good quality? Would you use it for downstream analysis?</li>
+</ul></li>
+<li><p>Save and commit the changes to your rmarkdown, push them to <code>GitHub</code> as well as the reports from <code>sequali</code>. Make sure to not push any of the fastq files to <code>GitHub</code> (you can add them to your gitignore file) (1 mark)</p></li>
+<li><p>Download the following illumina reads of a Campilobacter jejuni genome sequencing, make sure to have that in your rmarkdown document (1 Mark)</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR112/040/ERR11203340/ERR11203340_1.fastq.gz</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">-nc</span> <span class="at">-P</span> data/ ftp://ftp.sra.ebi.ac.uk/vol1/fastq/ERR112/040/ERR11203340/ERR11203340_2.fastq.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>File ‘data/ERR11203340_1.fastq.gz’ already there; not retrieving.
+File ‘data/ERR11203340_2.fastq.gz’ already there; not retrieving.</code></pre>
+</div>
+</div>
+<ol start="9" type="1">
+<li><p>Include a code chunk for each of the following (3 marks):</p>
+<ul>
+<li><p>Sequence quality per base per cycle: based on that write at which cycle do you see quality score dropping below 2</p></li>
+<li><p>Sequence content per base per cycle: based on that where do you see the highest proportion on Ns</p></li>
+<li><p>Read frequency plot: based on that what is the level of redundancy of most seqs (e.g.&nbsp;do most seqs have more than one read)?</p></li>
+</ul></li>
+<li><p>Trim the reads based on the quality scores. trim bases from the 3' end inwards that have Q score &lt;20 (2 marks). Direct the outputs to the <code>outputs/</code> directory.</p>
+<ul>
+<li>You can use the <code>QuasR::preprocessReads()</code> function for this purpose.</li>
+</ul></li>
+<li><p>Make sure to stage, commit and stage your changes to <code>GitHub</code> (1 mark)</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lab1/01-lab1.html" class="pagination-link" aria-label="Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Lab 1: Intro to RMarkdown, GitHub, and Computational Environment Setup</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lab2_3/03-lab3.html" class="pagination-link" aria-label="Lab 3: Genome Assembly and Annotation Basics">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Lab 3: Genome Assembly and Annotation Basics</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/idohatam/Biol4315_lab_manual/edit/main/lab2_3/02-lab2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li></ul></div></div></div></footer></body></html>
