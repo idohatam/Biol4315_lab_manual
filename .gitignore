@@ -13,6 +13,14 @@ log.txt
 self_reflection.md
 feedback.md
 .DS_Store
+_book/
+.gemini/
+.geminiignore
+.mcp.json
+GEMINI.md
+*.rmarkdown
+*.Rproj
+busco_downloads/
 
 /.quarto/
 **/*.quarto_ipynb
