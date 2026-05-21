@@ -5,7 +5,6 @@ project:
 book:
   title: "Biol 4315: Genomics and Transcriptomics Lab Manual"
   author: "Dr. Ido Hatam"
-  cover-image: assets/cover.png
   repo-url: https://github.com/idohatam/Biol4315_lab_manual
   repo-actions: [edit]
   chapters:

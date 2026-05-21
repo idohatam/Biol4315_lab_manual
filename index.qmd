@@ -1,4 +1,4 @@
-# Welcome {-}
+# Welcome {.unnumbered}
 
 This is the laboratory manual for Biol 4315: Genomics and Transcriptomics at Langara College.
 
@@ -9,4 +9,12 @@ Additional contributors:
 * Gemini 3.1 pro - language editing and syntax update
 
 * ChatGPT - cover image
+
+```{r artwork}
+#| fig-align: center
+#| echo: false
+#| include: !expr knitr::is_html_output()
+knitr::include_graphics('assets/cover.png', dpi = NA)
+```
+
 
