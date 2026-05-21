@@ -10,4 +10,3 @@ Additional contributors:
 
 * ChatGPT - cover image
 
-![](assets/cover.png){width=100% fig-align="center"}
