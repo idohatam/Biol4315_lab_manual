@@ -99,9 +99,10 @@ The labs will be migrated in the following order to respect both pedagogical pro
   - Merge PR from `dev` into `main`.
   - Ask human for approval before deleting the `dev` branch.
   - Human turns repository Public.
-  - Use manual `quarto publish gh-pages` from the local machine after merging to `main`. This natively renders the book using local cached data and automatically pushes the final static HTML and image assets to the `gh-pages` branch.
+  - **The human instructor** manually runs `quarto publish gh-pages` from their local machine after merging to `main`. This natively renders the book using local cached data and automatically pushes the final static HTML and image assets to the `gh-pages` branch.
 - **Agent Assignment:**
-  - Git Specialist (Branch operations, Pages config via Quarto publish)
+  - Human Instructor (Final render & Publishing)
+  - Git Specialist (Merge & Branch cleanup)
 - **Success Criteria:** The HTML book is live and accessible via the GitHub Pages URL.
 
 ---

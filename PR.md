@@ -18,7 +18,7 @@ This PR formally migrates the legacy `.Rmd` lab documents for Biol 4315 into a u
 
 **Infrastructure Requirements:**
 - **Conda Environments:** `sequali`, `filtlong`, `flye`, `minimap2`, `hisat2`, and `medaka_final` (with specific OSx-64 forcing for ARM64 compatibility if issues arise).
-- **Docker Containers:** `ezlabgva/busco:v6.0.0_cv1` and `quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2`.
+- **Docker Containers:** `ezlabgva/busco:v6.0.0_cv1` (supports `odb12` lineages) and `quay.io/biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2`.
 - **R Ecosystem:** Fully native R packages including `QuasR`, `ShortRead`, `DESeq2`, `phyloseq`, `dada2`, `Gviz`, and `clusterProfiler`.
 
 ## Pedagogical Audit

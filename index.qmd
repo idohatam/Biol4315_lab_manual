@@ -1,7 +1,13 @@
 # Welcome {-}
 
-This is the laboratory manual for **Biol 4315: Genomics and Transcriptomics** at Langara College.
+This is the laboratory manual for Biol 4315: Genomics and Transcriptomics at Langara College.
 
-**Author:** Instructor
+Author: Dr. Ido Hatam
+
+Additional contributors:
+
+* Gemini 3.1 pro - language editing and syntax update
+
+* ChatGPT - cover image
 
 ![](assets/cover.png){width=100% fig-align="center"}
